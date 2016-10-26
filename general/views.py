@@ -9,7 +9,7 @@ def index(request):
 
 def participant(request,participantID):
     participant = get_object_or_404(Participant,pk=participantID)
-
+    
     return render(request,'general/participant.html',{'participant':participant})
 
 def courses(request,courseID, participantID):

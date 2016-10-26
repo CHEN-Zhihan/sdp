@@ -1,10 +1,11 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 class Instructor(models.Model):
-    username = models.CharField(max_length=200)
-    name = models.CharField(max_length=200)
+    _user = models.OneToOneField(User)
     def __str__(self):
-        return self.name
+        return "{} {}".format(self._user.first_name,self._user.last_name)
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -39,17 +40,16 @@ class Component(models.Model):
         return string
 
 class Participant(models.Model):
-    username = models.CharField(max_length=200)
-    name = models.CharField(max_length=200)
     currentCourse = models.ForeignKey(Course,null=True,blank=True,on_delete=models.CASCADE)
+    _user = models.OneToOneField(User)
     def __str__(self):
-        return self.name
+        return "{} {}".format(self._user.first_name,self._user.last_name)
 
 class TakenCourse(models.Model):
     completionDate = models.DateField()
     course = models.ForeignKey(Course,on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant,on_delete=models.CASCADE)
-
+    _user = models.OneToOneField(User)
     def __str__(self):
         participant = self.participant.name
         course = self.course.name
