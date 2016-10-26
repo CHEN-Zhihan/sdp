@@ -51,7 +51,4 @@ class TakenCourse(models.Model):
     participant = models.ForeignKey(Participant,on_delete=models.CASCADE)
     _user = models.OneToOneField(User)
     def __str__(self):
-        participant = self.participant.name
-        course = self.course.name
-        date = str(self.completionDate)
-        return "{participant} completed {course} on {date}".format(participant=participant,course=course,date=date)
+        return self.course.name
