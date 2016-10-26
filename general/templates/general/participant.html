@@ -1,5 +1,44 @@
-<h1>{{participant.name}}</h1>
-<h2>Current Course </h2>
-<a herf="{%url 'courses' participant.id participant.currentCourse.id%}">{{participant.currentCourse}}</a>
-{%url 'courses' participant.id participant.currentCourse.id%}
-<h2>courses taken</h2>
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+    <meta charset="utf-8">
+    <title>Home</title>
+    <link rel="stylesheet/less" href="{% static "general/general.less" %}" media="all" type="text/css"/>
+    <link rel="stylesheet/less" href="{% static "general/participant.less" %}" media="all" type="text/css"/>
+    <script src="{% static "js/less.min.js" %}" charset="utf-8"></script>
+  </head>
+  <body>
+    <div class="content">
+      <div class="sidebar-container">
+        <div class="sidebar">
+          <nav>
+            <h1 class="title shadow">
+              <a href="#">SDP</a>
+            </h1>
+            <ul class="top-list">
+              <li id="home"><a class="selected" href="#">Home</a></li>
+              <li id="catalog"><a href="#">Catalog</a></li>
+            </ul>
+            <ul class="bottom-list">
+              <li id="logout"><a href="#">Logout</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <div class="main-container">
+        <div class="header shadow">
+          <h1>Home</h1>
+        </div>
+        <div class="main-content">
+          <div class="current-course-container">
+            <p class="nav-text">In Progress</p>
+          </div>
+          <div class="taken-courses-container">
+            <p class="nav-text">Completed</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
