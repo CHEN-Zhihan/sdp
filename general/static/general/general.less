@@ -1,26 +1,15 @@
 @import "colors";
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+html, body, .container-fluid {
+  height: 100%;
+}
 
-html, body, div, h1, a, ul, li, ol {
-  font-family: Helvetica, 'Open Sans', sans-serif;
-  font-weight: normal;
-  display: block;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  width: auto;
-  -webkit-font-smoothing: antialiased;
+.fullheight {
+  height: 100%;
 }
 
 a {
   text-decoration: none;
-}
-
-.content {
-  width: 100%;
-  float: left;
-  clear: none;
 }
 
 .shadow {
@@ -29,80 +18,11 @@ a {
   box-shadow: 0px 1px 3px @shadowColor;
 }
 
-.sidebar {
-  position: relative;
-  min-height: 100vh;
-  width: 200px;
+.bg-primary {
   background-color: @primaryColor;
-  ul {
-    font-size: 16px;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-  .title {
-    height: 50px;
-    background-color: darken(@primaryColor, 7%);
-    a {
-      padding-top: 5px;
-      padding-left: 10px;
-      color: white;
-    }
-  }
-  .top-list {
-    margin-top: 20px;
-    margin-left: 40px;
-    li {
-      margin-top: 20px;
-      margin-bottom: 20px;
-    }
-    .selected {
-      color: white;
-    }
-    a {
-      color: lightgrey;
-      &:hover {
-        color: white;
-      }
-    }
-  }
-  .bottom-list {
-    position: absolute;
-    bottom: 0;
-    margin-bottom: 20px;
-    margin-left: 40px;
-    a {
-      color: lightgrey;
-      &:hover {
-        color: white;
-      }
-    }
-  }
 }
 
-.sidebar-container {
-  float: left;
-  width: 200px;
-  div {
-    float: left;
-  }
-}
-
-.main-container {
-  min-height: 100vh;
-  .header {
-    height: 50px;
-    h1 {
-      font-size: 24px;
-      padding-left: 25px;
-      padding-top: 10px;
-      color: @titleTextColor;
-    }
-  }
-}
-
-.nav-text {
-  margin-top: 50px;
-  margin-left: 50px;
-  color: @navTextColor;
+.bg-warning {
+  background-color: darken(@primaryColor, 7%);
+  color: white;
 }
