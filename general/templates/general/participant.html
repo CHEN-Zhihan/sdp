@@ -11,30 +11,62 @@
     <script src="{% static "js/jquery-3.1.1.min.js" %}" charset="utf-8"></script>
     <script src="{% static "js/less.min.js" %}" charset="utf-8"></script>
     <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="utf-8"></script>
+    <script src="{% static "js/common.js" %}" charset="utf-8"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $.ajaxSetup({
+          data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+        });
+        $("#catalog").click(function () {
+          console.log("Catalog clicked");
+          $.ajax({
+            url     : "getCatalog",
+            type    : "POST",
+            success : function (response) {
+              $("#categories").html(response);
+            },
+            error   : function (XMLHttpRequest, textStatus, errorThrown) {
+              alert(XMLHttpRequest.readyState + XMLHttpRequest.status + XMLHttpRequest.responseText);
+            }
+          });
+        });
+      });
+    </script>
   </head>
   <body>
-    <div class="container-fluid">
+    <div class="container-fluid fullheight">
       <div class="row shadow">
-        <div class="col-sm-2 bg-warning">
-          <h2>SDP</h2>
+        <div class="col-sm-2 cbg-darken">
+          <h3>SDP</h3>
         </div>
         <div class="col-sm-10">
           <h3>Home</h3>
         </div>
       </div>
       <div class="row fullheight">
-        <div class="col-sm-2 bg-primary fullheight">
-          <ul class="list-unstyled">
-            <li>Home</li>
-            <li>Catalog</li>
-          </ul>
+        <div class="col-sm-2 cbg-primary fullheight">
+          <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <li>
+                <a class="active" href="#"><span class="glyphicon glyphicon-home"></span>Home</a>
+              </li>
+              <li>
+                {% csrf_token %}
+                <a href="#" data-toggle="collapse" data-target="#categories" id="catalog">
+                  <span class="glyphicon glyphicon-book"></span>Catalog
+                </a>
+              </li>
+              <div class="collapse" id="categories">
+              </div>
+            </ul>
+          </div>
         </div>
         <div class="col-sm-10 fullheight">
           <div>
-            <p class="nav-text">In Progress</p>
+            <h4 class="info-text page-header">In Progress</h4>
           </div>
           <div>
-            <p class="nav-text">Completed</p>
+            <h4 class="info-text page-header">Completed</h4>
           </div>
         </div>
       </div>
