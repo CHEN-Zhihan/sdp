@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}" media="all" type="text/css"/>
+    <link rel="stylesheet/less" href="{% static "general/general.less" %}" media="all" type="text/css"/>
+    <link rel="stylesheet/less" href="{% static "general/participant.less" %}" media="all" type="text/css"/>
+    <script src="{% static "js/jquery-3.1.1.min.js" %}" charset="utf-8"></script>
+    <script src="{% static "js/less.min.js" %}" charset="utf-8"></script>
+    <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="utf-8"></script>
+    <script src="{% static "js/common.js" %}" charset="utf-8"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $.ajaxSetup({
+          data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+        });
+        $("#catalog").click(function () {
+          console.log("Catalog clicked");
+          $.ajax({
+            url     : "getCatalog",
+            type    : "POST",
+            success : function (response) {
+              $("#categories").html(response);
+            },
+            error   : function (XMLHttpRequest, textStatus, errorThrown) {
+              alert(XMLHttpRequest.readyState + XMLHttpRequest.status + XMLHttpRequest.responseText);
+            }
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container-fluid fullheight">
+      <div class="row shadow">
+        <div class="col-sm-2 cbg-darken">
+          <h3>SDP</h3>
+        </div>
+        <div class="col-sm-10">
+          <h3>Home</h3>
+        </div>
+      </div>
+      <div class="row fullheight">
+        <div class="col-sm-2 cbg-primary fullheight">
+          <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <li>
+                <a class="active" href="#"><span class="glyphicon glyphicon-home"></span>Home</a>
+              </li>
+              <li>
+                {% csrf_token %}
+                <a href="#" data-toggle="collapse" data-target="#categories" id="catalog">
+                  <span class="glyphicon glyphicon-book"></span>Catalog
+                </a>
+              </li>
+              <div class="collapse" id="categories">
+              </div>
+            </ul>
+          </div>
+        </div>
+        <div class="col-sm-10 fullheight">
+          <div>
+            <h4 class="info-text page-header">In Progress</h4>
+          </div>
+          <div>
+            <h4 class="info-text page-header">Completed</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

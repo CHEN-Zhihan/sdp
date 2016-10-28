@@ -1,0 +1,76 @@
+@import "colors";
+
+html body .container-fluid {
+  overflow: hidden;
+}
+
+.fullheight {
+  height: 100vh;
+}
+
+.glyphicon {
+  margin-right: 10px;
+}
+
+#sidebar-wrapper {
+  width: auto;
+  height: 100%;
+  background-color: @primaryColor;
+  overflow-y: auto;
+}
+
+.sidebar-nav {
+  top: 0;
+  margin: 0;
+  padding: 0;
+  padding-top: 10px;
+  list-style: none;
+  li {
+    margin-left: 10px;
+    margin-top: 10px;
+    a {
+      display: block;
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.80);
+      &:hover {
+        color: white;
+      }
+    }
+  }
+}
+
+.active {
+  color: white !important;
+}
+
+.info-text {
+  color: @navTextColor;
+  margin-left: 10px;
+}
+
+.category {
+  margin-left: 20px;
+  a {
+    display: block;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.80);
+    &:hover {
+      color: white;
+    }
+  }
+}
+
+.cbg-primary {
+  background-color: @primaryColor;
+}
+
+.cbg-darken {
+  background-color: darken(@primaryColor, 7%);
+  color: white;
+}
+
+.shadow {
+  -webkit-box-shadow: 0px 1px 3px @shadowColor;
+  -moz-box-shadow: 0px 1px 3px @shadowColor;
+  box-shadow: 0px 1px 3px @shadowColor;
+}
