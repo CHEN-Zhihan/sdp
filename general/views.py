@@ -21,7 +21,7 @@ def participant(request,participantID):
     participant = get_object_or_404(Participant,pk=participantID)
     currentCourse = participant.currentCourse
     takenCourses = TakenCourse.objects.filter(participant=participant)
-    return render(request,'participant.html',{'currentCourse':currentCourse,'takenCourses':takenCourses})
+    return render(request,'general/participant.html',{'currentCourse':currentCourse,'takenCourses':takenCourses})
 
 def enrollIn(request,participantID,courseID):
     if not request.user.is_authenticated:
