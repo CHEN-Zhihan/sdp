@@ -2,9 +2,17 @@ from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-# Create your views here.
+from .models import Course,Participant,TakenCourse,Instructor,Category
+from django.template.loader import render_to_string
+
 
 from .models import Course,Participant,CompletionRecord,Instructor
+
+def showCatalog(request):
+    if request.method == "POST":
+        catelog = Category.objects.all()
+        result = render_to_string('general/ajax/categories.html', {'category_list':catelog})
+        return HttpResponse(result)
 
 @login_required(login_url="login/")
 def index(request):
@@ -15,8 +23,8 @@ def participant(request,participantID):
         return render(request,'general/error.html')
     participant = get_object_or_404(Participant,pk=participantID)
     currentCourse = participant.currentCourse
-    completionRecord = CompletionRecord.objects.filter(participant=participant)
-    return render(request,'participant.html',{'currentCourse':currentCourse,'completionRecord':completionRecord})
+    takenCourses = TakenCourse.objects.filter(participant=participant)
+    return render(request,'general/participant.html',{'currentCourse':currentCourse,'takenCourses':takenCourses})
 
 def enrollIn(request,participantID,courseID):
     if not request.user.is_authenticated:
