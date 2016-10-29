@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 # Create your views here.
 
-from .models import Course,Participant,TakenCourse,Instructor
+from .models import Course,Participant,CompletionRecord,Instructor
 
 @login_required(login_url="login/")
 def index(request):
@@ -15,8 +15,8 @@ def participant(request,participantID):
         return render(request,'general/error.html')
     participant = get_object_or_404(Participant,pk=participantID)
     currentCourse = participant.currentCourse
-    takenCourses = TakenCourse.objects.filter(participant=participant)
-    return render(request,'participant.html',{'currentCourse':currentCourse,'takenCourses':takenCourses})
+    completionRecord = CompletionRecord.objects.filter(participant=participant)
+    return render(request,'participant.html',{'currentCourse':currentCourse,'completionRecord':completionRecord})
 
 def enrollIn(request,participantID,courseID):
     if not request.user.is_authenticated:

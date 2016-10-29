@@ -21,6 +21,14 @@ class Course(models.Model):
     def __str__(self):
         return self.name
 
+    def moveToCategory(self,categoryID):
+        newCategory=Category.objects.get(id=categoryID)
+        self.category=newCategory
+        self.save()
+
+    def addNewModule(self):
+        pass
+
 class Module(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -44,11 +52,15 @@ class Participant(models.Model):
     _user = models.OneToOneField(User)
     def __str__(self):
         return "{} {}".format(self._user.first_name,self._user.last_name)
+    def enroll(self,courseID):
+        self.currentCourse=Course.objects.get(id=courseID)
+        self.currentCourse.participant_set.add(self)
+        self.save()
+        self.currentCourse.save()
 
-class TakenCourse(models.Model):
-    completionDate = models.DateField()
+class CompletionRecord(models.Model):
+    Date = models.DateField()
     course = models.ForeignKey(Course,on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant,on_delete=models.CASCADE)
-    _user = models.OneToOneField(User)
     def __str__(self):
         return self.course.name
