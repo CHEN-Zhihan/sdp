@@ -2,11 +2,10 @@ from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from .models import Course,Participant,TakenCourse,Instructor,Category
+from .models import Course,Participant,CompletedEnrollment,Instructor,Category
 from django.template.loader import render_to_string
 
 
-from .models import Course,Participant,CompletionRecord,Instructor
 
 def showCatalog(request):
     if request.method == "POST":
