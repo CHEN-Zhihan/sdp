@@ -1,13 +1,22 @@
 from django.db import models
 from django.contrib.auth.models import User,Group
 
+
+if not Group.objects.filter(name="instructor").exists():
+    instructor=Group(name="instructor")
+    instructor.save()
+
+if not Group.objects.filter(name="participant").exists():
+    participant=Group(name="participant")
+    participant.save()
+
 class SDPUser(models.Model):
-    _user = models.OneToOneField(User)
+    _user = models.OneToOneField(User,on_delete=models.CASCADE)
+    class Meta:
+        abstract=True
     def create(username,password,first_name,last_name):
         user = SDPUser()
-        user._user=User.objects.create_user(username,password=password)
-        user._user.first_name=first_name
-        user._user.last_name=last_name
+        user._user=User.objects.create_user(username,password=password,first_name=first_name,last_name=last_name)
         user._user.save()
         user.save()
         return user
@@ -15,19 +24,20 @@ class SDPUser(models.Model):
         return "{} {}".format(self._user.first_name,self._user.last_name)
     def getID(self):
         return user.id
-    def _addToGroup(self,groupID):
-        group = Group.objects.get(id=groupID)
-        group._user_set.add(self._user)
+    def _addToGroup(self,name):
+        group = Group.objects.get(name=name)
+        group.user_set.add(self._user)
         self._user.groups.add(group)
     def getGroups(self):
         return _user.groups.all()
 
 class Enrollment(models.Model):
-    participant = models.ForeignKey('Participant',on_delete=models.CASCADE)
-    course = models.ForeignKey('Course',on_delete=models.CASCADE)
-    def create(participant,course):
+    course = models.OneToOneField('Course',on_delete=models.CASCADE)
+    class Meta:
+        abstract=True
+
+    def create(course):
         enrollment=Enrollment()
-        enrollment.participant=participant
         enrollment.course=course
         enrollment.save()
         return enrollment
@@ -36,31 +46,54 @@ class CurrentEnrollment(Enrollment):
     progress = models.IntegerField()
     def updateProgess(self,newProgress):
         self.progress=newProgress
+    
+    def create(course):
+        e = CurrentEnrollment()
+        e.course=course
+        e.progress=0
+        return e
 
 class CompletedEnrollment(Enrollment):
     completionDate = models.DateField()
 
+    def createFromCurrentEnrollment(currentEnrollment,date):
+        temp = CompletedEnrollment()
+        temp.completionDate=date
+        temp.course=currentEnrollment.course
+        return temp
 
 class Instructor(SDPUser):
     def create(username,password,first_name,last_name):
-        user = SDPUser.create(username,password,first_name,last_name)
-        user._addToGroup(1)
-        user.save()
-        return user
+        instructor = Instructor()
+        instructor._user=User.objects.create_user(username=username,password=password,first_name=first_name,last_name=last_name)
+        instructor._addToGroup("instructor")
+        instructor._user.save()
+        instructor.save()
+        return instructor
 
     def getDevelopingCourses(self):
-        return self.course_set.filter(isOpen=False)
+        return self.course_set.filter(_isOpen=False)
     def getOpenCourses(self):
-        return self.course_set.filter(isOpen=True)
+        return self.course_set.filter(_isOpen=True)
+    
+    def openCourse(course):
+        if course in self.course_set.all():
+            course._isOpen=True
+        else:
+            raise Exception("Unable to open course {}, not created by {}".format(str(course),str(self)))
 
 class Participant(SDPUser):
-    current = models.ForeignKey(CurrentEnrollment,on_delete=models.CASCADE,related_name='+')
-    completed = models.ForeignKey(CompletedEnrollment,on_delete=models.CASCADE,related_name='+')
+    current = models.OneToOneField(CurrentEnrollment,on_delete=models.CASCADE,null=True,blank=True)
+    completed = models.ForeignKey(CompletedEnrollment,on_delete=models.CASCADE,null=True,blank=True)
     def create(username,password,first_name,last_name):
-        user = SDPUser.create(username,password,first_name,last_name)
-        user._addToGroup(2)
-        user.save()
-        return user
+        p=Participant()
+        p.current=None
+        p.completed=None
+        p._user=User.objects.create_user(username=username,password=password,first_name=first_name,last_name=last_name)
+        p._addToGroup("participant")
+        p._user.save()
+        p.save()
+        return p
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -89,6 +122,9 @@ class Course(models.Model):
         c.category=category
         c.save()
         return c
+    
+    def isOpen(self):
+        return self._isOpen
 
     def __str__(self):
         return self.name
@@ -141,7 +177,6 @@ class Component(models.Model):
         c.content=content
         c.save()
         return c
-
     def __str__(self):
         string = "{}-th of {}:{}".format(self.index,self.module.course.name,self.module.name)
         return string
