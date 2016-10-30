@@ -31,33 +31,21 @@ html body .container-fluid {
     a {
       display: block;
       text-decoration: none;
-      color: rgba(255, 255, 255, 0.80);
+      color: @linkColor;
       &:hover {
-        color: white;
+        color: @linkActiveColor;
       }
     }
   }
 }
 
 .active {
-  color: white !important;
+  color: @linkActiveColor !important;
 }
 
 .info-text {
   color: @navTextColor;
   margin-left: 10px;
-}
-
-.category {
-  margin-left: 20px;
-  a {
-    display: block;
-    text-decoration: none;
-    color: rgba(255, 255, 255, 0.80);
-    &:hover {
-      color: white;
-    }
-  }
 }
 
 .cbg-primary {
