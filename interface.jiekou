@@ -1,0 +1,90 @@
+
+
+"/"
+def index(request):
+	categories,
+	return "index.html"
+
+def dashboard(request):
+	if request.method=="POST":
+		currentCourse,
+		completionRecords,
+		render_to_string("main.html")
+		return httpresponse(,currentCourse,completionRecord)
+
+def showCategoryList(request):
+	if request.method==:
+		categories,
+		return {numberOfCategories,courses,participant} "categories.html"
+
+def showCourseList(request):
+	if request.method=="POST":
+		id=request.post.get('id')
+		courses,
+		render_to_string("courses.html")
+		return httpresponse
+
+def showCourse(request):
+	if request.method=="POST":
+		pid,
+		course,
+		hasEnrolled,
+		render_to_string()
+		return
+
+def enroll(request,pid,cid):
+	id,
+	result=enroll,
+	dic={"result":result}
+	return httpresponse(json.dumps(dic),contenttype)
+
+
+def instructorDashboard(request):
+	developingCourses,
+	openCourses,
+	return render_to_string
+
+def instructorIndex(request):
+	return render()
+
+def newCourse(request):
+	if post:
+		if get('action')!=create:
+			return httpresponse("form.html")
+		else:
+			get()
+			result=newCourse,
+			newid,
+			return json.dumps(result,id)
+
+def coursePage(request,cid,iid):
+	id,
+	course,
+	modules,
+	return render()
+
+def newModule(request,id):
+	if get:
+		return render("newModule.html",{courseID})
+	if post:
+		get()
+		result=newModule
+		newmoduleID,
+		return json.dumps(result,id)
+
+def modulePage(request,id):
+	name,
+	desciption,
+	components,
+	return render("moduelPage.",{})
+
+def newComponent(request,id),
+	if get:
+		return render("FORM.html",MODUleID)
+	if post:
+		if get('type')==text:
+			pass
+		elif ==picture:
+			pass
+		result=newComponent()
+		return dumps(result,moduleid)
