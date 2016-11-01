@@ -72,7 +72,7 @@
             <div>
               <h4 class="info-text page-header">In Progress</h4>
             </div>
-            <div class="course currentCourse jumbotron">
+            <div class="course currentCourse jumbotron" id="{{ currentCourse.id }}">
               <p class="course-name">{{ currentCourse.name }}</p>
               <p class="course-desc">{{ currentCourse.description }}</p>
               <div class="progress">
@@ -90,7 +90,7 @@
               <h4 class="info-text page-header">Completed</h4>
             </div>
             {% for course in completedCourses %}
-            <div class="course currentCourse jumbotron">
+            <div class="course currentCourse jumbotron" id="{{ course.id }}">
               <p class="course-name">{{ course.name }}</p>
               <p class="course-desc">{{ course.description }}</p>
             </div>

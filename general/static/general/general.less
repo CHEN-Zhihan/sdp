@@ -67,25 +67,34 @@ html body .container-fluid {
   }
 }
 
-.course {
+.course-name, .module-name {
+  color: @courseNameColor;
+}
+
+.course-desc, .module-desc {
+  color: @courseDescColor;
+  word-wrap: break-word;
+}
+
+.course, .module {
   .shadow(0px, 0px);
   &:hover {
     .shadow(0px, 0px, 6px);
   }
-  margin-top: 20px;
+  margin-top: 30px;
   &.jumbotron {
     background-color: white;
     border: none;
     border-radius: 0px;
     padding: 5px 5px 5px 5px;
   }
-  .course-name {
+  .course-name, .module-name {
     font-size: 16px;
     color: @courseNameColor;
     margin-top: 5px;
     margin-left: 5px;
   }
-  .course-desc {
+  .course-desc, .module-desc {
     font-size: 14px;
     color: @courseDescColor;
     margin-top: 5px;
@@ -100,6 +109,19 @@ html body .container-fluid {
 
 .modal {
   z-index: 9999;
+}
+
+.btn-default {
+  color: @linkActiveColor !important;
+  background-color: darken(@primaryColor, 7%) !important;
+  border: none !important;
+  border-radius: 0px !important;
+  &:hover {
+    background-color: @primaryColor !important;
+  }
+  &.btn-enroll {
+    margin-top: 10px !important;
+  }
 }
 
 .cbg-primary {

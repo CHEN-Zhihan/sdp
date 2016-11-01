@@ -1,5 +1,5 @@
 {% for course in courses %}
-<div class="course currentCourse jumbotron">
+<div class="course currentCourse jumbotron" id="{{ course.id }}">
   <p class="course-name">{{ course.name }}</p>
   <p class="course-desc">{{ course.description }}</p>
 </div>
