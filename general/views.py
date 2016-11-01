@@ -35,6 +35,7 @@ def showCourse(request,participantID):
         courseID = request.POST.get('courseID')
         course = Course.objects.get(id=courseID)
         participant = Participant.objects.get(id=participantID)
+        modules = course.module_set.all()
         try:
             hasEnrolled = participant.currentenrollment
         except ObjectDoesNotExist as e:
@@ -43,7 +44,8 @@ def showCourse(request,participantID):
             hasEnrolled=True
         return HttpResponse(
             render_to_string(
-                "general/ajax/showCourse.html",{'course':course,'hasEnrolled':hasEnrolled}
+                "general/ajax/showCourse.html",
+                {'course':course, 'hasEnrolled':hasEnrolled, 'modules':modules}
             )
         )
 
@@ -99,8 +101,8 @@ def newModule(request,instructorID,courseID):
 def modulePage(request,instructorID,courseID,moduleID):
     course = Course.objects.get(id=courseID)
     module = Module.objects.get(id=moduleID)
-    componentSet = module.component_set.all()
-    return render(request,"general/modulePage.html",{'course':course,'module':module,'componentSet':componentSet})
+    components = module.component_set.all()
+    return render(request,"general/modulePage.html",{'course':course,'module':module,'components':components})
 
 def newComponent(request,instructorID,courseID,moduleID):
     module = Module.objects.get(id=moduleID)
