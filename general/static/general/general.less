@@ -5,11 +5,26 @@ html body .container-fluid {
 }
 
 .fullheight {
-  height: 100vh;
+  min-height: 100%;
+  min-height: 100vh;
+  max-height: 100%;
+  max-height: 100vh;
+}
+
+.shadow (@h-shadow: 1px, @v-shadow: 1px, @blur: 3px, @spray: 0px) {
+  -webkit-box-shadow: @h-shadow @v-shadow @blur @spray @shadowColor;
+  -moz-box-shadow: @h-shadow @v-shadow @blur @spray @shadowColor;
+  box-shadow: @h-shadow @v-shadow @blur @spray @shadowColor;
+  z-index: 1;
+  position: relative;
 }
 
 .glyphicon {
   margin-right: 10px;
+}
+
+.header-row {
+  .shadow(0px, 0px);
 }
 
 #sidebar-wrapper {
@@ -45,7 +60,46 @@ html body .container-fluid {
 
 .info-text {
   color: @navTextColor;
-  margin-left: 10px;
+  &.jumbotron {
+    background-color: transparent;
+    border: none;
+    margin-top: 10%;
+  }
+}
+
+.course {
+  .shadow(0px, 0px);
+  &:hover {
+    .shadow(0px, 0px, 6px);
+  }
+  margin-top: 20px;
+  &.jumbotron {
+    background-color: white;
+    border: none;
+    border-radius: 0px;
+    padding: 5px 5px 5px 5px;
+  }
+  .course-name {
+    font-size: 16px;
+    color: @courseNameColor;
+    margin-top: 5px;
+    margin-left: 5px;
+  }
+  .course-desc {
+    font-size: 14px;
+    color: @courseDescColor;
+    margin-top: 5px;
+    margin-left: 5px;
+    word-wrap: break-word;
+  }
+}
+
+.main-column {
+  background-color: @mainBgColor;
+}
+
+.modal {
+  z-index: 9999;
 }
 
 .cbg-primary {
@@ -55,10 +109,4 @@ html body .container-fluid {
 .cbg-darken {
   background-color: darken(@primaryColor, 7%);
   color: white;
-}
-
-.shadow {
-  -webkit-box-shadow: 0px 1px 3px @shadowColor;
-  -moz-box-shadow: 0px 1px 3px @shadowColor;
-  box-shadow: 0px 1px 3px @shadowColor;
 }

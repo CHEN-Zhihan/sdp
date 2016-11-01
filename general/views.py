@@ -23,9 +23,12 @@ def participantIndex(request,participantID):
 
 def showCourseList(request,participantID):
     if request.method=="POST":
+        print("handled by showCourseList")
         categoryID = request.POST.get("categoryID")
         courses = Category.objects.get(id=categoryID).getCourses()
-        return render_to_string("general/showCourseList.html",{'courses':courses})
+        return HttpResponse(
+            render_to_string("general/ajax/showCourseList.html",{'courses':courses})
+        )
 
 def showCourse(request,participantID):
     if request.method=="POST":
@@ -38,7 +41,11 @@ def showCourse(request,participantID):
             hasEnrolled=False
         else:
             hasEnrolled=True
-        return render_to_string("general/showCourse.html",{'course':course,'hasEnrolled':hasEnrolled})
+        return HttpResponse(
+            render_to_string(
+                "general/ajax/showCourse.html",{'course':course,'hasEnrolled':hasEnrolled}
+            )
+        )
 
 def enroll(request,participantID):
     if request.method == "POST":

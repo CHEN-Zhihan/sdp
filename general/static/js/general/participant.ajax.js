@@ -8,9 +8,9 @@ $(document).ready(function () {
     $("#header-text").text(category_name);
     // Ajax POST
     $.ajax({
-      url     : "showCourseList",
+      url     : window.location.pathname + "/showCourseList",
       type    : "POST",
-      data    : {"category_id": category_id},
+      data    : {"categoryID": category_id},
       success : function (response) {
         // Insert result
         $("#main-content").html(response);
