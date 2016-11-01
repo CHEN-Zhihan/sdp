@@ -29,11 +29,17 @@ function registerCourseListener() {
     var courseName = $(".course-name", this).text();
     var courseID = parseInt($(this).attr("id"));
     console.log("Course " + courseName + " selected");
+    var postURL;
+    if ($(this).hasClass("currentCourse")) {
+      postURL = window.location.pathname + "/takeCourse";
+    } else {
+      postURL = window.location.pathname + "/showCourse";
+    }
     // Update header text
     $("#header-text").text(courseName);
     // Ajax POST
     $.ajax({
-      url     : window.location.pathname + "/showCourse",
+      url     : postURL,
       type    : "POST",
       data    : {"courseID": courseID},
       success : function (response) {
