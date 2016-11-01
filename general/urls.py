@@ -10,7 +10,7 @@ course = instructor+r'/(?P<courseID>[0-9]+)'
 module = course + r'/(?P<moduleID>[0-9]+)'
 
 urlpatterns = [
-    url(participant,views.participantIndex,name="participantIndex"),
+    url(participant+r'$',views.participantIndex,name="participantIndex"),
     url(participant+r'/showCourseList$',views.showCourseList,name="showCourseList"),
     url(participant+r'/showCourse$',views.showCourse,name="showCourse"),
     url(participant+r'/enroll$',views.enroll,name="enroll"),

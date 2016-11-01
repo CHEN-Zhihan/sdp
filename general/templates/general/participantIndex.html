@@ -18,7 +18,7 @@
     <!-- Main viewpoint container -->
     <div class="container-fluid fullheight">
       <!-- Header row -->
-      <div class="row shadow">
+      <div class="row header-row">
         <!-- Brand -->
         <div class="col-sm-2 cbg-darken">
           <h3>SDP</h3>
@@ -65,37 +65,45 @@
         </div> <!-- End navigation -->
 
         <!-- Main content container -->
-        <div class="col-sm-10 fullheight">
-          <div class="container" id="main-content">
-            <!-- Show current course -->
+        <div class="col-sm-10 fullheight main-column">
+          <div class="container-fluid fullheight pre-scrollable" id="main-content">
             {% if currentCourse %}
+            <!-- Show current course -->
             <div>
               <h4 class="info-text page-header">In Progress</h4>
             </div>
-            <div>
-              <!-- TODO: Format and display current course -->
+            <div class="course currentCourse jumbotron" id="{{ currentCourse.id }}">
+              <p class="course-name">{{ currentCourse.name }}</p>
+              <p class="course-desc">{{ currentCourse.description }}</p>
+              <div class="progress">
+                <div class="progress-bar" role="progressbar" aria-valuenow="20"
+                aria-valuemin="0" aria-valuemax="100" style="width:20%">
+                  <span>20% Complete</span>
+                </div>
+              </div>
             </div>
             {% endif %}
 
-            <!-- List taken courses -->
             {% if completedCourses %}
+            <!-- List taken courses -->
             <div>
               <h4 class="info-text page-header">Completed</h4>
             </div>
             {% for course in completedCourses %}
-            <div>
-              <!-- TODO: Format and display taken courses -->
+            <div class="course currentCourse jumbotron" id="{{ course.id }}">
+              <p class="course-name">{{ course.name }}</p>
+              <p class="course-desc">{{ course.description }}</p>
             </div>
             {% endfor %}
             {% endif %}
 
-            <!-- If no courses, display default message -->
             {% if not currentCourse and not completedCourses %}
-            <div class="centered text-center">
-              <h4 class="info-text">
+            <!-- If no courses, display default message -->
+            <div class="container-fluid fullheight centered text-center">
+              <h3 class="info-text jumbotron">
                 You haven't taken any course yet.<br>
-                Choose a category to explore!.
-              </h4>
+                Choose a category to explore!
+              </h3>
             </div>
             {% endif %}
           </div>
