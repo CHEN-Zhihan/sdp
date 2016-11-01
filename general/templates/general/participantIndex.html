@@ -1,0 +1,13 @@
+{% for category in categoryList %}
+<li><a href="#" class="category">{{ category.name }}</a></li>
+{% endfor %}
+
+{{currentCourse}}
+
+<h>begin</h>
+
+{% for completedCourse in completedCourses%}
+{{completedCourse}}
+{% endfor %}
+<h>end</h>
+

@@ -32,35 +32,43 @@ class SDPUser(models.Model):
         return _user.groups.all()
 
 class Enrollment(models.Model):
-    course = models.OneToOneField('Course',on_delete=models.CASCADE)
+    course = models.ForeignKey('Course',on_delete=models.CASCADE)
     class Meta:
         abstract=True
 
-    def create(course):
-        enrollment=Enrollment()
-        enrollment.course=course
-        enrollment.save()
-        return enrollment
-
 class CurrentEnrollment(Enrollment):
     progress = models.IntegerField()
+    participant = models.OneToOneField('Participant')
     def updateProgess(self,newProgress):
         self.progress=newProgress
-    
-    def create(course):
+    def create(course,participant):
         e = CurrentEnrollment()
         e.course=course
+        e.participant=participant
+        e.participant.save()
         e.progress=0
+        e.save()
         return e
+    
+    def __str__(self):
+        return "{} taking {}".format(str(self.participant),str(self.course))
 
 class CompletedEnrollment(Enrollment):
     completionDate = models.DateField()
-
+    participant = models.ForeignKey('Participant',on_delete=models.CASCADE)
     def createFromCurrentEnrollment(currentEnrollment,date):
         temp = CompletedEnrollment()
         temp.completionDate=date
         temp.course=currentEnrollment.course
+        temp.course.save()
+        temp.participant = currentEnrollment.participant
+        temp.participant.save()
+        temp.save()
+        currentEnrollment.delete()
         return temp
+    
+    def __str__(self):
+        return "{} completed {} on {}".format(str(self.participant),str(self.course),str(self.completionDate))
 
 class Instructor(SDPUser):
     def create(username,password,first_name,last_name):
@@ -83,23 +91,35 @@ class Instructor(SDPUser):
             raise Exception("Unable to open course {}, not created by {}".format(str(course),str(self)))
 
 class Participant(SDPUser):
-    current = models.OneToOneField(CurrentEnrollment,on_delete=models.CASCADE,null=True,blank=True)
-    completed = models.ForeignKey(CompletedEnrollment,on_delete=models.CASCADE,null=True,blank=True)
     def create(username,password,first_name,last_name):
         p=Participant()
-        p.current=None
-        p.completed=None
         p._user=User.objects.create_user(username=username,password=password,first_name=first_name,last_name=last_name)
         p._addToGroup("participant")
         p._user.save()
         p.save()
         return p
+    def enroll(self,course):
+        self.currentenrollment = CurrentEnrollment.create(course,self)
+        self.save()
+        return True
+    def drop(self):
+        try:
+            CurrentEnrollment.objects.filter(participant=self).delete()
+            self.currentenrollment=None
+            self.save()
+        except Exception as e:
+            print(e)
+    def completeCourseOn(self,date):
+        self.completedenrollment_set.add(CompletedEnrollment.createFromCurrentEnrollment(self.currentenrollment,date))
+        self.currentenrollment=None
+        self.save()
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
     def create(name):
         c=Category()
         c.name=name
+        c.save()
         return c
     def __str__(self):
         return self.name
@@ -114,14 +134,18 @@ class Course(models.Model):
     _isOpen = models.BooleanField()
     category = models.ForeignKey(Category,on_delete=models.CASCADE)
     def create(name,description,instructor,category):
-        c=Course()
-        c.name=name
-        c.description=description
-        c.instructor=instructor
-        c._isOpen=False
-        c.category=category
-        c.save()
-        return c
+        try:
+            c=Course()
+            c.name=name
+            c.description=description
+            c.instructor=instructor
+            c._isOpen=False
+            c.category=category
+            c.save()
+            return c
+        except Exception as e:
+            print(e)
+            return None
     
     def isOpen(self):
         return self._isOpen
@@ -129,7 +153,6 @@ class Course(models.Model):
     def __str__(self):
         return self.name
     def addModule(self,module):
-        module.course=self
         self.module_set.add(module)
         module.save()
         self.save()
@@ -142,21 +165,23 @@ class Module(models.Model):
     course = models.ForeignKey(Course,on_delete=models.CASCADE)
     index = models.IntegerField()
     def create(name,description,course,index):
-        m=Module()
-        m.name=name
-        m.description=description
-        m.course=course
-        m.index=index
-        m.save()
-        return m
+        try:
+            m=Module()
+            m.name=name
+            m.description=description
+            m.course=course
+            m.index=index
+            m.save()
+            return m
+        except Exception as e:
+            print(e)
+            return None
     def __str__(self):
         string = "{}:{}".format(self.course.name,self.name)
         return string
-    def addComponent(self,cid):
+    def addComponent(self,component):
         try:
-            component = Component.objects.get(id=cid)
             self.component_set.add(component)
-            component.module=self
             component.save()
             self.save()
             return True
@@ -171,9 +196,9 @@ class Component(models.Model):
 
     def create(module,typeName,index,content):
         c = Component()
+        c.module=module
         c.index=index
         c.typeName=typeName
-        c.index=index
         c.content=content
         c.save()
         return c

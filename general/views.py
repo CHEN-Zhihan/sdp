@@ -3,62 +3,110 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from .models import Course,Participant,CompletedEnrollment,Instructor,Category
+from .models import CurrentEnrollment
 from django.template.loader import render_to_string
+from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 
+def participantIndex(request,participantID):
+    categoryList = Category.objects.all()
+    participant = Participant.objects.get(id=participantID)
+    try:
+        currentEnrollment=participant.currentenrollment
+    except ObjectDoesNotExist as e:
+        currentCourse=None
+    else:
+        currentCourse=currentEnrollment.course
+    completedCourses = list(map((lambda x:x.course),participant.completedenrollment_set.all()))
+    return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,\
+        'completedCourses':completedCourses})
 
+def showCourseList(request,participantID):
+    if request.method=="POST":
+        categoryID = request.POST.get("categoryID")
+        courses = Category.objects.get(id=categoryID).getCourses()
+        return render_to_string("general/showCourseList.html",{'courses':courses})
 
-def showCatalog(request):
+def showCourse(request,participantID):
+    if request.method=="POST":
+        courseID = request.POST.get('courseID')
+        course = Course.objects.get(id=courseID)
+        participant = Participant.objects.get(id=participantID)
+        try:
+            hasEnrolled = participant.currentenrollment
+        except ObjectDoesNotExist as e:
+            hasEnrolled=False
+        else:
+            hasEnrolled=True
+        return render_to_string("general/showCourse.html",{'course':course,'hasEnrolled':hasEnrolled})
+
+def enroll(request,participantID):
     if request.method == "POST":
-        catelog = Category.objects.all()
-        result = render_to_string('general/ajax/categories.html', {'category_list':catelog})
-        return HttpResponse(result)
+        courseID = request.POST.get('courseID')
+        course = Course.objects.get(id=courseID)
+        participant = Participant.objects.get(id=participantID)
+        result = participant.enroll(course)
+        return JsonResponse({'result':result})
 
-@login_required(login_url="login/")
-def index(request):
-    return render(request,"index.html")
-
-def participant(request,participantID):
-    if not request.user.is_authenticated:
-        return render(request,'general/error.html')
-    participant = get_object_or_404(Participant,pk=participantID)
-    currentCourse = participant.currentCourse
-    takenCourses = TakenCourse.objects.filter(participant=participant)
-    return render(request,'general/participant.html',{'currentCourse':currentCourse,'takenCourses':takenCourses})
-
-def enrollIn(request,participantID,courseID):
-    if not request.user.is_authenticated:
-        return render(request,'general/error.html')
-    participant = Participant.objects.get(pk=participantID)
-    course = Course.objects.get(pk=courseID)
-    if participant.currentCourse!=None and participant.currentCourse.id==courseID:
-        return render(request,'error.html',{'participant':participant,'currentCourse':currentCourse})
-    Course.objects.get(pk=courseID).participant_set.add(Participant.objects.get(pk=participantID))
-
-def instructor(request,instructorID):
-    if not request.user.is_authenticated:
-        return render(request,'general/error.html')
-    instructor = get_object_or_404(Instructor,pk=instructorID)
-    myCourses = Course.objects.filter(instructor=instructor)
-    developingCourses = myCourses.filter(isOpen=False)
-    openCourses = myCourses.filter(isOpen=True)
-    return render(request,'instructor.html',{'instructor':instructor,'developingCourses':developingCourses,'openCourses':openCourses})
-
-
-def courses(request,courseID, participantID):
-    course = get_object_or_404(Course,pk=courseID)
-    participant = get_object_or_404(Participant,pk=participantID)
-    return render(request,'course.html',{'course':course,'participant':participant})
+def instructorIndex(request,instructorID):
+    instructor = Instructor.objects.get(id=instructorID)
+    developingCourses = instructor.course_set.filter(_isOpen=False)
+    openCourses = instructor.course_set.filter(_isOpen=True)
+    return render(request,"general/instructorIndex.html",{'developingCourses':developingCourses,'openCourses':openCourses})
 
 def newCourse(request,instructorID):
-    return render(request,'test.html')
+    if request.method == "POST":
+        name = request.POST.get('name')
+        description = request.POST.get("description")
+        categoryID = request.POST.get("categoryID")
+        category = Category.objects.get(id=categoryID)
+        instructor = Instructor.objects.get(id=instructorID)
+        course = Course.create(name,description,instructor,category)
+        result=course!=None
+        newID = course.id if result else -1
+        return JsonResponse({'result':result,'newCourseID':newID})
+    else:
+        categories = Category.objects.all()
+        return render(request,"general/newCourse.html",{'categories':categories})
+
+def coursePage(request,instructorID,courseID):
+    course = Course.objects.get(id=courseID)
+    modules = course.module_set.all()
+    return render(request,"general/coursePage.html",{'course':course,'modules':modules})
 
 def newModule(request,instructorID,courseID):
-    pass
+    course = Course.objects.get(id=courseID)
+    if request.method == "POST":
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        index = request.POST.get('index')
+        module = Module.create(name,description,course,index)
+        if module!=None:
+            course.addModule(module)
+            return JsonResponse({'result':True,'newModuleID':module.id})
+        else:
+            return JsonResponse({'result':False,'newModuleID':-1})
+    else:
+        return render(request,"general/newModule.html",{'moduleSet':course.module_set.all()})
 
-def developingCourse(request,instructorID,courseID):
-    instructor = get_object_or_404(Instructor,pk=instructorID)
-    course = get_object_or_404(Course,pk=courseID)
-    return render(request,'general/developingCourse.html',{'instructor':instructor, 'course':course})
+def modulePage(request,instructorID,courseID,moduleID):
+    course = Course.objects.get(id=courseID)
+    module = Module.objects.get(id=moduleID)
+    componentSet = module.component_set.all()
+    return render(request,"general/modulePage.html",{'course':course,'module':module,'componentSet':componentSet})
+
+def newComponent(request,instructorID,courseID,moduleID):
+    module = Module.objects.get(id=moduleID)
+    if request.method =="POST":
+        typeName = request.POST.get('typeName')
+        content = request.POST.get('content')
+        index = request.POST.get('index')
+        component = Component.create(module,typeName,index,content)
+        if component!=None:
+            module.addComponent(component)
+            return JsonResponse({'result':True,'componentID':component.id})
+        else:
+            return JsonResponse({'result':False,'componentID':-1})
 
 def login(request):
     username=request.POST['username']
