@@ -30,11 +30,11 @@ function redirectHome() {
 $(document).ready(function () {
   // Set up AJAX for Django CSRF token
   $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-              xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
-          }
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
       }
+    }
   });
 
   // Redirect to home page when Home is clicked
