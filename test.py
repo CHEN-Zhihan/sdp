@@ -1,5 +1,8 @@
-from general.models import Participant
-from django.contrib.auth.models import User
+from general.models import Participant,Instructor,Category,Course
 
-x=Participant()
-x._user=User()
+
+categories = ["Information Technology","Mergers and Acquisitions", "Markets","Risk Management","Securities","Financial Modelling","Operations"]
+
+for c in categories:
+    if not Category.objects.filter(name=c).exists():
+        Category.create(c)
