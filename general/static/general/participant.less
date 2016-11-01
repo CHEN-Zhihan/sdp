@@ -1,2 +1,13 @@
-@import "general";
 @import "colors";
+
+.category {
+  margin-left: 20px;
+  a {
+    display: block;
+    text-decoration: none;
+    color: @linkColor;
+    &:hover {
+      color: @linkActiveColor;
+    }
+  }
+}
