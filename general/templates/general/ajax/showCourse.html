@@ -3,8 +3,7 @@
     <h4 class="course-desc">{{ course.description }}</h4>
   </div>
   <div class="col-sm-2">
-    <button type="button" class="btn btn-default btn-lg btn-enroll
-     {% if hasEnrolled %}disabled{% endif %}" id="{{ course.id }}">Enroll</button>
+    <button type="button" disabled="{{ hasEnrolled }}" class="btn btn-default btn-lg btn-enroll" id="{{ course.id }}">Enroll</button>
   </div>
 </div>
 {% for module in modules %}
