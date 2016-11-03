@@ -18,10 +18,11 @@ class SDPUser(models.Model):
         user = SDPUser()
         user._user=User.objects.create_user(username,password=password,first_name=first_name,last_name=last_name)
         user._user.save()
+        user.name="{} {}".format(user._user.first_name,user._user.last_name)
         user.save()
         return user
     def __str__(self):
-        return "{} {}".format(self._user.first_name,self._user.last_name)
+        return self.name
     def getID(self):
         return user.id
     def _addToGroup(self,name):
@@ -49,7 +50,7 @@ class CurrentEnrollment(Enrollment):
         e.progress=0
         e.save()
         return e
-    
+
     def __str__(self):
         return "{} taking {}".format(str(self.participant),str(self.course))
 
@@ -66,7 +67,7 @@ class CompletedEnrollment(Enrollment):
         temp.save()
         currentEnrollment.delete()
         return temp
-    
+
     def __str__(self):
         return "{} completed {} on {}".format(str(self.participant),str(self.course),str(self.completionDate))
 
@@ -83,7 +84,7 @@ class Instructor(SDPUser):
         return self.course_set.filter(_isOpen=False)
     def getOpenCourses(self):
         return self.course_set.filter(_isOpen=True)
-    
+
     def openCourse(course):
         if course in self.course_set.all():
             course._isOpen=True
@@ -146,7 +147,7 @@ class Course(models.Model):
         except Exception as e:
             print(e)
             return None
-    
+
     def isOpen(self):
         return self._isOpen
 

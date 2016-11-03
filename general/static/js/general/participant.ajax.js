@@ -3,14 +3,14 @@ function registerCategoryListener() {
     var categoryName = $(this).text();
     var categoryID = parseInt($(this).attr("id"));
     console.log("Category " + categoryName + " selected");
-    // Update header text
-    $("#header-text").text(categoryName);
     // Ajax POST
     $.ajax({
       url     : window.location.pathname + "/showCourseList",
       type    : "POST",
       data    : {"categoryID": categoryID},
       success : function (response) {
+        // Update header text
+        $("#header-text").text(categoryName);
         // Insert result
         $("#main-content").html(response);
         registerCourseListener();
@@ -35,14 +35,14 @@ function registerCourseListener() {
     } else {
       postURL = window.location.pathname + "/showCourse";
     }
-    // Update header text
-    $("#header-text").text(courseName);
     // Ajax POST
     $.ajax({
       url     : postURL,
       type    : "POST",
       data    : {"courseID": courseID},
       success : function (response) {
+        // Update header text
+        $("#header-text").text(courseName);
         // Insert result
         $("#main-content").html(response);
         registerEnrollListener();
