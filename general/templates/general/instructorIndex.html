@@ -56,6 +56,41 @@
         <!-- Main content container -->
         <div class="col-sm-10 fullheight main-column">
           <div class="container-fluid fullheight pre-scrollable" id="main-content">
+            {% if developingCourses %}
+            <!-- Show developing courses -->
+            <div>
+              <h4 class="info-text page-header">Developing</h4>
+            </div>
+            {% for course in developingCourses %}
+            <div class="course developingCourse jumbotron" id="{{ course.id }}">
+              <p class="course-name">{{ course.name }}</p>
+              <p class="course-desc">{{ course.description }}</p>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% if openCourses %}
+            <!-- List open courses -->
+            <div>
+              <h4 class="info-text page-header">Opened</h4>
+            </div>
+            {% for course in openCourses %}
+            <div class="course openCourse jumbotron" id="{{ course.id }}">
+              <p class="course-name">{{ course.name }}</p>
+              <p class="course-desc">{{ course.description }}</p>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% if not developingCourses and not openCourses %}
+            <!-- If no courses, display default message -->
+            <div class="container-fluid fullheight centered text-center">
+              <h3 class="info-text jumbotron">
+                You haven't developed any course yet.<br>
+                Create a course to start!
+              </h3>
+            </div>
+            {% endif %}
           </div>
         </div> <!-- End main content container -->
       </div> <!-- End content row -->
