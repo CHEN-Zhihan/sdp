@@ -23,7 +23,6 @@ def participantIndex(request,participantID):
 
 def showCourseList(request,participantID):
     if request.method=="POST":
-        print("handled by showCourseList")
         categoryID = request.POST.get("categoryID")
         courses = Category.objects.get(id=categoryID).getCourses()
         return HttpResponse(
