@@ -17,15 +17,14 @@ def participantIndex(request,participantID):
         currentCourse=None
     else:
         currentCourse=currentEnrollment.course
-    completedCourses = list(map((lambda x:x.course),participant.completedenrollment_set.all()))
-    return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,\
+    completedCourses = participant.getAllCompletedCourses()
+    return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,
         'completedCourses':completedCourses})
 
 def showCourseList(request,participantID):
     if request.method=="POST":
-        print("handled by showCourseList")
         categoryID = request.POST.get("categoryID")
-        courses = Category.objects.get(id=categoryID).getCourses()
+        courses = Category.objects.get(id=categoryID).getOpenedCourses()
         return HttpResponse(
             render_to_string("general/ajax/showCourseList.html",{'courses':courses})
         )
@@ -36,16 +35,10 @@ def showCourse(request,participantID):
         course = Course.objects.get(id=courseID)
         participant = Participant.objects.get(id=participantID)
         modules = course.module_set.all()
-        try:
-            hasEnrolled = participant.currentenrollment
-        except ObjectDoesNotExist as e:
-            hasEnrolled=False
-        else:
-            hasEnrolled=True
         return HttpResponse(
             render_to_string(
                 "general/ajax/showCourse.html",
-                {'course':course, 'hasEnrolled':hasEnrolled, 'modules':modules}
+                {'course':course, 'hasEnrolled':participant.hasEnrolled(), 'modules':modules}
             )
         )
 
@@ -56,6 +49,7 @@ def enroll(request,participantID):
         participant = Participant.objects.get(id=participantID)
         result = participant.enroll(course)
         return JsonResponse({'result':result})
+    return HttpResponse(status=404)
 
 def instructorIndex(request,instructorID):
     instructor = Instructor.objects.get(id=instructorID)
@@ -116,6 +110,7 @@ def newComponent(request,instructorID,courseID,moduleID):
             return JsonResponse({'result':True,'componentID':component.id})
         else:
             return JsonResponse({'result':False,'componentID':-1})
+    return HttpResponse(status=404)
 
 def login(request):
     username=request.POST['username']
