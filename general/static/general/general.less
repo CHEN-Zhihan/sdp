@@ -11,6 +11,13 @@ html body .container-fluid {
   max-height: 100vh;
 }
 
+.fullwidth {
+  min-width: 100%;
+  min-width: 100vh;
+  max-width: 100%;
+  max-width: 100vh;
+}
+
 .shadow (@h-shadow: 1px, @v-shadow: 1px, @blur: 3px, @spray: 0px) {
   -webkit-box-shadow: @h-shadow @v-shadow @blur @spray @shadowColor;
   -moz-box-shadow: @h-shadow @v-shadow @blur @spray @shadowColor;
@@ -122,6 +129,16 @@ html body .container-fluid {
   &.btn-enroll {
     margin-top: 10px !important;
   }
+}
+
+.well-input {
+  border-radius: 0px;
+  border: none;
+  margin-top: 40px;
+  margin-left: 20px;
+  margin-bottom: 0px;
+  background-color: @inputBgColor !important;
+  color: @courseNameColor !important;
 }
 
 .cbg-primary {
