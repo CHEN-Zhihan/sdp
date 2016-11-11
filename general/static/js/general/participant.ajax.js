@@ -87,7 +87,6 @@ function registerEnrollListener() {
 }
 
 $(document).ready(function () {
-  // Get courses under a category
   registerCategoryListener();
   registerCourseListener();
 });

@@ -4,17 +4,37 @@ html body .container-fluid {
   overflow: hidden;
 }
 
-.fullheight {
+.viewpoint-container {
   min-height: 100%;
   min-height: 100vh;
   max-height: 100%;
   max-height: 100vh;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
 }
 
-.shadow (@h-shadow: 1px, @v-shadow: 1px, @blur: 3px, @spray: 0px) {
-  -webkit-box-shadow: @h-shadow @v-shadow @blur @spray @shadowColor;
-  -moz-box-shadow: @h-shadow @v-shadow @blur @spray @shadowColor;
-  box-shadow: @h-shadow @v-shadow @blur @spray @shadowColor;
+.content-row {
+  position: relative;
+  flex: 1;
+}
+
+.fill-height {
+  position: absolute;
+  height: 100%;
+}
+
+.fullwidth {
+  min-width: 100%;
+  min-width: 100vh;
+  max-width: 100%;
+  max-width: 100vh;
+}
+
+.shadow (@h-shadow: 1px, @v-shadow: 1px, @blur: 3px, @spray: 0px, @color: @shadowColor) {
+  -webkit-box-shadow: @h-shadow @v-shadow @blur @spray @color;
+  -moz-box-shadow: @h-shadow @v-shadow @blur @spray @color;
+  box-shadow: @h-shadow @v-shadow @blur @spray @color;
   z-index: 1;
   position: relative;
 }
@@ -67,11 +87,11 @@ html body .container-fluid {
   }
 }
 
-.course-name, .module-name {
+[class$='-name'] {
   color: @courseNameColor;
 }
 
-.course-desc, .module-desc {
+[class$='-desc'] {
   color: @courseDescColor;
   word-wrap: break-word;
 }
@@ -88,13 +108,13 @@ html body .container-fluid {
     border-radius: 0px;
     padding: 5px 5px 5px 5px;
   }
-  .course-name, .module-name {
+  [class$='-name'] {
     font-size: 16px;
     color: @courseNameColor;
     margin-top: 5px;
     margin-left: 5px;
   }
-  .course-desc, .module-desc {
+  [class$='-desc'] {
     font-size: 14px;
     color: @courseDescColor;
     margin-top: 5px;
@@ -105,6 +125,8 @@ html body .container-fluid {
 
 .main-column {
   background-color: @mainBgColor;
+  right: 0;
+  overflow-y: auto;
 }
 
 .modal {
@@ -124,6 +146,23 @@ html body .container-fluid {
   }
 }
 
+.form-group {
+  margin-top: 40px;
+  margin-left: 20px;
+  margin-bottom: 0px;
+}
+
+.well-input {
+  border-radius: 0px;
+  border: none;
+  background-color: @inputBgColor !important;
+  color: @courseNameColor !important;
+}
+
+.has-error {
+  .shadow(0px, 0px, 5px, 0px, @errorColor);
+}
+
 .cbg-primary {
   background-color: @primaryColor;
 }
@@ -131,4 +170,29 @@ html body .container-fluid {
 .cbg-darken {
   background-color: darken(@primaryColor, 7%);
   color: white;
+}
+
+.placeholder {
+  color: @placeholderColor !important;
+  option {
+    color: @courseNameColor !important;
+  }
+}
+
+::-webkit-input-placeholder {
+  color: @placeholderColor !important;
+}
+
+:-moz-placeholder {
+  color: @placeholderColor !important;
+  opacity:  1;
+}
+
+::-moz-placeholder {
+  color: @placeholderColor !important;
+  opacity:  1;
+}
+
+:-ms-input-placeholder {
+  color: @placeholderColor !important;
 }

@@ -58,7 +58,7 @@ def instructorIndex(request,instructorID):
     return render(request,"general/instructorIndex.html",{'developingCourses':developingCourses,'openCourses':openCourses})
 
 def newCourse(request,instructorID):
-    if request.method == "POST":
+    if request.POST.get('action') == "submit":
         name = request.POST.get('name')
         description = request.POST.get("description")
         categoryID = request.POST.get("categoryID")
@@ -68,14 +68,16 @@ def newCourse(request,instructorID):
         result=course!=None
         newID = course.id if result else -1
         return JsonResponse({'result':result,'newCourseID':newID})
-    else:
+    elif request.POST.get('action') == 'getForm':
         categories = Category.objects.all()
-        return render(request,"general/newCourse.html",{'categories':categories})
+        return HttpResponse(
+            render_to_string("general/ajax/newCourse.html",{'categories':categories})
+        )
 
 def coursePage(request,instructorID,courseID):
     course = Course.objects.get(id=courseID)
     modules = course.module_set.all()
-    return render(request,"general/coursePage.html",{'course':course,'modules':modules})
+    return render(request,"general/developCourse.html",{'course':course,'modules':modules})
 
 def newModule(request,instructorID,courseID):
     course = Course.objects.get(id=courseID)

@@ -43,7 +43,8 @@ $(document).ready(function () {
   });
 
   // Highlight clicked anchor
-  $("a").click(function () {
+  $("a").click(function (event) {
+    event.preventDefault();
     $("a.active").removeClass("active");
     $(this).addClass("active");
   });
