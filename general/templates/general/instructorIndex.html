@@ -16,7 +16,7 @@
   </head>
   <body>
     <!-- Main viewpoint container -->
-    <div class="container-fluid fullheight">
+    <div class="container-fluid viewpoint-container">
       <!-- Header row -->
       <div class="row header-row">
         <!-- Brand -->
@@ -30,9 +30,9 @@
       </div> <!-- End header row -->
 
       <!-- Content row -->
-      <div class="row fullheight">
+      <div class="row content-row">
         <!-- Navigation column -->
-        <div class="col-sm-2 cbg-primary fullheight">
+        <div class="col-sm-2 cbg-primary fill-height">
           <!-- Sidebar menu -->
           <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
@@ -54,8 +54,8 @@
         </div> <!-- End navigation -->
 
         <!-- Main content container -->
-        <div class="col-sm-10 fullheight main-column">
-          <div class="container-fluid fullheight pre-scrollable" id="main-content">
+        <div class="col-sm-10 fill-height main-column">
+          <div class="container-fluid" id="main-content">
             {% if developingCourses %}
             <!-- Show developing courses -->
             <div>
@@ -84,7 +84,7 @@
 
             {% if not developingCourses and not openCourses %}
             <!-- If no courses, display default message -->
-            <div class="container-fluid fullheight centered text-center">
+            <div class="container-fluid centered text-center">
               <h3 class="info-text jumbotron">
                 You haven't developed any course yet.<br>
                 Create a course to start!

@@ -1,7 +1,8 @@
 <input class="well well-sm well-input fullwidth" placeholder="Course Name" id="name"></input>
 <select class="well well-sm well-input fullwidth" id="category">
+  <option value="" hidden>Select a category</option>
 {% for category in categories %}
-<option id="{{ category.id }}">{{ category.name }}</option>
+<option value="{{ category.id }}">{{ category.name }}</option>
 {% endfor %}
 </select>
 <textarea class="well well-sm well-input fullwidth" placeholder="Course Description" rows=5 id="description"></textarea>

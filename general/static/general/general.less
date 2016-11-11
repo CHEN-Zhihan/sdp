@@ -4,11 +4,24 @@ html body .container-fluid {
   overflow: hidden;
 }
 
-.fullheight {
+.viewpoint-container {
   min-height: 100%;
   min-height: 100vh;
   max-height: 100%;
   max-height: 100vh;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+}
+
+.content-row {
+  position: relative;
+  flex: 1;
+}
+
+.fill-height {
+  position: absolute;
+  height: 100%;
 }
 
 .fullwidth {
@@ -74,11 +87,11 @@ html body .container-fluid {
   }
 }
 
-.course-name, .module-name {
+[class$='-name'] {
   color: @courseNameColor;
 }
 
-.course-desc, .module-desc {
+[class$='-desc'] {
   color: @courseDescColor;
   word-wrap: break-word;
 }
@@ -95,13 +108,13 @@ html body .container-fluid {
     border-radius: 0px;
     padding: 5px 5px 5px 5px;
   }
-  .course-name, .module-name {
+  [class$='-name'] {
     font-size: 16px;
     color: @courseNameColor;
     margin-top: 5px;
     margin-left: 5px;
   }
-  .course-desc, .module-desc {
+  [class$='-desc'] {
     font-size: 14px;
     color: @courseDescColor;
     margin-top: 5px;
@@ -112,6 +125,8 @@ html body .container-fluid {
 
 .main-column {
   background-color: @mainBgColor;
+  right: 0;
+  overflow-y: auto;
 }
 
 .modal {
