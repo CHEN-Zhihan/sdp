@@ -31,10 +31,10 @@ html body .container-fluid {
   max-width: 100vh;
 }
 
-.shadow (@h-shadow: 1px, @v-shadow: 1px, @blur: 3px, @spray: 0px) {
-  -webkit-box-shadow: @h-shadow @v-shadow @blur @spray @shadowColor;
-  -moz-box-shadow: @h-shadow @v-shadow @blur @spray @shadowColor;
-  box-shadow: @h-shadow @v-shadow @blur @spray @shadowColor;
+.shadow (@h-shadow: 1px, @v-shadow: 1px, @blur: 3px, @spray: 0px, @color: @shadowColor) {
+  -webkit-box-shadow: @h-shadow @v-shadow @blur @spray @color;
+  -moz-box-shadow: @h-shadow @v-shadow @blur @spray @color;
+  box-shadow: @h-shadow @v-shadow @blur @spray @color;
   z-index: 1;
   position: relative;
 }
@@ -146,14 +146,21 @@ html body .container-fluid {
   }
 }
 
-.well-input {
-  border-radius: 0px;
-  border: none;
+.form-group {
   margin-top: 40px;
   margin-left: 20px;
   margin-bottom: 0px;
+}
+
+.well-input {
+  border-radius: 0px;
+  border: none;
   background-color: @inputBgColor !important;
   color: @courseNameColor !important;
+}
+
+.has-error {
+  .shadow(0px, 0px, 5px, 0px, @errorColor);
 }
 
 .cbg-primary {
@@ -163,4 +170,29 @@ html body .container-fluid {
 .cbg-darken {
   background-color: darken(@primaryColor, 7%);
   color: white;
+}
+
+.placeholder {
+  color: @placeholderColor !important;
+  option {
+    color: @courseNameColor !important;
+  }
+}
+
+::-webkit-input-placeholder {
+  color: @placeholderColor !important;
+}
+
+:-moz-placeholder {
+  color: @placeholderColor !important;
+  opacity:  1;
+}
+
+::-moz-placeholder {
+  color: @placeholderColor !important;
+  opacity:  1;
+}
+
+:-ms-input-placeholder {
+  color: @placeholderColor !important;
 }

@@ -82,7 +82,7 @@ def newCourse(request,instructorID):
 def coursePage(request,instructorID,courseID):
     course = Course.objects.get(id=courseID)
     modules = course.module_set.all()
-    return render(request,"general/coursePage.html",{'course':course,'modules':modules})
+    return render(request,"general/developCourse.html",{'course':course,'modules':modules})
 
 def newModule(request,instructorID,courseID):
     course = Course.objects.get(id=courseID)
