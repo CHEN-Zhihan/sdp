@@ -1,34 +1,38 @@
 from django.db import models
 from django.contrib.auth.models import User,Group
+from datetime import datetime
 
 
-if not Group.objects.filter(name="instructor").exists():
-    instructor=Group(name="instructor")
-    instructor.save()
+roleList = ["Instructor","Participant","HR","Administrator"]
 
-if not Group.objects.filter(name="participant").exists():
-    participant=Group(name="participant")
-    participant.save()
+for role in roleList:
+    if not Group.objects.filter(name=role).exists():
+        group = Group(name=role)
+        group.save()
 
 class SDPUser(models.Model):
-    _user = models.OneToOneField(User,on_delete=models.CASCADE)
+    _user = models.ForeignKey(User,on_delete=models.CASCADE)
     class Meta:
         abstract=True
     def create(username,password,first_name,last_name):
         user = SDPUser()
         user._user=User.objects.create_user(username,password=password,first_name=first_name,last_name=last_name)
         user._user.save()
-        user.name="{} {}".format(user._user.first_name,user._user.last_name)
         user.save()
         return user
+
     def __str__(self):
-        return self.name
+        return "{} {}".format(self._user.first_name,self._user.last_name)
     def getID(self):
         return user.id
+    
     def _addToGroup(self,name):
         group = Group.objects.get(name=name)
         group.user_set.add(self._user)
         self._user.groups.add(group)
+        group.save()
+        self._user.save()
+        self.save()
     def getGroups(self):
         return _user.groups.all()
 
@@ -76,44 +80,56 @@ class Instructor(SDPUser):
         instructor = Instructor()
         instructor._user=User.objects.create_user(username=username,password=password,first_name=first_name,last_name=last_name)
         instructor._addToGroup("instructor")
-        instructor._user.save()
         instructor.save()
         return instructor
-
     def getDevelopingCourses(self):
         return self.course_set.filter(_isOpen=False)
-    def getOpenCourses(self):
+    def getOpenedCourses(self):
         return self.course_set.filter(_isOpen=True)
 
     def openCourse(course):
         if course in self.course_set.all():
             course._isOpen=True
+            course.save()
         else:
             raise Exception("Unable to open course {}, not created by {}".format(str(course),str(self)))
+    
+    def _add(user):
+        user._addToGroup("Instructor")
+
 
 class Participant(SDPUser):
     def create(username,password,first_name,last_name):
         p=Participant()
         p._user=User.objects.create_user(username=username,password=password,first_name=first_name,last_name=last_name)
-        p._addToGroup("participant")
-        p._user.save()
+        p._addToGroup("Participant")
         p.save()
         return p
     def enroll(self,course):
         self.currentenrollment = CurrentEnrollment.create(course,self)
         self.save()
         return True
-    def drop(self):
+    
+    def hasEnrolled(self):
         try:
-            CurrentEnrollment.objects.filter(participant=self).delete()
-            self.currentenrollment=None
-            self.save()
-        except Exception as e:
-            print(e)
-    def completeCourseOn(self,date):
-        self.completedenrollment_set.add(CompletedEnrollment.createFromCurrentEnrollment(self.currentenrollment,date))
+            hasEnrolled = participant.currentenrollment
+        except ObjectDoesNotExist as e:
+            return False
+        else:
+            return True
+
+    def dropCourse(self):
+        CurrentEnrollment.objects.filter(participant=self).delete()
         self.currentenrollment=None
         self.save()
+
+    def completeCourse(self):
+        self.completedenrollment_set.add(CompletedEnrollment.createFromCurrentEnrollment(self.currentenrollment,datetime.now()))
+        self.currentenrollment=None
+        self.save()
+
+    def getCompletedCourses(self):
+        return set(map((lambda x:x.course),participant.completedenrollment_set.all()))
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -124,8 +140,8 @@ class Category(models.Model):
         return c
     def __str__(self):
         return self.name
-    def getCourses(self):
-        return self.course_set.all()
+    def getOpenedCourses(self):
+        return self.course_set.filter(_isOpen=True)
 
 
 class Course(models.Model):
@@ -159,6 +175,7 @@ class Course(models.Model):
         self.save()
     def getInstructor(self):
         return self.instructor
+    
 
 class Module(models.Model):
     name = models.CharField(max_length=200)
@@ -181,13 +198,9 @@ class Module(models.Model):
         string = "{}:{}".format(self.course.name,self.name)
         return string
     def addComponent(self,component):
-        try:
-            self.component_set.add(component)
-            component.save()
-            self.save()
-            return True
-        except Exception as e:
-            return False
+        self.component_set.add(component)
+        component.save()
+        self.save()
 
 class Component(models.Model):
     index = models.IntegerField()
@@ -206,3 +219,33 @@ class Component(models.Model):
     def __str__(self):
         string = "{}-th of {}:{}".format(self.index,self.module.course.name,self.module.name)
         return string
+
+class HR(SDPUser):
+
+    def create(username,password,firstName,lastName):
+        hr = HR()
+        hr._user=User.objects.create_user(username=username,password=password,first_name=firstName,last_name=lastName)
+        hr._user.save()
+        hr._addToGroup("HR")
+        return hr
+    
+    def _add(user):
+        user._addToGroup("HR")
+    
+class Administrator(SDPUser):
+    def create(username,password,firstName,lastName):
+        admin = Administrator()
+        admin._user=User.objects.create_user(username=username,password=password,first_name=firstName,lastName=lastName)
+        admin._user.save()
+        admin._addToGroup("Administrator")
+        return admin
+    
+    def _add(user):
+        user._addToGroup("Administrator")
+
+    def designate(user,role):
+        newUser = role()
+        newUser._user = user._user
+        newUser._user.save()
+        role._add(newUser)
+        return newUser
