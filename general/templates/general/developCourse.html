@@ -70,15 +70,19 @@
 
             {% for module in modules %}
             <!-- List modules in course -->
-            <div class="module jumbotron" id="{{ module.id }}">
-              <p class="module-name">{{ module.name }}</p>
-              <p class="module-desc">{{ module.description }}</p>
-            </div>
+            <a href="#">
+              <div class="module jumbotron" id="{{ module.id }}">
+                <p class="module-name">{{ module.name }}</p>
+                <p class="module-desc">{{ module.description }}</p>
+              </div>
+            </a>
 
             <!-- Insert new module behind this module -->
-            <div class="addModule" id="{{ module.id | add:1 }}">
-              <span class="glyphicon glyphicon-plus"></span>Add new module here
-            </div>
+            <a href="#">
+              <div class="addModule" id="{{ module.id | add:1 }}">
+                <span class="glyphicon glyphicon-plus"></span>Add new module here
+              </div>
+            </a>
             {% endfor %}
           </div>
         </div> <!-- End main content container -->

@@ -62,10 +62,12 @@
               <h4 class="info-text page-header">Developing</h4>
             </div>
             {% for course in developingCourses %}
-            <div class="course developingCourse jumbotron" id="{{ course.id }}">
-              <p class="course-name">{{ course.name }}</p>
-              <p class="course-desc">{{ course.description }}</p>
-            </div>
+            <a href="#">
+              <div class="course developingCourse jumbotron" id="{{ course.id }}">
+                <p class="course-name">{{ course.name }}</p>
+                <p class="course-desc">{{ course.description }}</p>
+              </div>
+            </a>
             {% endfor %}
             {% endif %}
 
@@ -75,10 +77,12 @@
               <h4 class="info-text page-header">Opened</h4>
             </div>
             {% for course in openCourses %}
-            <div class="course openCourse jumbotron" id="{{ course.id }}">
-              <p class="course-name">{{ course.name }}</p>
-              <p class="course-desc">{{ course.description }}</p>
-            </div>
+            <a href="#">
+              <div class="course openCourse jumbotron" id="{{ course.id }}">
+                <p class="course-name">{{ course.name }}</p>
+                <p class="course-desc">{{ course.description }}</p>
+              </div>
+            </a>
             {% endfor %}
             {% endif %}
 
