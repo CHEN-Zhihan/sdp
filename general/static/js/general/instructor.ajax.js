@@ -1,16 +1,24 @@
+// Respond to click on course
 function registerCourseListener() {
+  // If developing course clicked
   $(".developingCourse").click(function () {
+    // Get course name and ID
     var courseName = $(".course-name", this).text();
     var courseID = parseInt($(this).attr("id"));
     console.log("Course " + courseName + " selected");
+
+    // Assemble new URL
     var protocol = window.location.protocol;
     var host = window.location.host;
     var pathArray = window.location.pathname.split("/");
     var newPath = pathArray[1] + "/" + pathArray[2] + "/" + courseID;
+
+    // Redirect to new URL
     window.location.assign(protocol + "//" + host + "/" + newPath);
   });
 }
 
+// Respond to menu item 'Create Course'
 function registerCreateCourseListener() {
   $("#createCourse").click(function () {
     console.log("Create course selected");
@@ -25,6 +33,7 @@ function registerCreateCourseListener() {
         // Insert result
         $("#main-content").html(response);
 
+        // Remove placeholder styles when select box updated
         $("select").change(function () {
           $(this).removeClass("placeholder");
         });
@@ -39,12 +48,19 @@ function registerCreateCourseListener() {
   });
 }
 
+// Respond to submit new course form
 function registerSubmitListener() {
   $("#createCourseForm").submit(function (event) {
+    // Prevent the default action
     event.preventDefault();
     console.log("Submit create course form");
+
+    // Validate the form
     if (validateForm(this)) {
+      // If validate success
       console.log("Validation success");
+
+      // Collect form data
       var formData = {
         "action": "submit",
         "name": $("div > #name", this).val(),
@@ -52,6 +68,7 @@ function registerSubmitListener() {
         "description": $("div > #description", this).val()
       };
       console.log(formData);
+
       // Ajax POST
       $.ajax({
         url     : window.location.pathname + "/newCourse",
@@ -62,6 +79,7 @@ function registerSubmitListener() {
           console.log(response);
           if (response["result"]) {
             $(".btn-success").click(function () {
+              // Redirect to new course page
               var protocol = window.location.protocol;
               var host = window.location.host;
               var pathArray = window.location.pathname.split("/");
@@ -70,6 +88,7 @@ function registerSubmitListener() {
             });
             $("#createSuccessModal").modal();
           } else {
+            // On error, prompt creation error
             $("#createFailModal").modal();
           }
         },
@@ -80,22 +99,10 @@ function registerSubmitListener() {
         }
       });
     } else {
+      // If validation failed, prompt error
       $("#validateFailModal").modal();
     }
   });
-}
-
-function validateForm(form) {
-  var validate = true;
-  $(form).children().not(".submit").each(function () {
-    if ($(this).children().val() === "" || $(this).children().val() === "placeholder") {
-      $(this).children().addClass("has-error").focus(function () {
-        $(this).removeClass("has-error");
-      });
-      validate = false;
-    }
-  });
-  return validate;
 }
 
 $(document).ready(function () {

@@ -17,7 +17,7 @@ def participantIndex(request,participantID):
         currentCourse=None
     else:
         currentCourse=currentEnrollment.course
-    completedCourses = participant.getAllCompletedCourses()
+    completedCourses = participant.getCompletedCourses()
     return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,
         'completedCourses':completedCourses})
 
