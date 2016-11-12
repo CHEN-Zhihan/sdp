@@ -1,23 +1,35 @@
+<!-- Course information form -->
 <form id="createCourseForm">
+  <!-- Input course name -->
   <div class="form-group">
     <input class="well well-sm well-input fullwidth" placeholder="Course name" id="name"></input>
   </div>
+
+  <!-- Select course category -->
   <div class="form-group">
     <select class="well well-sm well-input fullwidth placeholder" id="category">
+      <!-- Placeholder option -->
       <option value="placeholder" hidden>Select a category</option>
+
+      <!-- List categories -->
       {% for category in categories %}
       <option value="{{ category.id }}">{{ category.name }}</option>
       {% endfor %}
     </select>
   </div>
+
+  <!-- Input course description -->
   <div class="form-group">
     <textarea class="well well-sm well-input fullwidth" placeholder="Course description" rows=10 id="description"></textarea>
   </div>
+
+  <!-- Submit button -->
   <div class="form-group submit">
     <button type="submit" class="btn btn-default">Create</button>
   </div>
-</form>
+</form> <!-- End course information form -->
 
+<!-- Validation failed modal dialog -->
 <div class="modal fade" id="validateFailModal" role="dialog">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
@@ -33,8 +45,9 @@
       </div>
     </div>
   </div>
-</div>
+</div> <!-- End modal -->
 
+<!-- Create success modal dialog -->
 <div class="modal fade" id="createSuccessModal" role="dialog">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
@@ -50,7 +63,7 @@
       </div>
     </div>
   </div>
-</div>
+</div> <!-- End modal -->
 
 <!-- Create failed modal dialog -->
 <div class="modal fade" id="createFailModal" role="dialog">

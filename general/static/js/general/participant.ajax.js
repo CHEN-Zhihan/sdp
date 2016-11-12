@@ -1,8 +1,11 @@
+// Respond to a category clicked
 function registerCategoryListener() {
   $(".category").click(function () {
+    // Get category name and ID
     var categoryName = $(this).text();
     var categoryID = parseInt($(this).attr("id"));
     console.log("Category " + categoryName + " selected");
+
     // Ajax POST
     $.ajax({
       url     : window.location.pathname + "/showCourseList",
@@ -24,17 +27,24 @@ function registerCategoryListener() {
   });
 }
 
+// Respond to a course clicked
 function registerCourseListener() {
   $(".course").click(function () {
+    // Get course name and ID
     var courseName = $(".course-name", this).text();
     var courseID = parseInt($(this).attr("id"));
     console.log("Course " + courseName + " selected");
+
+    // Determine course type to assign URL
     var postURL;
     if ($(this).hasClass("currentCourse")) {
+      // If is current course, post to takeCourse
       postURL = window.location.pathname + "/takeCourse";
     } else {
+      // If else, post to showCourse
       postURL = window.location.pathname + "/showCourse";
     }
+
     // Ajax POST
     $.ajax({
       url     : postURL,
@@ -56,10 +66,13 @@ function registerCourseListener() {
   });
 }
 
+// Respond to enroll a course
 function registerEnrollListener() {
   $(".btn-enroll").click(function () {
+    // Get course ID
     var courseID = parseInt($(this).attr("id"));
     console.log("Choose to enroll");
+
     // Ajax POST
     $.ajax({
       url     : window.location.pathname + "/enroll",
@@ -70,10 +83,12 @@ function registerEnrollListener() {
         console.log(response);
         if (response['result']) {
           $(".btn-success").click(function () {
+            // On close of modal dialog, redirect to home page
             redirectHome();
           });
           $("#enrollSuccessModal").modal();
         } else {
+          // On error, prompt enrollment error
           $("#enrollFailModal").modal();
         }
       },

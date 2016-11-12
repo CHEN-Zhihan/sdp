@@ -1,17 +1,22 @@
+<!-- Course description row -->
 <div class="row page-header">
   <div class="col-sm-10">
     <h4 class="course-desc">{{ course.description }}</h4>
   </div>
+  <!-- Disable enroll button if participant has already enrolled in a course -->
   <div class="col-sm-2">
     <button type="button" {% if hasEnrolled %}disabled{% endif %} class="btn btn-default btn-lg btn-enroll" id="{{ course.id }}">Enroll</button>
   </div>
-</div>
+</div> <!-- End course description row -->
+
+<!-- List modules in course -->
 {% for module in modules %}
 <div class="module jumbotron" id="{{ module.id }}">
   <p class="module-name">{{ module.name }}</p>
   <p class="module-desc">{{ module.description }}</p>
 </div>
 {% endfor %}
+
 <!-- Enroll successful modal dialog -->
 <div class="modal fade" id="enrollSuccessModal" role="dialog">
   <div class="modal-dialog modal-sm">
