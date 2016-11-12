@@ -91,8 +91,6 @@ def newModule(request,instructorID,courseID):
             return JsonResponse({'result':True,'newModuleID':module.id})
         else:
             return JsonResponse({'result':False,'newModuleID':-1})
-    else:
-        return render(request,"general/newModule.html",{'moduleSet':course.module_set.all()})
 
 def modulePage(request,instructorID,courseID,moduleID):
     course = Course.objects.get(id=courseID)
