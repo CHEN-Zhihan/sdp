@@ -25,7 +25,7 @@ class SDPUser(models.Model):
         return "{} {}".format(self._user.first_name,self._user.last_name)
     def getID(self):
         return user.id
-    
+
     def _addToGroup(self,name):
         group = Group.objects.get(name=name)
         group.user_set.add(self._user)
@@ -93,7 +93,7 @@ class Instructor(SDPUser):
             course.save()
         else:
             raise Exception("Unable to open course {}, not created by {}".format(str(course),str(self)))
-    
+
     def _add(user):
         user._addToGroup("Instructor")
 
@@ -109,7 +109,7 @@ class Participant(SDPUser):
         self.currentenrollment = CurrentEnrollment.create(course,self)
         self.save()
         return True
-    
+
     def hasEnrolled(self):
         try:
             hasEnrolled = participant.currentenrollment
@@ -129,7 +129,7 @@ class Participant(SDPUser):
         self.save()
 
     def getCompletedCourses(self):
-        return set(map((lambda x:x.course),participant.completedenrollment_set.all()))
+        return set(map((lambda x:x.course),self.completedenrollment_set.all()))
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -175,7 +175,7 @@ class Course(models.Model):
         self.save()
     def getInstructor(self):
         return self.instructor
-    
+
 
 class Module(models.Model):
     name = models.CharField(max_length=200)
@@ -228,10 +228,10 @@ class HR(SDPUser):
         hr._user.save()
         hr._addToGroup("HR")
         return hr
-    
+
     def _add(user):
         user._addToGroup("HR")
-    
+
 class Administrator(SDPUser):
     def create(username,password,firstName,lastName):
         admin = Administrator()
@@ -239,7 +239,7 @@ class Administrator(SDPUser):
         admin._user.save()
         admin._addToGroup("Administrator")
         return admin
-    
+
     def _add(user):
         user._addToGroup("Administrator")
 
