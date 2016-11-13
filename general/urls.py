@@ -24,5 +24,6 @@ urlpatterns = [
     url(moduleURL+r'$',instructor.modulePage,name="modulePage"),
     url(moduleURL+r'/newComponent$',instructor.newComponent,name="newComponent"),
     url('login/$',authenticate.myLogin,name="myLogin"),
-    url('logout$',authenticate.myLogout,name="myLogout"),
+    url('logout/$',authenticate.myLogout,name="myLogout"),
+    url('register/$',authenticate.register,name="register"),
 ]
