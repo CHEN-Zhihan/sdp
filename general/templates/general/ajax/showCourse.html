@@ -9,9 +9,9 @@
   </div>
 </div> <!-- End course description row -->
 
-<!-- List modules in course -->
 {% for module in modules %}
-<div class="module jumbotron" id="{{ module.id }}">
+<!-- List modules in course -->
+<div class="module jumbotron disabled" id="{{ module.id }}">
   <p class="module-name">{{ module.name }}</p>
   <p class="module-desc">{{ module.description }}</p>
 </div>

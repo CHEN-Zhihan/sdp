@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from ..models import Course,CompletedEnrollment,Instructor,Category
-from ..models import CurrentEnrollment
+from ..models import CurrentEnrollment, Module, Component
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
@@ -60,8 +60,6 @@ def newModule(request,instructorID,courseID):
             return JsonResponse({'result':True,'newModuleID':module.id})
         else:
             return JsonResponse({'result':False,'newModuleID':-1})
-    else:
-        return render(request,"general/newModule.html",{'moduleSet':course.module_set.all()})
 
 @login_required
 def modulePage(request,instructorID,courseID,moduleID):
