@@ -19,7 +19,7 @@ from general.forms import LoginForm
 from django.contrib.auth import views
 
 urlpatterns = [
-    url(r'',include('general.urls')),
-    url(r'^login/$',views.login,{'template_name':'login.html','authentication_form':LoginForm},name="login"),
     url(r'^admin/', admin.site.urls),
+    url(r'',include('general.urls')),
+    
 ]
