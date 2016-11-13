@@ -242,9 +242,10 @@ class Administrator(SDPUser):
     def _add(user):
         user._addToGroup("Administrator")
 
-    def designate(user,role):
+    def designate(username,role):
         newUser = role()
-        newUser._user = user._user
+        newUser._user = User.objects.get(username=username)
         newUser._user.save()
         role._add(newUser)
+        newUser.save()
         return newUser

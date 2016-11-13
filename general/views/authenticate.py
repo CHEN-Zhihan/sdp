@@ -19,6 +19,9 @@ def myLogin(request):
             elif usertype=="Participant":
                 participantID=Participant.objects.get(_user=user).id
                 return redirect('participantIndex',participantID)
+            elif usertype=="Administrator":
+                administratorID=Administrator.objects.get(_user=user).id
+                return redirect("administratorIndex",administratorID)
         else:
             print(list(map((lambda x:x.name),user.groups.all())))
             return render(request,"general/login.html")
