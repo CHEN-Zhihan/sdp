@@ -34,7 +34,7 @@ class SDPUser(models.Model):
         self._user.save()
         self.save()
     def getGroups(self):
-        return _user.groups.all()
+        return map((lambda x:x.name),self._user.groups.all())
 
 class Enrollment(models.Model):
     course = models.ForeignKey('Course',on_delete=models.CASCADE)
@@ -54,7 +54,6 @@ class CurrentEnrollment(Enrollment):
         e.progress=0
         e.save()
         return e
-
     def __str__(self):
         return "{} taking {}".format(str(self.participant),str(self.course))
 
@@ -97,7 +96,6 @@ class Instructor(SDPUser):
     def _add(user):
         user._addToGroup("Instructor")
 
-
 class Participant(SDPUser):
     def create(username,password,first_name,last_name):
         p=Participant()
@@ -130,6 +128,7 @@ class Participant(SDPUser):
 
     def getCompletedCourses(self):
         return set(map((lambda x:x.course),self.completedenrollment_set.all()))
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200)

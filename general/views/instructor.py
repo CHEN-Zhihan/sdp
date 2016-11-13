@@ -1,63 +1,26 @@
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render,get_object_or_404,redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from .models import Course,Participant,CompletedEnrollment,Instructor,Category
-from .models import CurrentEnrollment
+from ..models import Course,CompletedEnrollment,Instructor,Category
+from ..models import CurrentEnrollment
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
-
-def participantIndex(request,participantID):
-    categoryList = Category.objects.all()
-    participant = Participant.objects.get(id=participantID)
-    try:
-        currentEnrollment=participant.currentenrollment
-    except ObjectDoesNotExist as e:
-        currentCourse=None
-    else:
-        currentCourse=currentEnrollment.course
-    completedCourses = participant.getCompletedCourses()
-    return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,
-        'completedCourses':completedCourses})
-
-def showCourseList(request,participantID):
-    if request.method=="POST":
-        categoryID = request.POST.get("categoryID")
-        courses = Category.objects.get(id=categoryID).getOpenedCourses()
-        return HttpResponse(
-            render_to_string("general/ajax/showCourseList.html",{'courses':courses})
-        )
-
-def showCourse(request,participantID):
-    if request.method=="POST":
-        courseID = request.POST.get('courseID')
-        course = Course.objects.get(id=courseID)
-        participant = Participant.objects.get(id=participantID)
-        modules = course.module_set.all()
-        return HttpResponse(
-            render_to_string(
-                "general/ajax/showCourse.html",
-                {'course':course, 'hasEnrolled':participant.hasEnrolled(), 'modules':modules}
-            )
-        )
-
-def enroll(request,participantID):
-    if request.method == "POST":
-        courseID = request.POST.get('courseID')
-        course = Course.objects.get(id=courseID)
-        participant = Participant.objects.get(id=participantID)
-        result = participant.enroll(course)
-        return JsonResponse({'result':result})
-    return HttpResponse(status=404)
-
+from . import authenticate
+@login_required()
 def instructorIndex(request,instructorID):
+    if "Instructor" not in list(map((lambda x:x.name),request.user.groups.all())):
+        return redirect('myLogout')
     instructor = Instructor.objects.get(id=instructorID)
     developingCourses = instructor.course_set.filter(_isOpen=False)
     openCourses = instructor.course_set.filter(_isOpen=True)
     return render(request,"general/instructorIndex.html",{'developingCourses':developingCourses,'openCourses':openCourses})
 
+@login_required
 def newCourse(request,instructorID):
+    if "Instructor" not in list(map((lambda x:x.name),request.user.groups.all())):
+        return redirect('myLogout')
     if request.POST.get('action') == "submit":
         name = request.POST.get('name')
         description = request.POST.get("description")
@@ -74,12 +37,18 @@ def newCourse(request,instructorID):
             render_to_string("general/ajax/newCourse.html",{'categories':categories})
         )
 
+@login_required
 def coursePage(request,instructorID,courseID):
+    if "Instructor" not in list(map((lambda x:x.name),request.user.groups.all())):
+        return redirect('myLogout')
     course = Course.objects.get(id=courseID)
     modules = course.module_set.all()
     return render(request,"general/developCourse.html",{'course':course,'modules':modules})
 
+@login_required
 def newModule(request,instructorID,courseID):
+    if "Instructor" not in list(map((lambda x:x.name),request.user.groups.all())):
+        return redirect('myLogout')
     course = Course.objects.get(id=courseID)
     if request.method == "POST":
         name = request.POST.get('name')
@@ -94,13 +63,19 @@ def newModule(request,instructorID,courseID):
     else:
         return render(request,"general/newModule.html",{'moduleSet':course.module_set.all()})
 
+@login_required
 def modulePage(request,instructorID,courseID,moduleID):
+    if "Instructor" not in list(map((lambda x:x.name),request.user.groups.all())):
+        return redirect('myLogout')
     course = Course.objects.get(id=courseID)
     module = Module.objects.get(id=moduleID)
     components = module.component_set.all()
     return render(request,"general/modulePage.html",{'course':course,'module':module,'components':components})
 
+@login_required
 def newComponent(request,instructorID,courseID,moduleID):
+    if "Instructor" not in list(map((lambda x:x.name),request.user.groups.all())):
+        return redirect('myLogout')
     module = Module.objects.get(id=moduleID)
     if request.method =="POST":
         typeName = request.POST.get('typeName')
@@ -113,12 +88,3 @@ def newComponent(request,instructorID,courseID,moduleID):
         else:
             return JsonResponse({'result':False,'componentID':-1})
     return HttpResponse(status=404)
-
-def login(request):
-    username=request.POST['username']
-    password = request.POST['password']
-    user = authenticate(username,password)
-    if user is not None:
-        login(request,user)
-    else:
-        return render(request,'general/error.html')
