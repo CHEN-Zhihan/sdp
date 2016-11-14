@@ -8,7 +8,8 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from . import authenticate
-@login_required()
+
+@login_required
 def InstructorIndex(request,instructorID):
     if authenticate.roleCheck(request.user,"Instructor",instructorID):
         instructor = Instructor.objects.get(id=instructorID)
