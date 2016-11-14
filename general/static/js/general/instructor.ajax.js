@@ -22,29 +22,13 @@ function registerCourseListener() {
 function registerCreateCourseListener() {
   $("#createCourse").click(function () {
     console.log("Create course selected");
-    // Ajax POST
-    $.ajax({
-      url     : window.location.pathname + "/newCourse",
-      type    : "POST",
-      data    : {"action": "getForm"},
-      success : function (response) {
-        // Update header text
-        $("#header-text").text("Create Course");
-        // Insert result
-        $("#main-content").html(response);
+    var protocol = window.location.protocol;
+    var host = window.location.host;
+    var pathArray = window.location.pathname.split("/");
+    var newPath = pathArray[1] + "/" + pathArray[2] + "/newCourse";
 
-        // Remove placeholder styles when select box updated
-        $("select").change(function () {
-          $(this).removeClass("placeholder");
-        });
-        registerCourseSubmitListener();
-      },
-      error   : function (XMLHttpRequest, textStatus, errorThrown) {
-        // On error, log the error info and prompt through error modal
-        console.log(XMLHttpRequest.readyState + XMLHttpRequest.status + XMLHttpRequest.responseText);
-        $("#errorModal").modal();
-      }
-    });
+    // Redirect to new URL
+    window.location.assign(protocol + "//" + host + "/" + newPath);
   });
 }
 
@@ -253,4 +237,5 @@ $(document).ready(function () {
   registerCourseListener();
   registerCreateCourseListener();
   registerAddModuleListener();
+  registerCourseSubmitListener();
 });

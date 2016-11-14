@@ -21,7 +21,7 @@ def InstructorIndex(request,instructorID):
 @login_required
 def newCourse(request,instructorID):
     if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        if request.POST.get('action') == "submit":
+        if request.method == "POST":
             name = request.POST.get('name')
             description = request.POST.get("description")
             categoryID = request.POST.get("categoryID")
@@ -31,11 +31,9 @@ def newCourse(request,instructorID):
             result=course!=None
             newID = course.id if result else -1
             return JsonResponse({'result':result,'newCourseID':newID})
-        elif request.POST.get('action') == 'getForm':
+        else:
             categories = Category.objects.all()
-            return HttpResponse(
-                render_to_string("general/ajax/newCourse.html",{'categories':categories})
-            )
+            return render(request, "general/newCourse.html",{'categories':categories})
     logout(request)
     return redirect("newCourse",instructorID)
 
