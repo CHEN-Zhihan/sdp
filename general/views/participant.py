@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from . import authenticate
 
 @login_required
-def participantIndex(request,participantID):
+def ParticipantIndex(request,participantID):
     if "Participant" not in list(map((lambda x:x.name),request.user.groups.all())):
         return redirect("myLogout")
     categoryList = Category.objects.all()

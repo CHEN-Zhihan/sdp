@@ -85,6 +85,8 @@ class Instructor(SDPUser):
         return self.course_set.filter(_isOpen=False)
     def getOpenedCourses(self):
         return self.course_set.filter(_isOpen=True)
+    def getAllCourses(self):
+        return self.course_set.all()
 
     def openCourse(course):
         if course in self.course_set.all():
@@ -234,7 +236,7 @@ class HR(SDPUser):
 class Administrator(SDPUser):
     def create(username,password,firstName,lastName):
         admin = Administrator()
-        admin._user=User.objects.create_user(username=username,password=password,first_name=firstName,lastName=lastName)
+        admin._user=User.objects.create_user(username=username,password=password,first_name=firstName,last_name=lastName)
         admin._user.save()
         admin._addToGroup("Administrator")
         return admin
