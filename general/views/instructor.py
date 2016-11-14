@@ -43,19 +43,21 @@ def newCourse(request,instructorID):
 def coursePage(request,instructorID,courseID):
     if authenticate.roleCheck(request.user,"Instructor",instructorID):
         instructor=Instructor.objects.get(id=instructorID)
-        if courseID in list(map(lambda x:x.id),instructor.getAllCourses()):
+        if int(courseID) in list(map((lambda x:x.id),instructor.getAllCourses())):
             course = Course.objects.get(id=courseID)
             modules = course.module_set.all()
             return render(request,"general/developCourse.html",{'course':course,'modules':modules})
+        else:
+            print(courseID,"not in ",list(map((lambda x:x.id),instructor.getAllCourses())))
     logout(request)
-    redirect("coursePage",instructorID,courseID)
+    return redirect("coursePage",instructorID,courseID)
 
 
 @login_required
 def newModule(request,instructorID,courseID):
     if authenticate.roleCheck(request.user,"Instructor",instructorID):
         instructor=instructor.objects.get(id=instructorID)
-        if courseID in list(map(lambda x:x.id),instructor.getAllCourses()):
+        if int(courseID) in list(map(lambda x:x.id),instructor.getAllCourses()):
             course = Course.objects.get(id=courseID)
             if request.method == "POST":
                 name = request.POST.get('name')
