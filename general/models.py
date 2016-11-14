@@ -78,7 +78,7 @@ class Instructor(SDPUser):
     def create(username,password,first_name,last_name):
         instructor = Instructor()
         instructor._user=User.objects.create_user(username=username,password=password,first_name=first_name,last_name=last_name)
-        instructor._addToGroup("instructor")
+        instructor._addToGroup("Instructor")
         instructor.save()
         return instructor
     def getDevelopingCourses(self):

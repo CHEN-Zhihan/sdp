@@ -12,7 +12,7 @@
     <script src="{% static "js/less.min.js" %}" charset="utf-8"></script>
     <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="utf-8"></script>
     <script src="{% static "js/common.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/general/instructor.ajax.js" %}" charset="utf-8"></script>
+    <script src="{% static "js/general/developCourse.js" %}" charset="utf-8"></script>
   </head>
   <body>
     <!-- Main viewpoint container -->
@@ -71,7 +71,7 @@
             {% for module in modules %}
             <!-- List modules in course -->
             <a href="#">
-              <div class="module jumbotron" id="{{ module.id }}">
+              <div class="module jumbotron" id="{{ module.index }}">
                 <p class="module-name">{{ module.name }}</p>
                 <p class="module-desc">{{ module.description }}</p>
               </div>
@@ -79,7 +79,7 @@
 
             <!-- Insert new module behind this module -->
             <a href="#">
-              <div class="addModule" id="{{ module.id }}">
+              <div class="addModule" id="{{ module.index|add:1 }}">
                 <span class="glyphicon glyphicon-plus"></span>Add new module here
               </div>
             </a>

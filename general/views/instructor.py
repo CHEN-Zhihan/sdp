@@ -21,7 +21,7 @@ def InstructorIndex(request,instructorID):
 @login_required
 def newCourse(request,instructorID):
     if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        if request.POST.get('action') == "submit":
+        if request.method == "POST":
             name = request.POST.get('name')
             description = request.POST.get("description")
             categoryID = request.POST.get("categoryID")
@@ -31,11 +31,9 @@ def newCourse(request,instructorID):
             result=course!=None
             newID = course.id if result else -1
             return JsonResponse({'result':result,'newCourseID':newID})
-        elif request.POST.get('action') == 'getForm':
+        else:
             categories = Category.objects.all()
-            return HttpResponse(
-                render_to_string("general/ajax/newCourse.html",{'categories':categories})
-            )
+            return render(request, "general/newCourse.html",{'categories':categories})
     logout(request)
     return redirect("newCourse",instructorID)
 
@@ -43,19 +41,21 @@ def newCourse(request,instructorID):
 def coursePage(request,instructorID,courseID):
     if authenticate.roleCheck(request.user,"Instructor",instructorID):
         instructor=Instructor.objects.get(id=instructorID)
-        if courseID in list(map(lambda x:x.id),instructor.getAllCourses()):
+        if int(courseID) in list(map((lambda x:x.id),instructor.getAllCourses())):
             course = Course.objects.get(id=courseID)
             modules = course.module_set.all()
             return render(request,"general/developCourse.html",{'course':course,'modules':modules})
+        else:
+            print(courseID,"not in ",list(map((lambda x:x.id),instructor.getAllCourses())))
     logout(request)
-    redirect("coursePage",instructorID,courseID)
+    return redirect("coursePage",instructorID,courseID)
 
 
 @login_required
 def newModule(request,instructorID,courseID):
     if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        instructor=instructor.objects.get(id=instructorID)
-        if courseID in list(map(lambda x:x.id),instructor.getAllCourses()):
+        instructor=Instructor.objects.get(id=instructorID)
+        if int(courseID) in list(map((lambda x:x.id),instructor.getAllCourses())):
             course = Course.objects.get(id=courseID)
             if request.method == "POST":
                 name = request.POST.get('name')
@@ -67,6 +67,8 @@ def newModule(request,instructorID,courseID):
                     return JsonResponse({'result':True,'newModuleID':module.id})
                 else:
                     return JsonResponse({'result':False,'newModuleID':-1})
+            elif request.method == "GET":
+                return render(request, "general/newModule.html");
     logout(request)
     redirect("newModule",instructorID,courseID)
 

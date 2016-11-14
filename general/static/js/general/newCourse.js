@@ -1,9 +1,9 @@
-// Respond to submit new module form
-function registerModuleSubmitListener(pos) {
-  $("#createModuleForm").submit(function (event) {
+// Respond to submit new course form
+function registerCourseSubmitListener() {
+  $("#createCourseForm").submit(function (event) {
     // Prevent the default action
     event.preventDefault();
-    console.log("Submit create module form");
+    console.log("Submit create course form");
 
     // Validate the form
     if (validateForm(this)) {
@@ -12,15 +12,16 @@ function registerModuleSubmitListener(pos) {
 
       // Collect form data
       var formData = {
+        "action": "submit",
         "name": $("div > #name", this).val(),
-        "description": $("div > #description", this).val(),
-        "index": pos
+        "categoryID": $("div > #category", this).val(),
+        "description": $("div > #description", this).val()
       };
       console.log(formData);
 
       // Ajax POST
       $.ajax({
-        url     : window.location.pathname + "/newModule",
+        url     : window.location.pathname + "/newCourse",
         type    : "POST",
         data    : formData,
         success : function (response) {
@@ -28,12 +29,11 @@ function registerModuleSubmitListener(pos) {
           console.log(response);
           if (response["result"]) {
             $(".btn-success").click(function () {
-              // Redirect to new module page
+              // Redirect to new course page
               var protocol = window.location.protocol;
               var host = window.location.host;
               var pathArray = window.location.pathname.split("/");
-              var newPath = pathArray[1] + "/" + pathArray[2] + "/"
-                            + pathArray[3] + "/" + response["newModuleID"];
+              var newPath = pathArray[1] + "/" + pathArray[2] + "/" + response["newCourseID"];
               window.location.assign(protocol + "//" + host + "/" + newPath);
             });
             $("#createSuccessModal").modal();
@@ -56,8 +56,5 @@ function registerModuleSubmitListener(pos) {
 }
 
 $(document).ready(function () {
-  registerCourseListener();
-  registerCreateCourseListener();
-  registerAddModuleListener();
   registerCourseSubmitListener();
 });
