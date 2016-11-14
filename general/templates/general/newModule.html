@@ -12,7 +12,7 @@
     <script src="{% static "js/less.min.js" %}" charset="utf-8"></script>
     <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="utf-8"></script>
     <script src="{% static "js/common.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/general/newCourse.js" %}" charset="utf-8"></script>
+    <script src="{% static "js/general/newModule.js" %}" charset="utf-8"></script>
   </head>
   <body>
     <!-- Main viewpoint container -->
@@ -25,7 +25,7 @@
         </div>
         <!-- Header text -->
         <div class="col-sm-10">
-          <h3 id="header-text">Create Course</h3>
+          <h3 id="header-text">Add Module</h3>
         </div>
       </div> <!-- End header row -->
 
@@ -50,29 +50,16 @@
         <div class="col-sm-10 fill-height main-column">
           <div class="container-fluid" id="main-content">
 
-            <!-- Course information form -->
-            <form id="createCourseForm">
-              <!-- Input course name -->
+            <!-- Module information form -->
+            <form id="createModuleForm">
+              <!-- Input module name -->
               <div class="form-group">
-                <input class="well well-sm well-input fullwidth" placeholder="Course name" id="name"></input>
+                <input class="well well-sm well-input fullwidth" placeholder="Module name" id="name"></input>
               </div>
 
-              <!-- Select course category -->
+              <!-- Input module description -->
               <div class="form-group">
-                <select class="well well-sm well-input fullwidth placeholder" id="category">
-                  <!-- Placeholder option -->
-                  <option value="placeholder" hidden>Select a category</option>
-
-                  <!-- List categories -->
-                  {% for category in categories %}
-                  <option value="{{ category.id }}">{{ category.name }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-
-              <!-- Input course description -->
-              <div class="form-group">
-                <textarea class="well well-sm well-input fullwidth" placeholder="Course description" rows=10 id="description"></textarea>
+                <textarea class="well well-sm well-input fullwidth" placeholder="Module description" rows=10 id="description"></textarea>
               </div>
 
               <!-- Submit button -->
@@ -108,10 +95,10 @@
                     <h4 class="modal-title">Success</h4>
                   </div>
                   <div class="modal-body">
-                    <p>Course created successfully.</p>
+                    <p>Module added successfully.</p>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-default btn-success" data-dismiss="modal">Go to course</button>
+                    <button type="button" class="btn btn-default btn-success" data-dismiss="modal">Go to module</button>
                   </div>
                 </div>
               </div>
@@ -134,7 +121,6 @@
                 </div>
               </div>
             </div> <!-- End modal -->
-
           </div>
         </div> <!-- End main content container -->
       </div> <!-- End content row -->

@@ -54,8 +54,8 @@ def coursePage(request,instructorID,courseID):
 @login_required
 def newModule(request,instructorID,courseID):
     if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        instructor=instructor.objects.get(id=instructorID)
-        if int(courseID) in list(map(lambda x:x.id),instructor.getAllCourses()):
+        instructor=Instructor.objects.get(id=instructorID)
+        if int(courseID) in list(map((lambda x:x.id),instructor.getAllCourses())):
             course = Course.objects.get(id=courseID)
             if request.method == "POST":
                 name = request.POST.get('name')
@@ -67,6 +67,8 @@ def newModule(request,instructorID,courseID):
                     return JsonResponse({'result':True,'newModuleID':module.id})
                 else:
                     return JsonResponse({'result':False,'newModuleID':-1})
+            elif request.method == "GET":
+                return render(request, "general/newModule.html");
     logout(request)
     redirect("newModule",instructorID,courseID)
 
