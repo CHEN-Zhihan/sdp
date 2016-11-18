@@ -12,6 +12,7 @@ urlpatterns = [
     url(participantURL+r'/showCourseList$',participant.showCourseList,name="showCourseList"),
     url(participantURL+r'/showCourse$',participant.showCourse,name="showCourse"),
     url(participantURL+r'/enroll$',participant.enroll,name="enroll"),
+    url(participantURL+r'/viewCourse/((?P<courseID>[0-9]+))$',participant.viewCourse,name="viewCourse"),
     url(instructorURL+r'$',instructor.InstructorIndex,name="InstructorIndex"),
     url(instructorURL+r'/newCourse$',instructor.newCourse,name="newCourse"),
     url(courseURL+r'$',instructor.coursePage,name="coursePage"),

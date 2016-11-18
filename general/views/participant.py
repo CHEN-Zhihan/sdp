@@ -1,6 +1,6 @@
 from django.shortcuts import render,get_object_or_404,redirect
 from django.http import HttpResponse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from ..models import Course,Participant,CompletedEnrollment,Category
 from ..models import CurrentEnrollment
@@ -65,3 +65,20 @@ def enroll(request,participantID):
         result = participant.enroll(course)
         return JsonResponse({'result':result})
     return HttpResponse(status=404)
+
+@login_required
+def viewCourse(request,participantID,courseID):
+    participantID=int(participantID)
+    courseID=int(courseID)
+    if not authenticate.roleCheck(request.user,"Participant",participantID):
+        return redirect("myLogout")
+    participant=Participant.getFromUser(request.user)
+    if not participant.hasCourse(courseID):
+        logout(request)
+        redirect("viewCourse",participantID,courseID)
+    course,status=participant.getCourseByID(courseID)
+    modules = course.getSortedModules()
+    return HttpResponse(request,"general/viewCourse.html",{"course":course,"status":status,"modules":modules})
+
+@login_required
+def viewModule(request,)

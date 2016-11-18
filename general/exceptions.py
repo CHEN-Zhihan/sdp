@@ -1,15 +1,7 @@
 from abc import ABC
-class DuplicationException(Exception,ABC):
+class NameDuplication(Exception):
     pass
 
-class UsernameDuplication(DuplicationException):
-    pass
-
-class CourseNameDuplication(DuplicationException):
-    pass
-
-class ModuleNameDuplication(DuplicationException):
-    pass
 
 class AlreadyException(Exception,ABC):
     pass
@@ -25,4 +17,3 @@ class NotOwnerException(Exception):
 
 class NotEnrolledException(Exception):
     pass
-    

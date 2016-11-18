@@ -9,13 +9,6 @@ from .exceptions import *
 class Category(models.Model):
     name = models.CharField(max_length=200)
     @staticmethod
-    def create(name):
-        c=Category()
-        c.name=name
-        c.save()
-        return c
-
-    @staticmethod
     def getAllCategories():
         return Category.objects.all()
 
@@ -134,21 +127,31 @@ class Course(models.Model):
 
     def __str__(self):
         return self.name
-
+    
     def _updateIndex(self,newIndex):
         for module in self.module_set.all():
             if module.index>=newIndex:
                 module.index+=1
                 module.save()
+    def updateIndex(self,originIndex,newIndex):
+        for module in self.module_set.all():
+            if module.index>=newIndex and module.index<originIndex:
+                module.index+=1
+            elif module.index<=newIndex and module.index>originIndex:
+                module.index-=1
+            module.save()
+        module = self.module_set.get(index=originIndex)
+        module.index=newIndex
+        module.save()
+
 
     def createModule(self,name,description,index):
         if self.module_set.filter(name=name).exists():
-            raise ModuleNameDuplication()
+            raise NameDuplication()
         m=Module()
         m.name=name
         m.description=description
         m.course=self
-        index=int(index)
         self._updateIndex(index)
         m.index=index
         m.save()
@@ -198,7 +201,7 @@ class Instructor(SDPUser):
 
     def createCourse(self,name,description,category):
         if Course.objects.filter(name=name).exists():
-            raise CourseNameDuplication()            
+            raise NameDuplication()            
         c=Course()
         c.name=name
         c.description=description
@@ -217,7 +220,7 @@ class Instructor(SDPUser):
 
     def modifyCourse(self,course,name,description,category):
         if Course.objects.filter(name=name).exists():
-            raise CourseNameDuplication()
+            raise NameDuplication()
         course.name=name
         course.description=description
         course.category=category
@@ -257,7 +260,6 @@ class Participant(SDPUser):
         self.currentenrollment.progress=0
         self.currentenrollment.save()
         self.save()
-
         return True
 
     def hasEnrolled(self):
@@ -274,6 +276,13 @@ class Participant(SDPUser):
         CurrentEnrollment.objects.filter(participant=self).delete()
         self.currentenrollment=None
         self.save()
+    
+    def hasCourse(self,courseID):
+        if self.hasEnrolled() and self.currentenrollment.course.id==courseID:
+            return True
+        if len(filter((lambda x:x.id==courseID),self.getCompletedCourses()))!=0:
+            return True
+        return False
 
     def completeCourse(self):
         self.completedenrollment_set.add(CompletedEnrollment.createFromCurrentEnrollment(self.currentenrollment))
@@ -282,13 +291,18 @@ class Participant(SDPUser):
 
     def getCompletedCourses(self):
         return set(map((lambda x:x.course),self.completedenrollment_set.all()))
-    
+
     def getByID(self,ID):
         if Participant.objects.filter(id=ID).exists():
             return Participant.objects.get(id=ID)
         return None
 
-
+    def getCourseByID(self,courseID):
+        if self.currentenrollment.course.id==courseID:
+            return self.currentenrollment.course,0
+        for completed in self.getCompletedCourses():
+            if completed.id==courseID:
+                return completed,1
 
 
 class Module(models.Model):
@@ -313,11 +327,22 @@ class Module(models.Model):
         self.save()
         return c
 
-    def _updateIndex(self,index):
+    def _updateIndex(self,newIndex):
         for component in self.component_set.all():
             if component.index>=newIndex:
                 component.index+=1
                 component.save()
+
+    def updateIndex(self,originIndex,newIndex):
+        for component in self.component_set.all():
+            if component.index>=newIndex and component.index<originIndex:
+                component.index+=1
+            elif component.index<=newIndex and component.index>originIndex:
+                component.index-=1
+            component.save()
+        component=self.component_set.get(index=originIndex)
+        component.index=newIndex
+        component.save()
 
     def getSortedComponents(self):
         components=list(self.component_set.all())
@@ -376,5 +401,14 @@ class Administrator(SDPUser):
     @staticmethod
     def getUserGroups(user):
         return list(map((lambda x:x.name),user.groups.all()))
+    
+    @staticmethod
+    def createCategory(name):
+        if Category.objects.filter(name=name).exists():
+            raise NameDuplication()
+        c=Category()
+        c.name=name
+        c.save()
+        return c
 
 lookup = {"Instructor":Instructor,"Participant":Participant,"HR":HR,"Administrator":Administrator}
