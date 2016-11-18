@@ -31,10 +31,15 @@ def newCourse(request,instructorID):
             instructor = Instructor.getFromUser(request.user)
             try:
                 course = instructor.createCourse(name,description,category)
-                result = True
             except CourseNameDuplication:
                 result = False
-            newID = course.id if result else -1
+                newID=-2
+            except Exception:
+                result = False
+                newID=-1
+            else:
+                result = True
+                newID=course.id
             return JsonResponse({'result':result,'newCourseID':newID})
         else:
             categories = Category.getAllCategories()
