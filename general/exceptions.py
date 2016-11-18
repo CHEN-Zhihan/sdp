@@ -8,7 +8,7 @@ class UsernameDuplication(DuplicationException):
 class CourseNameDuplication(DuplicationException):
     pass
 
-class ModulenameDuplication(DuplicationException):
+class ModuleNameDuplication(DuplicationException):
     pass
 
 class AlreadyException(Exception,ABC):
@@ -25,3 +25,4 @@ class NotOwnerException(Exception):
 
 class NotEnrolledException(Exception):
     pass
+    

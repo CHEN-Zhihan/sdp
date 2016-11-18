@@ -143,7 +143,7 @@ class Course(models.Model):
 
     def createModule(self,name,description,index):
         if self.module_set.filter(name=name).exists():
-            raise ModulenameDuplication()
+            raise ModuleNameDuplication()
         m=Module()
         m.name=name
         m.description=description
@@ -207,13 +207,25 @@ class Instructor(SDPUser):
         c.category=category
         c.save()
         return c
+    
+    def deleteCourse(self,course):
+        for module in course.getSortedModules():
+            for component in module.getSortedComponents():
+                component.delete()
+            module.delete()
+        course.delete()
+
+    def modifyCourse(self,course,name,description,category):
+        if Course.objects.filter(name=name).exists():
+            raise CourseNameDuplication()
+        course.name=name
+        course.description=description
+        course.category=category
+        course.save()
 
     def openCourse(self,course):
-        if course in self.course_set.all():
-            course._isOpen=True
-            course.save()
-        else:
-            raise NotOwnerException()
+        course._isOpen=True
+        course.save()
 
     def ownCourse(self,courseID):
         return courseID in list(map((lambda x:x.id),self.getAllCourses()))

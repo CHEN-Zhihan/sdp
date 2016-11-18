@@ -54,13 +54,58 @@ def coursePage(request,instructorID,courseID):
         instructor=Instructor.getFromUser(request.user)
         if instructor.ownCourse(courseID):
             course = instructor.getCourseByID(courseID)
-            modules = course.getSortedModules()
-            return render(request,"general/developCourse.html",{'course':course,'modules':modules})
+            if request.method=="POST":
+                action = request.POST.get("action")
+                if action=="OPEN":
+                    try:
+                        instructor.openCourse(course)
+                    except Exception:
+                        result=False
+                    else:
+                        result=True
+                    return JsonResponse({"result":result})
+                elif action=="DELETE":
+                    try:
+                        instructor.deleteCourse(course)
+                    except Exception:
+                        result=False
+                    else:
+                        result=True
+                    return JsonResponse({"result":result})
+            if request.method=="GET":
+                modules = course.getSortedModules()
+                return render(request,"general/developCourse.html",{'course':course,'modules':modules,"isOpen":course.isOpen()})
         else:
             print(courseID,"not in ",list(map((lambda x:x.id),instructor.getAllCourses())))
     logout(request)
     return redirect("coursePage",instructorID,courseID)
 
+
+
+
+@login_required
+def modifyCourse(request,instructorID,courseID):
+    courseID=int(courseID)
+    if authenticate.roleCheck(request.user,"Instructor",instructorID):
+        instructor=Instructor.getFromUser(request.user)
+        if instructor.ownCourse(courseID):
+            course = instructor.getCourseByID(courseID)
+            if request.method=="POST":
+                name=request.POST.get("name")
+                description = request.POST.get("description")
+                categoryID = request.POST.get("categoryID")
+                category = Category.getByID(categoryID)
+                try:
+                    instructor.modifyCourse(name,description,category)
+                except CourseNameDuplication:
+                    errno=-2
+                except Exception:
+                    errno=-1
+                else:
+                    errno=0
+                return JsonResponse({"result":errno})
+            else:
+                return render(request,"general/modifyCourse.html",{"course":course})
 
 @login_required
 def newModule(request,instructorID,courseID):
@@ -100,7 +145,7 @@ def modulePage(request,instructorID,courseID,moduleIndex):
             module = course.getModuleByIndex(moduleIndex)
             if module!=None:
                 components = module.getSortedComponents()
-                return render(request,"general/modulePage.html",{'course':course,'module':module,'components':components})
+                return render(request,"general/modulePage.html",{'course':course,'module':module,'components':components,"isOpen":course.isOpen()})
 
 @login_required
 def newComponent(request,instructorID,courseID,moduleIndex):
