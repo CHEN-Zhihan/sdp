@@ -15,7 +15,7 @@ def InstructorIndex(request,instructorID):
     if authenticate.roleCheck(request.user,"Instructor",instructorID):
         instructor = Instructor.getFromUser(request.user)
         developingCourses = instructor.getDevelopingCourses()
-        openCourses = instructor.getDevelopingCourses()
+        openCourses = instructor.getOpenedCourses()
         return render(request,"general/instructorIndex.html",{'developingCourses':developingCourses,'openCourses':openCourses})
     logout(request)
     return redirect("InstructorIndex",instructorID)
@@ -68,7 +68,7 @@ def newModule(request,instructorID,courseID):
                 name = request.POST.get('name')
                 description = request.POST.get('description')
                 index = request.POST.get('index')
-                module = Module.create(name,description,course,index)
+                module = course.create(name,description,index)
                 if module!=None:
                     course.addModule(module)
                     return JsonResponse({'result':True})
@@ -104,6 +104,6 @@ def newComponent(request,instructorID,courseID,moduleIndex):
                     typeName = request.POST.get('typeName')
                     content = request.POST.get('content')
                     index = request.POST.get('index')
-                    component = module.createComponent(module,typeName,index,content)
+                    component = module.createComponent(typeName,index,content)
                     return JsonResponse({'result':True,'componentID':component.index})
     return HttpResponse(status=404)

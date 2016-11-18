@@ -123,6 +123,12 @@ class Course(models.Model):
     _isOpen = models.BooleanField()
     category = models.ForeignKey('Category',on_delete=models.CASCADE)
 
+    @staticmethod
+    def getByID(ID):
+        if Course.objects.filter(id=ID).exists():
+            return Course.objects.get(id=ID)
+        return None
+
     def isOpen(self):
         return self._isOpen
 
@@ -262,7 +268,11 @@ class Participant(SDPUser):
 
     def getCompletedCourses(self):
         return set(map((lambda x:x.course),self.completedenrollment_set.all()))
-
+    
+    def getByID(self,ID):
+        if Participant.objects.filter(id=ID).exists():
+            return Participant.objects.get(id=ID)
+        return None
 
 
 
