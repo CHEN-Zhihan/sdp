@@ -1,25 +1,25 @@
-from django.http import HttpResponse
-from django.contrib.auth import authenticate, login,logout
-from django.contrib.auth.decorators import login_required
-from ..models import Participant,Instructor,HR,Administrator
-from django.shortcuts import render,redirect
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from ..models import Participant,Instructor, HR, Administrator
+
+lookup={"Instructor":Instructor,"HR":HR,"Administrator":Administrator,"Participant":Participant}
 
 def myLogin(request):
     if request.method=="POST":
-        username=request.POST.get('username');
-        password=request.POST.get('password');
-        usertype=request.POST.get('usertype');
+        username=request.POST.get('username')
+        password=request.POST.get('password')
+        usertype=request.POST.get('usertype')
         user=authenticate(username=username,password=password)
         if user!=None and usertype in list(map((lambda x:x.name),user.groups.all())):
             login(request,user)
-            uid = eval(usertype).objects.get(_user=user).id
+            uid = lookup[usertype].objects.get(_user=user).id
             return redirect(usertype+"Index",uid)
         else:
             print(list(map((lambda x:x.name),user.groups.all())))
             return render(request,"general/login.html")
     else:
-        return render(request,"general/login.html");
+        return render(request,"general/login.html")
 
 def myLogout(request):
     logout(request)
@@ -27,27 +27,28 @@ def myLogout(request):
     return redirect('myLogin')
 
 def register(request):
-    if request.method=="POST":
-        username=request.POST.get('username')
-        password=request.POST.get('password')
-        firstName=request.POST.get('firstName')
-        lastName=request.POST.get('lastName')
-        usertype = request.POST.get("usertype")
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        firstName = request.POST.get('firstName')
+        lastName = request.POST.get('lastName')
         if User.objects.filter(username=username).exists():
-            return render(request,"general/register.html")
+            return render(request, "general/register.html")
         else:
-            newUser=eval(usertype).create(username,password,firstName,lastName)
-            login(request,newUser._user)
-            return redirect(usertype+"Index",newUser.id)
+            newUser = Participant.createWithNewUser(username, password, firstName, lastName)
+            login(request,newUser.getUser())
+            return redirect("participantIndex", newUser.id)
     else:
-        return render(request,"general/register.html")
+        return render(request, "general/register.html")
 
 def roleCheck(user,role,passedID):
-    if role not in list(map((lambda x:x.name),user.groups.all())):
-        print(role,"not in ", user.groups.all())
-        return False
-    targetUser = eval(role).objects.get(_user=user)
-    if int(targetUser.id)!=int(passedID):
-        print("user id: ",targetUser.id, "id passed in: ",passedID)
-        return False
-    return True
+    if role!=None:
+        if role not in Administrator.getUserGroups(user):
+            print(role,"not in ", Administrator.getUserGroups(user))
+            return False
+        targetUser = Administrator.getFromUser(user,role)
+        if int(targetUser.id)!=int(passedID):
+            print("user id: ",targetUser.id, "id passed in: ",passedID)
+            return False
+        return True
+    return False
