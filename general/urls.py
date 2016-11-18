@@ -1,8 +1,4 @@
 from django.conf.urls import url
-
-
-from django.contrib.auth import views as authViews
-from .forms import LoginForm
 from .views import participant,instructor,authenticate,administrator
 
 participantURL = r'^Participant/(?P<participantID>[0-9]+)'
