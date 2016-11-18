@@ -15,6 +15,21 @@ function registerAddModuleListener() {
   });
 }
 
+// Respond to edit course info
+function registerEditListener() {
+  $(".btn-edit").click(function () {
+    var protocol = window.location.protocol;
+    var host = window.location.host;
+    var pathArray = window.location.pathname.split("/");
+    var newPath = pathArray[1] + "/" + pathArray[2]
+                  + "/" + pathArray[3] + "/editCourse";
+
+    // Redirect to new URL
+    window.location.assign(protocol + "//" + host + "/" + newPath);
+  });
+}
+
+
 // Respond to open a course
 function registerOpenListener() {
   $(".btn-open").click(function () {
@@ -85,6 +100,7 @@ function registerDeleteListener() {
 
 $(document).ready(function () {
   registerAddModuleListener();
+  registerEditListener();
   registerOpenListener();
   registerDeleteListener();
 });

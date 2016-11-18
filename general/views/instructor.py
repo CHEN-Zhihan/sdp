@@ -100,7 +100,7 @@ def changeModuleOrder(request,instructorID,courseID):
 
 
 @login_required
-def modifyCourse(request,instructorID,courseID):
+def editCourse(request,instructorID,courseID):
     courseID=int(courseID)
     if authenticate.roleCheck(request.user,"Instructor",instructorID):
         instructor=Instructor.getFromUser(request.user)
@@ -112,16 +112,18 @@ def modifyCourse(request,instructorID,courseID):
                 categoryID = request.POST.get("categoryID")
                 category = Category.getByID(categoryID)
                 try:
-                    instructor.modifyCourse(name,description,category)
+                    instructor.modifyCourse(course,name,description,category)
                 except NameDuplication:
                     errno=-2
-                except Exception:
+                except Exception as err:
+                    print(err)
                     errno=-1
                 else:
                     errno=0
                 return JsonResponse({"result":errno})
             else:
-                return render(request,"general/modifyCourse.html",{"course":course})
+                categories = Category.getAllCategories()
+                return render(request,"general/editCourse.html",{"course":course, "categories":categories})
     return redirect("myLogout")
 
 @login_required
