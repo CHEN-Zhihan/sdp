@@ -9,7 +9,7 @@ function registerModuleSubmitListener(pos) {
     if (validateForm(this)) {
       // If validate success
       console.log("Validation success");
-      var pos = $("#index", this).val();
+      var pos = parseInt($("#index", this).val());
 
       // Collect form data
       var formData = {
