@@ -39,6 +39,12 @@ function registerCourseSubmitListener() {
             $("#createSuccessModal").modal();
           } else {
             // On error, prompt creation error
+            if (response["newCourseID"] == -2) {
+              $("#createFailModal > .modal-body > p").text("Course name already used.");
+              $("div > #name", this).addClass("has-error").focus(function () {
+                $(this).removeClass("has-error");
+              });
+            }
             $("#createFailModal").modal();
           }
         },
