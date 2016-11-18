@@ -11,10 +11,12 @@ from . import authenticate
 
 @login_required
 def ParticipantIndex(request,participantID):
-    if "Participant" not in list(map((lambda x:x.name),request.user.groups.all())):
+    participantID=int(participantID)
+    if not authenticate.roleCheck(request.user,"Participant",participantID):
         return redirect("myLogout")
-    categoryList = Category.objects.all()
-    participant = Participant.objects.get(id=participantID)
+    categoryList = Category.getAllCategories()
+    participant = Participant.getFromUser(request.user)
+
     try:
         currentEnrollment=participant.currentenrollment
     except ObjectDoesNotExist as e:
@@ -27,24 +29,24 @@ def ParticipantIndex(request,participantID):
 
 @login_required
 def showCourseList(request,participantID):
-    if "Participant" not in list(map((lambda x:x.name),request.user.groups.all())):
+    if not authenticate.roleCheck(request.user,"Participant",participantID):
         return redirect("myLogout")
     if request.method=="POST":
         categoryID = request.POST.get("categoryID")
-        courses = Category.objects.get(id=categoryID).getOpenedCourses()
+        courses = Category.getByID(categoryID).getOpenedCourses()
         return HttpResponse(
             render_to_string("general/ajax/showCourseList.html",{'courses':courses})
         )
 
 @login_required
 def showCourse(request,participantID):
-    if "Participant" not in list(map((lambda x:x.name),request.user.groups.all())):
+    if not authenticate.roleCheck(request.user,"Participant",participantID):
         return redirect("myLogout")
     if request.method=="POST":
         courseID = request.POST.get('courseID')
-        course = Course.objects.get(id=courseID)
-        participant = Participant.objects.get(id=participantID)
-        modules = course.module_set.all()
+        course = Course.getByID(courseID)
+        participant = Participant.getFromUser(request.user)
+        modules = course.getSortedModules()
         return HttpResponse(
             render_to_string(
                 "general/ajax/showCourse.html",
@@ -54,12 +56,12 @@ def showCourse(request,participantID):
 
 @login_required
 def enroll(request,participantID):
-    if "Participant" not in list(map((lambda x:x.name),request.user.groups.all())):
+    if not authenticate.roleCheck(request.user,"Participant",participantID):
         return redirect("myLogout")
     if request.method == "POST":
-        courseID = request.POST.get('courseID')
-        course = Course.objects.get(id=courseID)
-        participant = Participant.objects.get(id=participantID)
+        courseID = int(request.POST.get('courseID'))
+        course = Course.getByID(courseID)
+        participant = Participant.getFromUser(request.user)
         result = participant.enroll(course)
         return JsonResponse({'result':result})
     return HttpResponse(status=404)

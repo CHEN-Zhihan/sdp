@@ -45,7 +45,7 @@ def roleCheck(user,role,passedID):
         if role not in Administrator.getUserGroups(user):
             print(role,"not in ", Administrator.getUserGroups(user))
             return False
-        targetUser = SDPUser._getFromUser(user,role)
+        targetUser = SDPUser.getFromUser(user,role)
         if int(targetUser.id)!=int(passedID):
             print("user id: ",targetUser.id, "id passed in: ",passedID)
             return False
