@@ -34,12 +34,18 @@ function registerModuleSubmitListener(pos) {
               var host = window.location.host;
               var pathArray = window.location.pathname.split("/");
               var newPath = pathArray[1] + "/" + pathArray[2] + "/"
-                            + pathArray[3] + "/" + pos;
+                            + pathArray[3] + "/" + response["newModuleIndex"];
               window.location.assign(protocol + "//" + host + "/" + newPath);
             });
             $("#createSuccessModal").modal();
           } else {
             // On error, prompt creation error
+            if (response["newModuleIndex"] == -2) {
+              $(".modal-body > p", "#createFailModal").text("Module name already exists.");
+              $("input#name").addClass("has-error").focus(function () {
+                $(this).removeClass("has-error");
+              });
+            }
             $("#createFailModal").modal();
           }
         },

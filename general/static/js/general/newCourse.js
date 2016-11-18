@@ -40,7 +40,7 @@ function registerCourseSubmitListener() {
           } else {
             // On error, prompt creation error
             if (response["newCourseID"] == -2) {
-              $(".modal-body > p", "#createFailModal").text("Course name already used.");
+              $(".modal-body > p", "#createFailModal").text("Course name already exists.");
               $("input#name").addClass("has-error").focus(function () {
                 $(this).removeClass("has-error");
               });
