@@ -68,7 +68,7 @@ def newModule(request,instructorID,courseID):
                 name = request.POST.get('name')
                 description = request.POST.get('description')
                 index = request.POST.get('index')
-                module = course.create(name,description,index)
+                module = course.createModule(name,description,index)
                 if module!=None:
                     course.addModule(module)
                     return JsonResponse({'result':True})
