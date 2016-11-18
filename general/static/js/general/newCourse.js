@@ -56,5 +56,8 @@ function registerCourseSubmitListener() {
 }
 
 $(document).ready(function () {
+  $("select").on("change", function () {
+    $(this).removeClass("placeholder");
+  });
   registerCourseSubmitListener();
 });
