@@ -61,7 +61,7 @@ class SDPUser(models.Model):
         return SDPUser._createFromUser(user,role)
 
     @staticmethod
-    def _getFromUser(user,roleName):
+    def getFromUser(user,roleName):
         role=lookup[roleName]
         temp = role.objects.get(_user=user)
         return temp
@@ -177,7 +177,7 @@ class Instructor(SDPUser):
 
     @staticmethod
     def getFromUser(user):
-        return SDPUser._getFromUser(user,"Instructor")
+        return SDPUser.getFromUser(user,"Instructor")
 
     def getDevelopingCourses(self):
         return self.course_set.filter(_isOpen=False)
@@ -226,7 +226,7 @@ class Participant(SDPUser):
 
     @staticmethod
     def getFromUser(user):
-        return SDPUser._getFromUser(user,"Participant")
+        return SDPUser.getFromUser(user,"Participant")
 
     def enroll(self,course):
         if self.hasEnrolled():
@@ -329,7 +329,7 @@ class HR(SDPUser):
         return SDPUser._createWithNewUser(username,password,firstName,lastName,"HR")
     @staticmethod
     def getFromUser(user):
-        return SDPUser._getFromUser(user,"HR")
+        return SDPUser.getFromUser(user,"HR")
 
 
 class Administrator(SDPUser):
@@ -347,7 +347,7 @@ class Administrator(SDPUser):
 
     @staticmethod
     def getFromUser(user):
-        return SDPUser._getFromUser(user,"Administrator")
+        return SDPUser.getFromUser(user,"Administrator")
 
     @staticmethod
     def getUserGroups(user):
