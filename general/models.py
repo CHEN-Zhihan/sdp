@@ -197,16 +197,16 @@ class Instructor(SDPUser):
         return self.course_set.all()
 
     def createCourse(self,name,description,category):
-        if not Course.objects.filter(name=name).exists():
-            c=Course()
-            c.name=name
-            c.description=description
-            c.instructor=self
-            c._isOpen=False
-            c.category=category
-            c.save()
-            return c
-        raise CourseNameDuplication()
+        if Course.objects.filter(name=name).exists():
+            raise CourseNameDuplication()            
+        c=Course()
+        c.name=name
+        c.description=description
+        c.instructor=self
+        c._isOpen=False
+        c.category=category
+        c.save()
+        return c
 
     def openCourse(self,course):
         if course in self.course_set.all():
