@@ -6,17 +6,47 @@ from django.core.exceptions import ObjectDoesNotExist
 from abc import ABC,abstractmethod
 from .exceptions import *
 
-roleList = ["Instructor","Participant","HR","Administrator"]
+class Category(models.Model):
+    name = models.CharField(max_length=200)
+    @staticmethod
+    def create(name):
+        c=Category()
+        c.name=name
+        c.save()
+        return c
 
+    @staticmethod
+    def getAllCategories():
+        return set(map((lambda x:x.name),Category.objects.all()))
+
+    @staticmethod
+    def getByID(ID):
+        if Category.objects.filter(id=ID).exists():
+            return Category.objects.get(id=ID)
+        return None
+
+    def __str__(self):
+        return self.name
+    def getOpenedCourses(self):
+        return self.course_set.filter(_isOpen=True)
+
+roleList = ["Instructor","Participant","HR","Administrator"]
+categoryList= ["Mergers and Acquisitions","Markets","Risk Management","Securities","Financial Modelling","Operations","Information Technology"]
 
 for role in roleList:
     if not Group.objects.filter(name=role).exists():
         group = Group(name=role)
         group.save()
 
-class SDPUser(models.Model,ABC):
-    _user = models.ForeignKey(User,on_delete=models.CASCADE)
+for name in categoryList:
+    if not Category.objects.filter(name=name).exists():
+        category=Category.create(name)
+        category.save()
 
+class SDPUser(models.Model):
+    _user = models.ForeignKey(User,on_delete=models.CASCADE)
+    class Meta:
+        abstract=True
     @staticmethod
     def _createFromUser(user,role):
         temp=lookup[role]()
@@ -28,7 +58,7 @@ class SDPUser(models.Model,ABC):
     @staticmethod
     def _createWithNewUser(username,password,firstName,lastName,role):
         user=User.objects.create_user(username=username,password=password,first_name=firstName,last_name=lastName)
-        return SDPUser.createFromUser(user,role)
+        return SDPUser._createFromUser(user,role)
 
     @staticmethod
     def _getFromUser(user,roleName):
@@ -43,6 +73,7 @@ class SDPUser(models.Model,ABC):
         return "{} {}".format(self._user.first_name,self._user.last_name)
 
     def _addToGroup(self,name):
+        print(name)
         group = Group.objects.get(name=name)
         group.user_set.add(self._user)
         self._user.groups.add(group)
@@ -50,7 +81,9 @@ class SDPUser(models.Model,ABC):
         self._user.save()
         self.save()
 
-class Enrollment(models.Model,ABC):
+class Enrollment(models.Model):
+    class Meta:
+        abstract=True
     course = models.ForeignKey('Course',on_delete=models.CASCADE)
 
 
@@ -86,16 +119,16 @@ class CompletedEnrollment(Enrollment):
 class Course(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
-    instructor = models.ForeignKey(Instructor,on_delete=models.CASCADE)
+    instructor = models.ForeignKey('Instructor',on_delete=models.CASCADE)
     _isOpen = models.BooleanField()
-    category = models.ForeignKey(Category,on_delete=models.CASCADE)
+    category = models.ForeignKey('Category',on_delete=models.CASCADE)
 
     def isOpen(self):
         return self._isOpen
 
     def __str__(self):
         return self.name
-    
+
     def _updateIndex(self,newIndex):
         for module in self.module_set.all():
             if module.index>=newIndex:
@@ -136,15 +169,15 @@ class Course(models.Model):
 class Instructor(SDPUser):
     @staticmethod
     def createWithNewUser(username,password,firstName,lastName):
-        return SDPUser.createWithNewUser(username,password,firstName,lastName,"Instructor")
+        return SDPUser._createWithNewUser(username,password,firstName,lastName,"Instructor")
 
     @staticmethod
     def createFromUser(user):
-        return SDPUser.createFromUser(user,"Instructor")
+        return SDPUser._createFromUser(user,"Instructor")
 
     @staticmethod
     def getFromUser(user):
-        return SDPUser.getFromUser(user,"Instructor")
+        return SDPUser._getFromUser(user,"Instructor")
 
     def getDevelopingCourses(self):
         return self.course_set.filter(_isOpen=False)
@@ -176,7 +209,7 @@ class Instructor(SDPUser):
 
     def ownCourse(self,courseID):
         return courseID in list(map((lambda x:x.id),self.getAllCourses()))
-    
+
     def getCourseByID(self,courseID):
         return self.course_set.get(id=courseID)
 
@@ -185,15 +218,15 @@ class Instructor(SDPUser):
 class Participant(SDPUser):
     @staticmethod
     def createFromUser(user):
-        return SDPUser.createFromUser(user,"Participant")
+        return SDPUser._createFromUser(user,"Participant")
 
     @staticmethod
     def createWithNewUser(username,password,firstName,lastName):
-        return SDPUser.createWithNewUser(username,password,firstName,lastName,"Participant")
+        return SDPUser._createWithNewUser(username,password,firstName,lastName,"Participant")
 
     @staticmethod
     def getFromUser(user):
-        return SDPUser.getFromUser(user,"Participant")
+        return SDPUser._getFromUser(user,"Participant")
 
     def enroll(self,course):
         if self.hasEnrolled():
@@ -231,29 +264,7 @@ class Participant(SDPUser):
         return set(map((lambda x:x.course),self.completedenrollment_set.all()))
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=200)
-    @staticmethod
-    def create(name):
-        c=Category()
-        c.name=name
-        c.save()
-        return c
 
-    @staticmethod
-    def getAllCategories():
-        return set(map((lambda x:x.name),Category.objects.all()))
-
-    @staticmethod
-    def getByID(ID):
-        if Category.objects.filter(id=ID).exists():
-            return Category.objects.get(id=ID)
-        return None
-
-    def __str__(self):
-        return self.name
-    def getOpenedCourses(self):
-        return self.course_set.filter(_isOpen=True)
 
 
 class Module(models.Model):
@@ -283,7 +294,7 @@ class Module(models.Model):
             if component.index>=newIndex:
                 component.index+=1
                 component.save()
-    
+
     def getSortedComponents(self):
         components=list(self.component_set.all())
         components.sort(key=(lambda x:x.index))
@@ -291,7 +302,7 @@ class Module(models.Model):
 
     def hasComponent(self,index):
         return self.component_set.filter(index=index).exists()
-    
+
     def getComponentByIndex(self,index):
         return self.component_set.get(index=index)
 
@@ -304,7 +315,7 @@ class Component(models.Model):
     def __str__(self):
         string = "{}-th of {}:{}".format(self.index,self.module.course.name,self.module.name)
         return string
-    
+
     def show(self):
         pass
 
@@ -312,31 +323,31 @@ class Component(models.Model):
 class HR(SDPUser):
     @staticmethod
     def createFromUser(user):
-        return SDPUser.createFromUser(user,"HR")
+        return SDPUser._createFromUser(user,"HR")
     @staticmethod
     def createWithNewUser(username,password,firstName,lastName):
-        return SDPUser.createWithNewUser(username,password,firstName,lastName,"HR")
+        return SDPUser._createWithNewUser(username,password,firstName,lastName,"HR")
     @staticmethod
     def getFromUser(user):
-        return SDPUser.getFromUser(user,"HR")
+        return SDPUser._getFromUser(user,"HR")
 
 
 class Administrator(SDPUser):
     @staticmethod
     def createWithNewUser(username,password,firstName,lastName):
-        return SDPUser.createWithNewUser(username,password,firstName,lastName,"Administrator")
+        return SDPUser._createWithNewUser(username,password,firstName,lastName,"Administrator")
 
     @staticmethod
     def createFromUser(user):
-        return SDPUser.createFromUser(user,"Administrator")
+        return SDPUser._createFromUser(user,"Administrator")
 
     @staticmethod
     def designate(user,role):
-        return SDPUser.createFromUser(user,role)
+        return SDPUser._createFromUser(user,role)
 
     @staticmethod
     def getFromUser(user):
-        return SDPUser.getFromUser(user,"Administrator")
+        return SDPUser._getFromUser(user,"Administrator")
 
     @staticmethod
     def getUserGroups(user):
