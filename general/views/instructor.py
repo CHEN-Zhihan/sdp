@@ -75,9 +75,16 @@ def newModule(request,instructorID,courseID):
                 index = request.POST.get('index')
                 try:
                     module = course.createModule(name,description,index)
-                    return JsonResponse({'result':True})
                 except ModulenameDuplication:
-                    return JsonResponse({'result':False})
+                    newIndex=-2
+                    result=False
+                except Exception:
+                    newIndex=-1
+                    result=False
+                else:
+                    newIndex=module.index
+                    result=True
+                return JsonResponse({'result':result,"newModuleIndex":newIndex})
             elif request.method == "GET":
                 return render(request, "general/newModule.html")
     logout(request)
