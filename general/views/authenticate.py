@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from ..models import Participant,Instructor, HR, Administrator
+from ..models import Participant,Instructor, HR, Administrator,SDPUser
 
 lookup={"Instructor":Instructor,"HR":HR,"Administrator":Administrator,"Participant":Participant}
 
@@ -45,7 +45,7 @@ def roleCheck(user,role,passedID):
         if role not in Administrator.getUserGroups(user):
             print(role,"not in ", Administrator.getUserGroups(user))
             return False
-        targetUser = Administrator.getFromUser(user,role)
+        targetUser = SDPUser._getFromUser(user,role)
         if int(targetUser.id)!=int(passedID):
             print("user id: ",targetUser.id, "id passed in: ",passedID)
             return False
