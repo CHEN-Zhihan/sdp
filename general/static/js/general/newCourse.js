@@ -21,7 +21,7 @@ function registerCourseSubmitListener() {
 
       // Ajax POST
       $.ajax({
-        url     : window.location.pathname + "/newCourse",
+        url     : window.location.pathname,
         type    : "POST",
         data    : formData,
         success : function (response) {
