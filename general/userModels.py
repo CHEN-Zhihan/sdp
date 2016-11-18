@@ -91,7 +91,7 @@ class Instructor(SDPUser):
         course.delete()
 
     def modifyCourse(self,course,name,description,category):
-        if Course.objects.filter(name=name).exists():
+        if Course.objects.filter(name=name).exists() and course.name!=name:
             raise NameDuplication()
         course.name=name
         course.description=description
