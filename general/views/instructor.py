@@ -31,10 +31,15 @@ def newCourse(request,instructorID):
             instructor = Instructor.getFromUser(request.user)
             try:
                 course = instructor.createCourse(name,description,category)
-                result = True
             except CourseNameDuplication:
                 result = False
-            newID = course.id if result else -1
+                newID=-2
+            except Exception:
+                result = False
+                newID=-1
+            else:
+                result = True
+                newID=course.id
             return JsonResponse({'result':result,'newCourseID':newID})
         else:
             categories = Category.getAllCategories()
@@ -68,11 +73,10 @@ def newModule(request,instructorID,courseID):
                 name = request.POST.get('name')
                 description = request.POST.get('description')
                 index = request.POST.get('index')
-                module = course.createModule(name,description,index)
-                if module!=None:
-                    course.addModule(module)
+                try:
+                    module = course.createModule(name,description,index)
                     return JsonResponse({'result':True})
-                else:
+                except ModulenameDuplication:
                     return JsonResponse({'result':False})
             elif request.method == "GET":
                 return render(request, "general/newModule.html")
