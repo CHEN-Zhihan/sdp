@@ -146,7 +146,7 @@ class Participant(SDPUser):
             return True
 
     def dropCourse(self):
-        if not CurrentEnrollment.objects.filter(participant=self).exists():
+        if not self.hasEnrolled():
             raise NotEnrolledException()
         CurrentEnrollment.objects.filter(participant=self).delete()
         self.currentenrollment=None
@@ -201,8 +201,8 @@ class Administrator(SDPUser):
         return SDPUser._createFromUser(user,"Administrator")
 
     @staticmethod
-    def designate(user,role):
-        return SDPUser._createFromUser(user,role)
+    def designate(user,newRole):
+        return SDPUser._createFromUser(user,newRole)
 
     @staticmethod
     def getFromUser(user):
@@ -211,7 +211,7 @@ class Administrator(SDPUser):
     @staticmethod
     def getUserGroups(user):
         return list(map((lambda x:x.name),user.groups.all()))
-    
+
     @staticmethod
     def createCategory(name):
         if Category.objects.filter(name=name).exists():
