@@ -139,7 +139,7 @@ class Participant(SDPUser):
     
     def hasEnrolled(self):
         try:
-            hasEnrolled = participant.currentenrollment
+            hasEnrolled = self.currentenrollment
         except ObjectDoesNotExist:
             return False
         else:
