@@ -148,7 +148,9 @@ class Course(models.Model):
         m.name=name
         m.description=description
         m.course=self
+        index=int(index)
         self._updateIndex(index)
+        m.index=index
         m.save()
         self.module_set.add(m)
         self.save()
