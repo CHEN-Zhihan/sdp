@@ -17,7 +17,7 @@ class Category(models.Model):
 
     @staticmethod
     def getAllCategories():
-        return set(map((lambda x:x.name),Category.objects.all()))
+        return Category.objects.all()
 
     @staticmethod
     def getByID(ID):
