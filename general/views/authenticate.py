@@ -16,7 +16,6 @@ def myLogin(request):
             uid = lookup[usertype].objects.get(_user=user).id
             return redirect(usertype+"Index",uid)
         else:
-            print(list(map((lambda x:x.name),user.groups.all())))
             return render(request,"general/login.html")
     else:
         return render(request,"general/login.html")
@@ -37,7 +36,7 @@ def register(request):
         else:
             newUser = Participant.createWithNewUser(username, password, firstName, lastName)
             login(request,newUser.getUser())
-            return redirect("participantIndex", newUser.id)
+            return redirect("ParticipantIndex", newUser.id)
     else:
         return render(request, "general/register.html")
 

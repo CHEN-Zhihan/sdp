@@ -9,8 +9,8 @@ def AdministratorIndex(request,administratorID):
     if "Administrator" not in list(map((lambda x:x.name),request.user.groups.all())):
         print("Not an administrator")
         return redirect("myLogout")
-    admin=SDPUser.getFromUser(request.user,"Administrator")
-    if admin.id!=administratorID:
+    admin=Administrator.getFromUser(request.user)
+    if admin.id!=int(administratorID):
         print("Invalid administratorID")
         return redirect("AdministratorIndex",admin.id)
     if request.method=="POST":
@@ -18,6 +18,6 @@ def AdministratorIndex(request,administratorID):
         newInstructor=Administrator.designate(username,"Instructor")
         return redirect('administratorIndex',administratorID)
     else:
-        allUserList = set(map((lambda x:x.name),User.objects.all()))
+        allUserList = set(map((lambda x:x.username),User.objects.all()))
         instructorList = set(map((lambda x:x.getUser().username),Instructor.objects.all()))
         return render(request,"general/administratorIndex.html",{"usernameList":allUserList-instructorList})
