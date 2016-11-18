@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from ..models import Participant,Instructor, HR, Administrator,SDPUser
+from ..userModels import Participant,Instructor, HR, Administrator,SDPUser
 
 lookup={"Instructor":Instructor,"HR":HR,"Administrator":Administrator,"Participant":Participant}
 

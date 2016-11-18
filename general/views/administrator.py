@@ -1,5 +1,5 @@
 from . import authenticate
-from ..models import Participant,Administrator,Instructor,HR,SDPUser
+from ..userModels import Participant,Administrator,Instructor,HR,SDPUser
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render,redirect

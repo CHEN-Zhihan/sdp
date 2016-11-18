@@ -1,14 +1,12 @@
-from django.shortcuts import render,get_object_or_404,redirect
+from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from django.contrib.auth import authenticate, login,logout
-from django.contrib.auth.decorators import login_required
-from ..models import Course,CompletedEnrollment,Instructor,Category
-from ..models import CurrentEnrollment, Module, Component,Administrator
-from django.template.loader import render_to_string
 from django.http import JsonResponse
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
+from ..courseModels import Category
+from ..userModels import Instructor
+
 from . import authenticate
-from ..exceptions import *
+from ..exceptions import NameDuplication
 
 @login_required
 def InstructorIndex(request,instructorID):
@@ -17,8 +15,7 @@ def InstructorIndex(request,instructorID):
         developingCourses = instructor.getDevelopingCourses()
         openCourses = instructor.getOpenedCourses()
         return render(request,"general/instructorIndex.html",{'developingCourses':developingCourses,'openCourses':openCourses})
-    logout(request)
-    return redirect("InstructorIndex",instructorID)
+    return redirect("myLogout")
 
 @login_required
 def newCourse(request,instructorID):
@@ -34,7 +31,7 @@ def newCourse(request,instructorID):
             except NameDuplication:
                 result = False
                 newID=-2
-            except Exception:
+            except Exception as e:
                 result = False
                 newID=-1
             else:
@@ -44,8 +41,7 @@ def newCourse(request,instructorID):
         else:
             categories = Category.getAllCategories()
             return render(request, "general/newCourse.html",{'categories':categories})
-    logout(request)
-    return redirect("newCourse",instructorID)
+    return redirect("myLogout")
 
 @login_required
 def coursePage(request,instructorID,courseID):
@@ -77,8 +73,7 @@ def coursePage(request,instructorID,courseID):
                 return render(request,"general/developCourse.html",{'course':course,'modules':modules,"isOpen":course.isOpen()})
         else:
             print(courseID,"not in ",list(map((lambda x:x.id),instructor.getAllCourses())))
-    logout(request)
-    return redirect("coursePage",instructorID,courseID)
+    return redirect("myLogout")
 
 
 @login_required
@@ -101,7 +96,7 @@ def changeModuleOrder(request,instructorID,courseID):
                 return JsonResponse({"result":result})
             else:
                 return HttpResponse(status=404)
-    redirect("myLogout")
+    return redirect("myLogout")
 
 
 @login_required
@@ -127,7 +122,7 @@ def modifyCourse(request,instructorID,courseID):
                 return JsonResponse({"result":errno})
             else:
                 return render(request,"general/modifyCourse.html",{"course":course})
-
+    return redirect("myLogout")
 
 @login_required
 def newModule(request,instructorID,courseID):
@@ -154,8 +149,7 @@ def newModule(request,instructorID,courseID):
                 return JsonResponse({'result':result,"newModuleIndex":newIndex})
             elif request.method == "GET":
                 return render(request, "general/newModule.html")
-    logout(request)
-    redirect("newModule",instructorID,courseID)
+    return redirect("myLogout")
 
 @login_required
 def modulePage(request,instructorID,courseID,moduleIndex):
@@ -168,7 +162,7 @@ def modulePage(request,instructorID,courseID,moduleIndex):
             if module!=None:
                 components = module.getSortedComponents()
                 return render(request,"general/modulePage.html",{'course':course,'module':module,'components':components,"isOpen":course.isOpen()})
-
+    return redirect("myLogout")
 
 @login_required
 def newComponent(request,instructorID,courseID,moduleIndex):

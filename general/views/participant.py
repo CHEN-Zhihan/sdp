@@ -1,14 +1,12 @@
-from django.shortcuts import render,get_object_or_404,redirect
+from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
-from ..models import Course,Participant,CompletedEnrollment,Category
-from ..models import CurrentEnrollment
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from . import authenticate
-
+from ..userModels import Participant
+from ..courseModels import Course,Category
 @login_required
 def ParticipantIndex(request,participantID):
     participantID=int(participantID)
@@ -70,15 +68,25 @@ def enroll(request,participantID):
 def viewCourse(request,participantID,courseID):
     participantID=int(participantID)
     courseID=int(courseID)
-    if not authenticate.roleCheck(request.user,"Participant",participantID):
-        return redirect("myLogout")
-    participant=Participant.getFromUser(request.user)
-    if not participant.hasCourse(courseID):
-        logout(request)
-        redirect("viewCourse",participantID,courseID)
-    course,status=participant.getCourseByID(courseID)
-    modules = course.getSortedModules()
-    return HttpResponse(request,"general/viewCourse.html",{"course":course,"status":status,"modules":modules})
+    if authenticate.roleCheck(request.user,"Participant",participantID):
+        participant=Participant.getFromUser(request.user)
+        if participant.hasCourse(courseID):
+            course,status=participant.getCourseByID(courseID)
+            modules = course.getSortedModules()
+            return HttpResponse(request,"general/viewCourse.html",{"course":course,"status":status,"modules":modules})
+    return redirect("myLogout")
 
 @login_required
-def viewModule(request,)
+def viewModule(request,participantID,courseID,moduleIndex):
+    participantID=int(participantID)
+    courseID=int(courseID)
+    moduleIndex=int(moduleIndex)
+    if authenticate.roleCheck(request.user,"Participant",participantID):
+        participant = Participant.getFromUser(request.user)
+        if participant.hasCourse(courseID):
+            course,status=participant.getCourseByID(courseID)
+            if course.hasModule(moduleIndex) and participant.getProgress()>=moduleIndex:
+                module = course.getModuleByIndex(moduleIndex)
+                components = module.getSortedComponents()
+                return HttpResponse(request,"general/viewModule.html",{"components":components})
+    return redirect("myLogout")
