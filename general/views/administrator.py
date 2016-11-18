@@ -15,8 +15,9 @@ def AdministratorIndex(request,administratorID):
         return redirect("AdministratorIndex",admin.id)
     if request.method=="POST":
         username = request.POST.get("username")
-        newInstructor=Administrator.designate(username,"Instructor")
-        return redirect('administratorIndex',administratorID)
+        user=User.objects.get(username=username)
+        newInstructor=Administrator.designate(user,"Instructor")
+        return redirect('AdministratorIndex',administratorID)
     else:
         allUserList = set(map((lambda x:x.username),User.objects.all()))
         instructorList = set(map((lambda x:x.getUser().username),Instructor.objects.all()))
