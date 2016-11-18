@@ -137,11 +137,18 @@ a, a:hover {
   z-index: 9999;
 }
 
+.btn {
+  border: none !important;
+  border-radius: 0px !important;
+}
+
+.btn-cancel {
+  color: @courseNameColor;
+}
+
 .btn-default {
   color: @linkActiveColor !important;
   background-color: darken(@primaryColor, 7%) !important;
-  border: none !important;
-  border-radius: 0px !important;
   &:hover:enabled {
     background-color: @primaryColor !important;
   }
