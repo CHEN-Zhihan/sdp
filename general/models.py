@@ -61,7 +61,7 @@ class SDPUser(models.Model):
         return SDPUser._createFromUser(user,role)
 
     @staticmethod
-    def _getFromUser(user,roleName):
+    def getFromUser(user,roleName):
         role=lookup[roleName]
         temp = role.objects.get(_user=user)
         return temp
@@ -123,6 +123,12 @@ class Course(models.Model):
     _isOpen = models.BooleanField()
     category = models.ForeignKey('Category',on_delete=models.CASCADE)
 
+    @staticmethod
+    def getByID(ID):
+        if Course.objects.filter(id=ID).exists():
+            return Course.objects.get(id=ID)
+        return None
+
     def isOpen(self):
         return self._isOpen
 
@@ -142,7 +148,9 @@ class Course(models.Model):
         m.name=name
         m.description=description
         m.course=self
+        index=int(index)
         self._updateIndex(index)
+        m.index=index
         m.save()
         self.module_set.add(m)
         self.save()
@@ -177,7 +185,7 @@ class Instructor(SDPUser):
 
     @staticmethod
     def getFromUser(user):
-        return SDPUser._getFromUser(user,"Instructor")
+        return SDPUser.getFromUser(user,"Instructor")
 
     def getDevelopingCourses(self):
         return self.course_set.filter(_isOpen=False)
@@ -226,7 +234,7 @@ class Participant(SDPUser):
 
     @staticmethod
     def getFromUser(user):
-        return SDPUser._getFromUser(user,"Participant")
+        return SDPUser.getFromUser(user,"Participant")
 
     def enroll(self,course):
         if self.hasEnrolled():
@@ -262,7 +270,11 @@ class Participant(SDPUser):
 
     def getCompletedCourses(self):
         return set(map((lambda x:x.course),self.completedenrollment_set.all()))
-
+    
+    def getByID(self,ID):
+        if Participant.objects.filter(id=ID).exists():
+            return Participant.objects.get(id=ID)
+        return None
 
 
 
@@ -329,7 +341,7 @@ class HR(SDPUser):
         return SDPUser._createWithNewUser(username,password,firstName,lastName,"HR")
     @staticmethod
     def getFromUser(user):
-        return SDPUser._getFromUser(user,"HR")
+        return SDPUser.getFromUser(user,"HR")
 
 
 class Administrator(SDPUser):
@@ -347,7 +359,7 @@ class Administrator(SDPUser):
 
     @staticmethod
     def getFromUser(user):
-        return SDPUser._getFromUser(user,"Administrator")
+        return SDPUser.getFromUser(user,"Administrator")
 
     @staticmethod
     def getUserGroups(user):
