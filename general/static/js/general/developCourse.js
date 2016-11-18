@@ -7,7 +7,8 @@ function registerAddModuleListener() {
     var protocol = window.location.protocol;
     var host = window.location.host;
     var pathArray = window.location.pathname.split("/");
-    var newPath = pathArray[1] + "/" + pathArray[2] + "/" + pathArray[3] + "/newModule";
+    var newPath = pathArray[1] + "/" + pathArray[2]
+                  + "/" + pathArray[3] + "/newModule?index=" + pos;
 
     // Redirect to new URL
     window.location.assign(protocol + "//" + host + "/" + newPath);

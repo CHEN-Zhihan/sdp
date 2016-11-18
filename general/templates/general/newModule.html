@@ -52,6 +52,8 @@
 
             <!-- Module information form -->
             <form id="createModuleForm">
+              <!-- Get inserting position index -->
+              <input id="index" value="{{ request.GET.index }}" hidden/>
               <!-- Input module name -->
               <div class="form-group">
                 <input class="well well-sm well-input fullwidth" placeholder="Module name" id="name"></input>
