@@ -45,10 +45,11 @@ def showCourse(request,participantID):
         course = Course.getByID(courseID)
         participant = Participant.getFromUser(request.user)
         modules = course.getSortedModules()
+        hasEnrolled = participant.hasEnrolled()
         return HttpResponse(
             render_to_string(
                 "general/ajax/showCourse.html",
-                {'course':course, 'hasEnrolled':participant.hasEnrolled(), 'modules':modules}
+                {'course':course, 'hasEnrolled':hasEnrolled, 'modules':modules}
             )
         )
 
