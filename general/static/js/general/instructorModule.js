@@ -42,7 +42,7 @@ function registerDragSortHandler() {
             registerDeleteListener();
           } else {
             $(".btn-refresh").click(function () {
-              window.location.reload();
+              window.location.reload(true);
             });
             $("#reorderFailModal").modal();
           }
@@ -92,7 +92,7 @@ function registerDeleteListener() {
           console.log(response);
           if (response['result']) {
             $(".btn-success", "#deleteSuccessModal").click(function () {
-              window.location.reload();
+              window.location.reload(true);
             });
             $("#deleteSuccessModal").modal();
           } else {
