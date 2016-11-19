@@ -258,7 +258,6 @@ def newComponent(request,instructorID,courseID,moduleIndex):
                         return JsonResponse({"result":result})
                 else:
                     form = ComponentForm()
-                    components=module.getSortedComponents()
                     return render(request,"general/newComponent.html",{"form":form})
     return HttpResponse(status=404)
 
@@ -283,7 +282,9 @@ def changeComponentOrder(request,instructorID,courseID,moduleIndex):
                         result=False
                     else:
                         result=True
-                    return JsonResponse({"result":result})
+                    components = module.getSortedComponents()
+                    data=render_to_string("general/ajax/components.html",{"components":components})
+                    return JsonResponse({"result":result,"data":data})
                 else:
                     return HttpResponse(status=404)
     return redirect("myLogout")

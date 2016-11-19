@@ -20,4 +20,6 @@ def AdministratorIndex(request,administratorID):
         allUserList = set(map((lambda x:x.username),User.objects.all()))
         instructorList = set(map((lambda x:x.getUser().username),Instructor.objects.all()))
         courses = Course.objects.all()
+        for course in courses:
+            print(course.instructor)
         return render(request,"general/administratorIndex.html",{"users":allUserList-instructorList,"courses":courses})
