@@ -35,13 +35,14 @@ function registerCreateCourseListener() {
 // Respond to delete a course
 function registerDeleteListener() {
   $(".delete").click(function () {
-    console.log("Choose to delete");
+    var id = parseInt($(this).attr("id"));
+    console.log("Choose to delete #" + id);
     $(".btn-confirm", "#deleteConfirmModal").click(function () {
       // Ajax POST
       $.ajax({
         url     : window.location.pathname,
         type    : "POST",
-        data    : {"action": "DELETE", "id": parseInt($(this).attr("id"))},
+        data    : {"action": "DELETE", "id": id},
         success : function (response) {
           // Prompt result
           console.log(response);
