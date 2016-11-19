@@ -1,25 +1,152 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Minimal Django File Upload Example</title>   
-    </head>
-    <body>
-    <!-- List of uploaded components -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SDP</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}" media="all" type="text/css"/>
+    <link rel="stylesheet/less" href="{% static "general/general.less" %}" media="all" type="text/css"/>
+    <link rel="stylesheet/less" href="{% static "general/instructor.less" %}" media="all" type="text/css"/>
+    <script src="{% static "js/jquery-3.1.1.min.js" %}" charset="utf-8"></script>
+    <script src="{% static "js/less.min.js" %}" charset="utf-8"></script>
+    <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="utf-8"></script>
+    <script src="{% static "js/common.js" %}" charset="utf-8"></script>
+    <script src="{% static "js/general/newComponent.js" %}" charset="utf-8"></script>
+  </head>
+  <body>
+    <!-- Main viewpoint container -->
+    <div class="container-fluid viewpoint-container">
+      <!-- Header row -->
+      <div class="row header-row">
+        <!-- Brand -->
+        <div class="col-sm-2 cbg-darken">
+          <h3>SDP</h3>
+        </div>
+        <!-- Header text -->
+        <div class="col-sm-10">
+          <h3 id="header-text">Add Component</h3>
+        </div>
+      </div> <!-- End header row -->
 
-        <!-- Upload form. Note enctype attribute! -->
-        <form action="" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <p>text: <input type="text" name="text"></p>
-            <p>file: <input type="file" name="file"></p>
-            <p>index: <input type="text" name="index"></p>
-                usertype: <select name="typeName" >
-                <option value = "TEXT">text</option>
-                <option value = "IMAGE">image</option>
-                <option value = "FILE">file</option>
-            </select>
-            <p><input type="submit" value="Upload" /></p>
+      <!-- Content row -->
+      <div class="row content-row">
+        <!-- Navigation column -->
+        <div class="col-sm-2 cbg-primary fill-height">
+          <!-- Sidebar menu -->
+          <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <!-- Menu item: Home -->
+              <li>
+                <a href="#" id="home">
+                  <span class="glyphicon glyphicon-home"></span>Home
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div> <!-- End navigation -->
 
-        </form>
-    </body>
-</html> 
+        <!-- Main content container -->
+        <div class="col-sm-10 fill-height main-column">
+          <div class="container-fluid" id="main-content">
+
+            <!-- Module information form -->
+            <form id="createComponentForm" enctype="multipart/form-data">
+              <!-- Get inserting position index -->
+              <input id="index" name="index" value="{{ request.GET.index }}" hidden/>
+              <!-- Select component type -->
+              <div class="form-group">
+                <select class="well well-sm well-input fullwidth" id="type" name="typeName">
+                  <option value="TEXT">Text</option>
+                  <option value="IMAGE">Image</option>
+                  <option value="FILE">File</option>
+                </select>
+              </div>
+
+              <div class="form-group form-content">
+                <textarea class="well well-sm well-input fullwidth" placeholder="Add Content" rows=10 id="text" name="text"></textarea>
+              </div>
+
+              <!-- Submit button -->
+              <div class="form-group submit">
+                <button type="submit" class="btn btn-default">Create</button>
+              </div>
+            </form> <!-- End course information form -->
+          </div>
+        </div> <!-- End main content container -->
+      </div> <!-- End content row -->
+
+      <!-- Validation failed modal dialog -->
+      <div class="modal fade" id="validateFailModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Error</h4>
+            </div>
+            <div class="modal-body">
+              <p>One or more fields required.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End modal -->
+
+      <!-- Create success modal dialog -->
+      <div class="modal fade" id="createSuccessModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Success</h4>
+            </div>
+            <div class="modal-body">
+              <p>Component added successfully.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default btn-success" data-dismiss="modal">Go Back</button>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End modal -->
+
+      <!-- Create failed modal dialog -->
+      <div class="modal fade" id="createFailModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Error</h4>
+            </div>
+            <div class="modal-body">
+              <p>An error occurred. Creation failed.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End modal -->
+
+      <!-- Error modal dialog -->
+      <div class="modal fade" id="errorModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Error</h4>
+            </div>
+            <div class="modal-body">
+              <p>An error occurred.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End modal -->
+    </div> <!-- End viewpoint container -->
+  </body>
+</html>

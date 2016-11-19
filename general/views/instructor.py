@@ -175,7 +175,7 @@ def modulePage(request,instructorID,courseID,moduleIndex):
         if instructor.ownCourse(courseID):
             course=instructor.getCourseByID(courseID)
             if course.hasModule(moduleIndex):
-                module=course.getModuleByIndex(moduleIndex)                
+                module=course.getModuleByIndex(moduleIndex)
                 if request.method=="POST":
                     componentIndex=int(request.POST.get("index"))
                     component=module.getComponentByIndex(componentIndex)
