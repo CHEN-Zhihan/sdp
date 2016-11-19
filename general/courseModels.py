@@ -95,7 +95,7 @@ class Course(models.Model):
     def deleteModule(self,module):
         index=module.index
         for component in module.component_set.all():
-            component.delete()
+            module.deleteComponent(component)
         for restModule in self.module_set.all():
             if restModule.index>index:
                 restModule-=1
@@ -175,6 +175,8 @@ class Module(models.Model):
             if restComponent.index>index:
                 restComponent.index-=1
                 restComponent.save()
+        if component.typeName!="TEXT":
+            component.content.delete()
         component.delete()
 
     def _updateIndex(self,newIndex):
