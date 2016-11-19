@@ -61,11 +61,13 @@
 
             <div class="modules-container">
               <!-- Insert new component at head -->
-              <a href="#">
-                <div class="addModule col-sm-11" id="0">
-                  <span class="glyphicon glyphicon-plus"></span>Add new component here
-                </div>
-              </a>
+              <div class="row">
+                <a href="#">
+                  <div class="addModule col-sm-11" id="0">
+                    <span class="glyphicon glyphicon-plus"></span>Add new component here
+                  </div>
+                </a>
+              </div>
               <ul class="jumbotron-list" id="sortable">
               {% for component in components %}
               <!-- List components in module -->
@@ -85,11 +87,13 @@
                 </div>
 
                 <!-- Insert new module behind this module -->
-                <a href="#">
-                  <div class="addModule col-sm-11" id="{{ component.index|add:1 }}">
-                    <span class="glyphicon glyphicon-plus"></span>Add new component here
-                  </div>
-                </a>
+                <div class="row">
+                  <a href="#">
+                    <div class="addModule col-sm-11" id="{{ component.index|add:1 }}">
+                      <span class="glyphicon glyphicon-plus"></span>Add new component here
+                    </div>
+                  </a>
+                </div>
               </li>
               {% elif component.typeName == 'IMAGE' %}
               <li>
@@ -107,18 +111,20 @@
                 </div>
 
                 <!-- Insert new module behind this module -->
-                <a href="#">
-                  <div class="addModule col-sm-6" id="{{ component.index|add:1 }}">
-                    <span class="glyphicon glyphicon-plus"></span>Add new component here
-                  </div>
-                </a>
+                <div class="row">
+                  <a href="#">
+                    <div class="addModule col-sm-6" id="{{ component.index|add:1 }}">
+                      <span class="glyphicon glyphicon-plus"></span>Add new component here
+                    </div>
+                  </a>
+                </div>
               </li>
               {% else %}
               <li>
                 <div class="row">
                   <div class="col-sm-11">
                     <div class="component jumbotron disabled" id="{{ component.index }}">
-                      <a class="content-file link" href="{{ component.content.url }}">
+                      <a class="content-file link" href="{{ component.content.url }}" download>
                         <span class="glyphicon glyphicon-save"></span>
                         {{ component.content.name }}
                       </a>
@@ -132,11 +138,13 @@
                 </div>
 
                 <!-- Insert new module behind this module -->
-                <a href="#">
-                  <div class="addModule col-sm-11" id="{{ component.index|add:1 }}">
-                    <span class="glyphicon glyphicon-plus"></span>Add new component here
-                  </div>
-                </a>
+                <div class="row">
+                  <a href="#">
+                    <div class="addModule col-sm-11" id="{{ component.index|add:1 }}">
+                      <span class="glyphicon glyphicon-plus"></span>Add new component here
+                    </div>
+                  </a>
+                </div>
               </li>
               {% endif %}
               {% endfor %}
