@@ -34,8 +34,6 @@ class CurrentEnrollment(Enrollment):
     progress = models.IntegerField()
     participant = models.OneToOneField('Participant')
 
-    def updateProgess(self,newProgress):
-        self.progress=newProgress
 
     def __str__(self):
         return "{} taking {}".format(str(self.participant),str(self.course))
@@ -142,6 +140,9 @@ class Course(models.Model):
 
     def hasModule(self,index):
         return self.module_set.filter(index=index).exists()
+    
+    def getTotalProgress():
+        return len(self.module_set.all())
 
 class Module(models.Model):
     name = models.CharField(max_length=200)
