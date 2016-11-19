@@ -6,7 +6,6 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from ..courseModels import Category,Course
 from ..userModels import Instructor
-from ..forms import ComponentForm
 from . import authenticate
 from ..exceptions import NameDuplication
 
@@ -236,16 +235,14 @@ def newComponent(request,instructorID,courseID,moduleIndex):
                     typeName = request.POST.get('typeName')
                     index = int(request.POST.get('index'))
                     if typeName!="TEXT":
-                        form = ComponentForm(request.POST,request.FILES)
-                        if form.is_valid():
-                            try:
-                                component = module.createComponent(typeName,index,request.FILES['file'])
-                            except Exception as e:
-                                print(e)
-                                result=False
-                            else:
-                                result=True
-                            return JsonResponse({'result':result})
+                        try:
+                            component = module.createComponent(typeName,index,request.FILES['file'])
+                        except Exception as e:
+                            print(e)
+                            result=False
+                        else:
+                            result=True
+                        return JsonResponse({'result':result})
                     else:
                         text = request.POST.get("text")
                         try:
@@ -257,9 +254,7 @@ def newComponent(request,instructorID,courseID,moduleIndex):
                             result=True
                         return JsonResponse({"result":result})
                 else:
-                    form = ComponentForm()
-                    components=module.getSortedComponents()
-                    return render(request,"general/newComponent.html",{"form":form})
+                    return render(request,"general/newComponent.html")
     return HttpResponse(status=404)
 
 
@@ -283,7 +278,9 @@ def changeComponentOrder(request,instructorID,courseID,moduleIndex):
                         result=False
                     else:
                         result=True
-                    return JsonResponse({"result":result})
+                    components = module.getSortedComponents()
+                    data=render_to_string("general/ajax/components.html",{"components":components})
+                    return JsonResponse({"result":result,"data":data})
                 else:
                     return HttpResponse(status=404)
     return redirect("myLogout")

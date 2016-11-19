@@ -17,7 +17,17 @@ def AdministratorIndex(request,administratorID):
         newInstructor=Administrator.designate(user,"Instructor")
         return redirect('AdministratorIndex',administratorID)
     else:
-        allUserList = set(map((lambda x:x.username),User.objects.all()))
-        instructorList = set(map((lambda x:x.getUser().username),Instructor.objects.all()))
+        users = set(map(UserAdapter,User.objects.all()))
         courses = Course.objects.all()
-        return render(request,"general/administratorIndex.html",{"users":allUserList-instructorList,"courses":courses})
+        return render(request,"general/administratorIndex.html",{"users":users,"courses":courses})
+
+
+class UserAdapter():
+    def __init__(self,user):
+        self.username=user.username
+        self.name="{} {}".format(user.first_name,user.last_name)
+        self.groups=list(map((lambda x:x.name),user.groups.all()))
+        if "Instructor" not in self.groups:
+            self.isInstructor=False
+        else:
+            self.isInstructor=True

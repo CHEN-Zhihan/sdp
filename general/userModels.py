@@ -40,6 +40,7 @@ class SDPUser(models.Model):
     def __str__(self):
         return "{} {}".format(self._user.first_name,self._user.last_name)
 
+
     def _addToGroup(self,name):
         print(name)
         group = Group.objects.get(name=name)
