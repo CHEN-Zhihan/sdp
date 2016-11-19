@@ -43,6 +43,9 @@ function registerCourseEditListener() {
               $("input#name").addClass("has-error").focus(function () {
                 $(this).removeClass("has-error");
               });
+              $(".btn-fail").click(function () {
+                $(".modal-body > p", "#editFailModal").text("An error occurred. Edition failed.");
+              });
             }
             $("#editFailModal").modal();
           }

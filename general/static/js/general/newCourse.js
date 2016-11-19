@@ -44,6 +44,9 @@ function registerCourseSubmitListener() {
               $("input#name").addClass("has-error").focus(function () {
                 $(this).removeClass("has-error");
               });
+              $(".btn-fail").click(function () {
+                $(".modal-body > p", "#createFailModal").text("An error occurred. Creation failed.");
+              });
             }
             $("#createFailModal").modal();
           }
