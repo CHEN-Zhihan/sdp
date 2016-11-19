@@ -81,7 +81,7 @@ def coursePage(request,instructorID,courseID):
                     return JsonResponse({"result":result})
             if request.method=="GET":
                 modules = course.getSortedModules()
-                return render(request,"general/developCourse.html",{'course':course,'modules':modules,"isOpen":course.isOpen()})
+                return render(request,"general/instructorCourse.html",{'course':course,'modules':modules,"isOpen":course.isOpen()})
         else:
             print(courseID,"not in ",list(map((lambda x:x.id),instructor.getAllCourses())))
     return redirect("myLogout")
@@ -188,7 +188,7 @@ def modulePage(request,instructorID,courseID,moduleIndex):
                     return JsonResponse({"result":result})
                 else:
                     components = module.getSortedComponents()
-                    return render(request,"general/modulePage.html",{'course':course,'module':module,'components':components,"isOpen":course.isOpen()})
+                    return render(request,"general/instructorModule.html",{'course':course,'module':module,'components':components,"isOpen":course.isOpen()})
     return redirect("myLogout")
 
 @login_required
