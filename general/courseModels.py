@@ -84,13 +84,13 @@ class Course(models.Model):
                 module.index+=1
                 module.save()
     def updateIndex(self,originIndex,newIndex):
+        module = self.module_set.get(index=originIndex)
         for module in self.module_set.all():
             if module.index>=newIndex and module.index<originIndex:
                 module.index+=1
             elif module.index<=newIndex and module.index>originIndex:
                 module.index-=1
             module.save()
-        module = self.module_set.get(index=originIndex)
         module.index=newIndex
         module.save()
 
@@ -155,13 +155,13 @@ class Module(models.Model):
                 component.save()
 
     def updateIndex(self,originIndex,newIndex):
+        component=self.component_set.get(index=originIndex)        
         for component in self.component_set.all():
             if component.index>=newIndex and component.index<originIndex:
                 component.index+=1
             elif component.index<=newIndex and component.index>originIndex:
                 component.index-=1
             component.save()
-        component=self.component_set.get(index=originIndex)
         component.index=newIndex
         component.save()
 
