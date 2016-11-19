@@ -115,6 +115,7 @@ function registerDragSortHandler() {
         success : function (response) {
           if (response["result"]) {
             $(".modules-container").html(response["data"]);
+            registerDragSortHandler();
           } else {
             $(".btn-refresh").click(function () {
               window.location.reload();
