@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from ..courseModels import Category
+from ..courseModels import Category,Course
 from ..userModels import Instructor
 from ..forms import DocumentForm
 from . import authenticate
@@ -16,6 +16,15 @@ def InstructorIndex(request,instructorID):
         instructor = Instructor.getFromUser(request.user)
         developingCourses = instructor.getDevelopingCourses()
         openCourses = instructor.getOpenedCourses()
+        if request.method=="POST":
+            courseID=request.POST.get("id")
+            try:
+                instructor.deleteCourse(Course.getByID(courseID))
+            except Exception:
+                result=False
+            else:
+                result=True
+            return JsonResponse({"result":result})
         return render(request,"general/instructorIndex.html",{'developingCourses':developingCourses,'openCourses':openCourses})
     return redirect("myLogout")
 
@@ -53,7 +62,7 @@ def coursePage(request,instructorID,courseID):
         if instructor.ownCourse(courseID):
             course = instructor.getCourseByID(courseID)
             if request.method=="POST":
-                action = request.POST.get("action")
+                action=request.method.get("action")
                 if action=="OPEN":
                     try:
                         instructor.openCourse(course)
@@ -63,8 +72,10 @@ def coursePage(request,instructorID,courseID):
                         result=True
                     return JsonResponse({"result":result})
                 elif action=="DELETE":
+                    moduleIndex=int(request.POST.get("index"))
+                    module=course.getModuleByIndex(moduleIndex)
                     try:
-                        instructor.deleteCourse(course)
+                        course.deleteModule(module)
                     except Exception:
                         result=False
                     else:
@@ -166,16 +177,18 @@ def modulePage(request,instructorID,courseID,moduleIndex):
         if instructor.ownCourse(courseID):
             course=instructor.getCourseByID(courseID)
             if course.hasModule(moduleIndex):
+                module=course.getModuleByIndex(moduleIndex)                
                 if request.method=="POST":
+                    componentIndex=int(request.POST.get("index"))
+                    component=module.getComponentByIndex(componentIndex)
                     try:
-                        course.deleteModule(moduleIndex)
+                        component.delete()
                     except Exception:
                         result=False
                     else:
                         result=True
                     return JsonResponse({"result":result})
                 else:
-                    module=course.getModuleByIndex(moduleIndex)
                     components = module.getSortedComponents()
                     return render(request,"general/modulePage.html",{'course':course,'module':module,'components':components,"isOpen":course.isOpen()})
     return redirect("myLogout")

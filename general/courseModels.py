@@ -94,8 +94,9 @@ class Course(models.Model):
         moduleChanged.index=newIndex
         moduleChanged.save()
 
-    def deleteModule(self,index):
-        module=self.module_set.get(index=index)
+    def deleteModule(self,module):
+        for component in module.component_set.all():
+            component.delete()
         module.delete()
 
     def modifyModule(self,module,name,description):
