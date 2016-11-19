@@ -15,11 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from general.forms import LoginForm
-from django.contrib.auth import views
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'',include('general.urls')),
-    
-]
+] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

@@ -1,10 +1,11 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,render_to_response,render_to_string
 from django.http import HttpResponse
 from django.http import JsonResponse
+from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from ..courseModels import Category
 from ..userModels import Instructor
-
+from ..forms import DocumentForm
 from . import authenticate
 from ..exceptions import NameDuplication
 
@@ -93,7 +94,9 @@ def changeModuleOrder(request,instructorID,courseID):
                     result=False
                 else:
                     result=True
-                return JsonResponse({"result":result})
+                modules = course.getSortedModules()
+                data=render_to_string("general/ajax/modules.html",{"modules":modules})
+                return JsonResponse({"result":result,"data":data})
             else:
                 return HttpResponse(status=404)
     return redirect("myLogout")
@@ -178,10 +181,18 @@ def newComponent(request,instructorID,courseID,moduleIndex):
                 module=course.getModuleByIndex(moduleIndex)
                 if request.method =="POST":
                     typeName = request.POST.get('typeName')
-                    content = request.POST.get('content')
                     index = request.POST.get('index')
+                    if typeName=="FILE":
+                        form = DocumentForm(request.POST,request.FILES)
+                        if form.is_valid():
+                            component = module.createComponent(typeName,index,request.FILES['file'])
+                    content = request.POST.get('content')
                     component = module.createComponent(typeName,index,content)
                     return JsonResponse({'result':True,'componentID':component.index})
+                else:
+                    form = DocumentForm()
+                    components=module.getSortedComponents()
+                    return render(request,"general/newComponent.html",{"components":components,"form":form})
     return HttpResponse(status=404)
 
 
