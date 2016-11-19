@@ -16,7 +16,10 @@ def ParticipantIndex(request,participantID):
     categoryList = Category.getAllCategories()
     participant = Participant.getFromUser(request.user)
     currentCourse=participant.getCurrentCourse()
-    progress = -1 if currentCourse==None else int(participant.getProgress()/currentCourse.getTotalProgress()*100)
+    if currentCourse.getTotalProgress()!=0:
+        progress = -1 if currentCourse==None else int(participant.getProgress()/currentCourse.getTotalProgress()*100)
+    else:
+        progress=0
     completedCourses = participant.getCompletedCourses()
     return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,
         "progress":progress,'completedCourses':completedCourses})
@@ -28,7 +31,7 @@ def showCourseList(request,participantID):
         category=Category.getByID(categoryID)
         courses = category.getOpenedCourses()
         categoryList=Category.getAllCategories()
-        return render(request,"general/showCourseList.html",{"courses":courses,"categoryList":categoryList})
+        return render(request,"general/showCourseList.html",{"courses":courses,"categoryList":categoryList,"category":category})
     return redirect("myLogout")
 
 
