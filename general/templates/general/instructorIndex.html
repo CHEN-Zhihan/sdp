@@ -62,19 +62,21 @@
               <h4 class="info-text page-header">Developing</h4>
             </div>
             {% for course in developingCourses %}
-            <a href="#">
-              <div class="course developingCourse jumbotron" id="{{ course.id }}">
-                <div class="row">
-                  <div class="col-sm-11">
+            <div class="row">
+              <div class="col-sm-11">
+                <a href="#">
+                  <div class="course developingCourse jumbotron" id="{{ course.id }}">
                     <p class="course-name">{{ course.name }}</p>
                     <p class="course-desc">{{ course.description }}</p>
                   </div>
-                  <div class="col-sm-1">
-                    <span class="glyphicon glyphicon-remove delete"></span>
-                  </div>
-                </div>
+                </a>
               </div>
-            </a>
+              <div class="col-sm-1">
+                <a href="#">
+                  <span class="glyphicon glyphicon-remove delete" id="{{ course.id }}"></span>
+                </a>
+              </div>
+            </div>
             {% endfor %}
             {% endif %}
 
@@ -115,7 +117,7 @@
               <h4 class="modal-title">Confirm</h4>
             </div>
             <div class="modal-body">
-              <p>Are you sure to delete course<br>{{ course.name }}?</p>
+              <p>Are you sure to delete this course?</p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default btn-confirm" data-dismiss="modal">Confirm</button>
@@ -134,7 +136,7 @@
               <h4 class="modal-title">Success</h4>
             </div>
             <div class="modal-body">
-              <p>Course<br>{{ course.name }}<br>deleted successfully.</p>
+              <p>Course deleted successfully.</p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default btn-success" data-dismiss="modal">Close</button>

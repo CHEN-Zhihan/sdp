@@ -41,7 +41,7 @@ function registerDeleteListener() {
       $.ajax({
         url     : window.location.pathname,
         type    : "POST",
-        data    : {"action": "DELETE"},
+        data    : {"action": "DELETE", "id": parseInt($(this).attr("id"))},
         success : function (response) {
           // Prompt result
           console.log(response);
