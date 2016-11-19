@@ -17,7 +17,7 @@ def InstructorIndex(request,instructorID):
         developingCourses = instructor.getDevelopingCourses()
         openCourses = instructor.getOpenedCourses()
         if request.method=="POST":
-            courseID=request.POST.get("id")
+            courseID=int(request.POST.get("id"))
             try:
                 instructor.deleteCourse(Course.getByID(courseID))
             except Exception:
