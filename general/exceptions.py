@@ -17,3 +17,6 @@ class NotOwnerException(Exception):
 
 class NotEnrolledException(Exception):
     pass
+
+class NoModuleException(Exception):
+    pass

@@ -16,7 +16,7 @@ def ParticipantIndex(request,participantID):
     categoryList = Category.getAllCategories()
     participant = Participant.getFromUser(request.user)
     currentCourse=participant.getCurrentCourse()
-    if currentCourse!=None and currentCourse.getTotalProgress()!=0:
+    if currentCourse!=None and  currentCourse.getTotalProgress()!=0:
         progress = -1 if currentCourse==None else int(participant.getProgress()/currentCourse.getTotalProgress()*100)
     else:
         progress=0

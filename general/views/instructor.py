@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from ..courseModels import Category,Course
 from ..userModels import Instructor
 from . import authenticate
-from ..exceptions import NameDuplication
+from ..exceptions import NameDuplication,NoModuleException
 
 @login_required
 def InstructorIndex(request,instructorID):
@@ -64,10 +64,12 @@ def coursePage(request,instructorID,courseID):
                 if action=="OPEN":
                     try:
                         instructor.openCourse(course)
+                    except NoModuleException:
+                        result=-2
                     except Exception:
-                        result=False
+                        result=-1
                     else:
-                        result=True
+                        result=0
                     return JsonResponse({"result":result})
                 elif action=="DELETE":
                     moduleIndex=int(request.POST.get("index"))

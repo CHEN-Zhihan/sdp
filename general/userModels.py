@@ -100,6 +100,8 @@ class Instructor(SDPUser):
         course.save()
 
     def openCourse(self,course):
+        if len(course.module_set.all())==0:
+            raise NoModuleException()
         course._isOpen=True
         course.save()
 
