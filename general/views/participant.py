@@ -16,7 +16,7 @@ def ParticipantIndex(request,participantID):
     categoryList = Category.getAllCategories()
     participant = Participant.getFromUser(request.user)
     currentCourse=participant.getCurrentCourse()
-    progress = -1 if currentCourse==None else participant.getProgrss()/currentCourse.getTotalProgress()
+    progress = -1 if currentCourse==None else int(participant.getProgress()/currentCourse.getTotalProgress()*100)
     completedCourses = participant.getCompletedCourses()
     return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,
         "progress":progress,'completedCourses':completedCourses})
@@ -24,7 +24,7 @@ def ParticipantIndex(request,participantID):
 @login_required
 def showCourseList(request,participantID):
     if authenticate.roleCheck(request.user,"Participant",participantID):
-        categoryID = request.POST.get("categoryID")
+        categoryID = int(request.GET.get("categoryID"))
         category=Category.getByID(categoryID)
         courses = category.getOpenedCourses()
         return render(request,"general/showCourseList.html",{"courses":courses,"category":category})
@@ -39,10 +39,12 @@ def viewCourse(request,participantID,courseID):
     if authenticate.roleCheck(request.user,"Participant",participantID):
         participant=Participant.getFromUser(request.user)
         if request.method=="GET":
+            print("get la!")
             if participant.isTaking(courseID):
                 course=participant.getCurrentCourse()
                 status="isTaking"
                 visibility=participant.getProgress()
+                print("is taking this course!")
             elif participant.hasTaken(courseID):
                 course=participant.getCompletedCourseByID(courseID)
                 status="hasTaken"
@@ -52,11 +54,12 @@ def viewCourse(request,participantID,courseID):
                 status="notTaken"
                 visibility=-1
             modules=course.getSortedModules()
-            return HttpResponse(request,"general/participantCourse.html",{"course":course,"status":status,\
-            "modules":modules,"visibility":visibility,"hasEnrolled":participant.hasEnrolled()})
+            hasEnrolled=participant.hasEnrolled()
+            print("all are fine!")
+            return render(request,"general/participantCourse.html",{"course":course,"status":status,"modules":modules,"visibility":visibility,"hasEnrolled":hasEnrolled})
         else:
             action = request.POST.get("action")
-            if action=="DROP" and participant.isTakingCourse(courseID):
+            if action=="DROP" and participant.isTaking(courseID):
                 try:
                     participant.drop()
                 except Exception as e:
@@ -75,7 +78,7 @@ def viewCourse(request,participantID,courseID):
                 else:
                     result=True
                 return JsonResponse({'result':result})
-            elif action=="RETAKE" and not participant.hasEnrolled() and participant.hasTakenCourse(courseID):
+            elif action=="RETAKE" and not participant.hasEnrolled() and participant.hasTaken(courseID):
                 course = participant.getCompletedCourseByID(courseID)
                 try:
                     result = participant.retake(course)
@@ -96,11 +99,11 @@ def viewModule(request,participantID,courseID,moduleIndex):
     if authenticate.roleCheck(request.user,"Participant",participantID):
         participant = Participant.getFromUser(request.user)
         if participant.canViewModule(courseID,moduleIndex):
-            course = participant.getCourseByID(courseID)
+            course = participant.getCurrentCourse() if participant.hasEnrolled() else participant.getCompletedCourseByID(courseID)
             module = course.getModuleByIndex(moduleIndex)
             components=module.getSortedComponents()
-            return HttpResponse(request,"general/viewModule.html",{"components":components,"module":module})
+            return render(request,"general/participantModule.html",{"components":components,"module":module})
         else:
             return HttpResponse(status=404)
     return redirect("myLogout")
-
+    

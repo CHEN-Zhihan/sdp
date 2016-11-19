@@ -173,9 +173,9 @@ class Participant(SDPUser):
         self.save()
     
     def canViewModule(self,courseID,moduleIndex):
-        if self.hasTakenCourse(courseID):
+        if self.hasTaken(courseID):
             return True
-        if self.isTakingCourse(courseID) and self.getProgress()>=moduleIndex:
+        if self.isTaking(courseID) and self.getProgress()>=moduleIndex:
             return True
         return False
 
