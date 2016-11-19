@@ -94,7 +94,6 @@ class Course(models.Model):
         module.index=newIndex
         module.save()
 
-
     def createModule(self,name,description,index):
         if self.module_set.filter(name=name).exists():
             raise NameDuplication()
