@@ -84,15 +84,15 @@ class Course(models.Model):
                 module.index+=1
                 module.save()
     def updateIndex(self,originIndex,newIndex):
-        module = self.module_set.get(index=originIndex)
+        moduleChanged = self.module_set.get(index=originIndex)
         for module in self.module_set.all():
             if module.index>=newIndex and module.index<originIndex:
                 module.index+=1
             elif module.index<=newIndex and module.index>originIndex:
                 module.index-=1
             module.save()
-        module.index=newIndex
-        module.save()
+        moduleChanged.index=newIndex
+        moduleChanged.save()
 
     def createModule(self,name,description,index):
         if self.module_set.filter(name=name).exists():
@@ -155,15 +155,15 @@ class Module(models.Model):
                 component.save()
 
     def updateIndex(self,originIndex,newIndex):
-        component=self.component_set.get(index=originIndex)        
+        componentChanged=self.component_set.get(index=originIndex)        
         for component in self.component_set.all():
             if component.index>=newIndex and component.index<originIndex:
                 component.index+=1
             elif component.index<=newIndex and component.index>originIndex:
                 component.index-=1
             component.save()
-        component.index=newIndex
-        component.save()
+        componentChanged.index=newIndex
+        componentChanged.save()
 
     def getSortedComponents(self):
         components=list(self.component_set.all())
