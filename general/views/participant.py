@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from . import authenticate
 from ..userModels import Participant
 from ..courseModels import Course,Category
-from ..exceptions import AlreadyEnrolled
+from ..exceptions import AlreadyEnrolled,NoModuleException
 @login_required
 def ParticipantIndex(request,participantID):
     participantID=int(participantID)
@@ -74,11 +74,13 @@ def viewCourse(request,participantID,courseID):
                 course = Course.getByID(courseID)
                 try:
                     result = participant.enroll(course)
+                except NoModuleException:
+                    result=-2
                 except Exception as e:
                     print(e)
-                    result=False
+                    result=-1
                 else:
-                    result=True
+                    result=0
                 return JsonResponse({'result':result})
             elif action=="RETAKE" and not participant.hasEnrolled() and participant.hasTaken(courseID):
                 course = participant.getCompletedCourseByID(courseID)
