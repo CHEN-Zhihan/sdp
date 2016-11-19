@@ -55,8 +55,8 @@ def viewCourse(request,participantID,courseID):
                 visibility=-1
             modules=course.getSortedModules()
             hasEnrolled=participant.hasEnrolled()
-            print("all are fine!")
-            return render(request,"general/participantCourse.html",{"course":course,"status":status,"modules":modules,"visibility":visibility,"hasEnrolled":hasEnrolled})
+            categoryList=Category.getAllCategories()            
+            return render(request,"general/participantCourse.html",{"course":course,"status":status,"modules":modules,"visibility":visibility,"hasEnrolled":hasEnrolled,'categoryList':categoryList})
         else:
             action = request.POST.get("action")
             if action=="DROP" and participant.isTaking(courseID):
@@ -102,8 +102,10 @@ def viewModule(request,participantID,courseID,moduleIndex):
             course = participant.getCurrentCourse() if participant.hasEnrolled() else participant.getCompletedCourseByID(courseID)
             module = course.getModuleByIndex(moduleIndex)
             components=module.getSortedComponents()
-            participant.updateProgress()
-            return render(request,"general/participantModule.html",{"components":components,"module":module})
+            if participant.isTaking(courseID):
+                participant.updateProgress()
+            categoryList=Category.getAllCategories()
+            return render(request,"general/participantModule.html",{"components":components,"module":module,'categoryList':categoryList})
         else:
             return HttpResponse(status=404)
     return redirect("myLogout")
