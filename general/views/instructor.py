@@ -207,7 +207,7 @@ def changeComponentOrder(request,instructorID,courseID,moduleIndex):
             if course.hasModule(moduleIndex):
                 module=course.getModuleByIndex(moduleIndex)
                 if request.method=="POST":
-                    originIndex = request.POST.get("originIndex")
+                    originIndex = int(request.POST.get("originIndex"))
                     newIndex = int(request.POST.get("newIndex"))
                     try:
                         module.updateIndex(originIndex,newIndex)
