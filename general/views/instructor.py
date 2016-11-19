@@ -235,15 +235,31 @@ def newComponent(request,instructorID,courseID,moduleIndex):
                 if request.method =="POST":
                     typeName = request.POST.get('typeName')
                     index = int(request.POST.get('index'))
-                    if typeName=="FILE":
+                    if typeName!="TEXT":
                         form = ComponentForm(request.POST,request.FILES)
                         if form.is_valid():
-                            component = module.createComponent(typeName,index,request.FILES['file'])
-                            return JsonResponse({'result':True,'componentID':component.index})
+                            try:
+                                component = module.createComponent(typeName,index,request.FILES['file'])
+                            except Exception as e:
+                                print(e)
+                                result=False
+                            else:
+                                result=True
+                            return JsonResponse({'result':result})
+                    else:
+                        text = request.POST.get("text")
+                        try:
+                            component = module.createComponent("TEXT",index,text)
+                        except Exception as e:
+                            print(e)
+                            result=False
+                        else:
+                            result=True
+                        return JsonResponse({"result":result})
                 else:
                     form = ComponentForm()
                     components=module.getSortedComponents()
-                    return render(request,"general/newComponent.html",{"components":components,"form":form})
+                    return render(request,"general/newComponent.html",{"form":form})
     return HttpResponse(status=404)
 
 
