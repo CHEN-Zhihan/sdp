@@ -10,13 +10,8 @@
         <!-- Upload form. Note enctype attribute! -->
         <form action="" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <p>{{ form.non_field_errors }}</p>
-            <p>{{ form.file.label_tag }} {{ form.file.help_text }}</p>
-            <p>
-                {{ form.file.errors }}
-                {{ form.file }}
-            </p>
             <p>text: <input type="text" name="text"></p>
+            <p>file: <input type="file" name="file"></p>
             <p>index: <input type="text" name="index"></p>
                 usertype: <select name="typeName" >
                 <option value = "TEXT">text</option>
