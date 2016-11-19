@@ -70,6 +70,7 @@ function registerDragSortHandler() {
     placeholder: "ui-state-highlight",
     start   : function (event, ui) {
       $(".addModule").fadeOut(200);
+      $(".delete").fadeOut(200);
       ui.placeholder.height($("a > .module", ui.item).outerHeight());
     },
     update  : function (event, ui) {
@@ -86,6 +87,7 @@ function registerDragSortHandler() {
             $(".modules-container").html(response["data"]);
             registerAddModuleListener();
             registerDragSortHandler();
+            registerDeleteListener();
           } else {
             $(".btn-refresh").click(function () {
               window.location.reload();
@@ -102,7 +104,43 @@ function registerDragSortHandler() {
     },
     stop    : function (event, ui) {
       $(".addModule").fadeIn(200);
+      $(".delete").fadeIn(200);
     }
+  });
+}
+
+// Respond to delete a module
+function registerDeleteListener() {
+  $(".delete").click(function () {
+    var index = parseInt($(this).attr("id"));
+    console.log("Choose to delete #" + index);
+    $(".btn-confirm", "#deleteConfirmModal").click(function () {
+      // Ajax POST
+      $.ajax({
+        url     : window.location.pathname,
+        type    : "POST",
+        data    : {"action": "DELETE", "index": index},
+        success : function (response) {
+          // Prompt result
+          console.log(response);
+          if (response['result']) {
+            $(".btn-success", "#deleteSuccessModal").click(function () {
+              window.location.reload();
+            });
+            $("#deleteSuccessModal").modal();
+          } else {
+            // On error, prompt enrollment error
+            $("#deleteFailModal").modal();
+          }
+        },
+        error   : function (XMLHttpRequest, textStatus, errorThrown) {
+          // On error, log the error info and prompt through error modal
+          console.log(XMLHttpRequest.readyState + XMLHttpRequest.status + XMLHttpRequest.responseText);
+          $("#errorModal").modal();
+        }
+      });
+    });
+    $("#deleteConfirmModal").modal();
   });
 }
 
@@ -111,4 +149,5 @@ $(document).ready(function () {
   registerEditListener();
   registerOpenListener();
   registerDragSortHandler();
+  registerDeleteListener();
 });
