@@ -100,8 +100,11 @@ function registerDeleteListener() {
 
 function registerDragSortHandler() {
   $("#sortable").sortable({
+    forcePlaceholderSize: true,
+    placeholder: "ui-state-highlight",
     start   : function (event, ui) {
       $(".addModule").fadeOut(200);
+      ui.placeholder.height($("a > .module", ui.item).outerHeight());
     },
     update  : function (event, ui) {
       var originIndex = parseInt($("a > .module", ui.item).attr("id"));
@@ -115,6 +118,7 @@ function registerDragSortHandler() {
         success : function (response) {
           if (response["result"]) {
             $(".modules-container").html(response["data"]);
+            registerAddModuleListener();
             registerDragSortHandler();
           } else {
             $(".btn-refresh").click(function () {
