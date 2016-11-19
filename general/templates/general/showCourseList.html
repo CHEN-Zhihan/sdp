@@ -53,9 +53,9 @@
               <!-- Collapse sub-menu: categories -->
               <div class="collapse in" id="categories">
                 <!-- List all categories -->
-                {% for category in categoryList %}
+                {% for categoryItr in categoryList %}
                 <li>
-                  <a href="#" {% if category.id == request.GET.categoryID %}class="category active"{% else %}class="category"{% endif %} id="{{ category.id }}">{{ category.name }}</a>
+                  <a href="#" class="category {% if category.id == categoryItr.categoryID %}active{% endif %}" id="{{ categoryItr.id }}">{{ categoryItr.name }}</a>
                 </li>
                 {% endfor %}
               </div>
