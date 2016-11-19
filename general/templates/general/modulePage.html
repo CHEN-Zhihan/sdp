@@ -73,11 +73,11 @@
                   <div class="row">
                     <div class="col-sm-11">
                       <a href="#">
-                        <div class="component jumbotron" id="{{ component.index }}">
+                        <div class="component jumbotron disabled" id="{{ component.index }}">
                           {% if component.typeName == 'TEXT' %}
-                          <p>{{ component.text }}</p>
+                          <p class="content-text">{{ component.text }}</p>
                           {% elif component.typeName == 'IMAGE' %}
-                          <img src="{{ component.content.url }}"/>
+                          <img class="content-img" src="{{ component.content.url }}"/>
                           {% else %}
                           <a href="{{ component.content.url }}">{{ component.content.name }}</a>
                           {% endif %}

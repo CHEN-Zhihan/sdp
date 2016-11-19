@@ -107,11 +107,12 @@ li {
   word-wrap: break-word;
 }
 
-.course, .module {
+.course, .module, .component {
   .shadow(0px, 0px);
   &:hover:not(.disabled) {
     .shadow(0px, 0px, 6px);
   }
+  overflow: hidden;
   margin-top: 30px;
   margin-bottom: 30px;
   &.jumbotron {
@@ -120,7 +121,7 @@ li {
     border-radius: 0px;
     padding: 5px 5px 5px 5px;
   }
-  [class$='-name'] {
+  [class$='-name'], .content-text {
     font-size: 16px;
     color: @courseNameColor;
     margin-top: 5px;
@@ -132,6 +133,11 @@ li {
     margin-top: 5px;
     margin-left: 5px;
     word-wrap: break-word;
+  }
+  .content-img {
+    margin: 0px;
+    width: 100%;
+    max-width: 600px;
   }
 }
 
