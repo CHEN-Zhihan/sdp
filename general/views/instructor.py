@@ -160,15 +160,54 @@ def newModule(request,instructorID,courseID):
 @login_required
 def modulePage(request,instructorID,courseID,moduleIndex):
     courseID=int(courseID)
+    moduleIndex=int(moduleIndex)
     if authenticate.roleCheck(request.user,"Instructor",instructorID):
         instructor=Instructor.getFromUser(request.user)
         if instructor.ownCourse(courseID):
             course=instructor.getCourseByID(courseID)
-            module = course.getModuleByIndex(moduleIndex)
-            if module!=None:
-                components = module.getSortedComponents()
-                return render(request,"general/modulePage.html",{'course':course,'module':module,'components':components,"isOpen":course.isOpen()})
+            if course.hasModule(moduleIndex):
+                if request.method=="POST":
+                    try:
+                        course.deleteModule(moduleIndex)
+                    except Exception:
+                        result=False
+                    else:
+                        result=True
+                    return JsonResponse({"result":result})
+                else:
+                    module=course.getModuleByIndex(moduleIndex)
+                    components = module.getSortedComponents()
+                    return render(request,"general/modulePage.html",{'course':course,'module':module,'components':components,"isOpen":course.isOpen()})
     return redirect("myLogout")
+
+@login_required
+def editModule(request,instructorID,courseID,moduleIndex):
+    courseID=int(courseID)
+    moduleIndex=int(moduleIndex)
+    if authenticate.roleCheck(request.user,"Instructor",instructorID):
+        instructor=Instructor.getFromUser(request.user)
+        if instructor.ownCourse(courseID):
+            course = instructor.getCourseByID(courseID)
+            if course.hasModule(moduleIndex):
+                module=course.getModuleByIndex(moduleIndex)
+                if request.method=="POST":
+                    name=request.POST.get("name")
+                    description = request.POST.get("description")
+                    try:
+                        course.modifyModule(module,name,description)
+                    except NameDuplication:
+                        errno=-2
+                    except Exception as err:
+                        print(err)
+                        errno=-1
+                    else:
+                        errno=0
+                    return JsonResponse({"result":errno})
+                else:
+                    return render(request,"general/editModule.html",{"module":module})
+    return redirect("myLogout")
+
+
 
 @login_required
 def newComponent(request,instructorID,courseID,moduleIndex):

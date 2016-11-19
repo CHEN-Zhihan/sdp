@@ -94,6 +94,17 @@ class Course(models.Model):
         moduleChanged.index=newIndex
         moduleChanged.save()
 
+    def deleteModule(self,index):
+        module=self.module_set.get(index=index)
+        module.delete()
+
+    def modifyModule(self,module,name,description):
+        if self.module_set.filter(name=name).exists() and module.name!=name:
+            raise NameDuplication()
+        module.name=name
+        module.description=description
+        module.save()
+
     def createModule(self,name,description,index):
         if self.module_set.filter(name=name).exists():
             raise NameDuplication()
