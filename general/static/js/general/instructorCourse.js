@@ -42,13 +42,19 @@ function registerOpenListener() {
         success : function (response) {
           // Prompt result
           console.log(response);
-          if (response['result']) {
+          if (response["result"] == 0) {
             $(".btn-refresh").click(function () {
               window.location.reload(true);
             });
             $("#openSuccessModal").modal();
           } else {
             // On error, prompt enrollment error
+            if (response["result"] == -2) {
+              $(".modal-body > p", "#openFailModal").text("There must be at least one module to open the course.");
+              $(".btn-fail").click(function () {
+                $(".modal-body > p", "#openFailModal").text("An error occurred. Opening failed.");
+              });
+            }
             $("#openFailModal").modal();
           }
         },
