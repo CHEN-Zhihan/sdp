@@ -76,7 +76,7 @@
             <div class="modules-container">
               <!-- Insert new module at head -->
               <a href="#">
-                <div class="addModule" id="0">
+                <div class="addModule col-sm-11" id="0">
                   <span class="glyphicon glyphicon-plus"></span>Add new module here
                 </div>
               </a>
@@ -84,16 +84,25 @@
               {% for module in modules %}
               <!-- List modules in course -->
                 <li>
-                  <a href="#">
-                    <div class="module jumbotron" id="{{ module.index }}">
-                      <p class="module-name">{{ module.name }}</p>
-                      <p class="module-desc">{{ module.description }}</p>
+                  <div class="row">
+                    <div class="col-sm-11">
+                      <a href="#">
+                        <div class="module jumbotron" id="{{ module.index }}">
+                          <p class="module-name">{{ module.name }}</p>
+                          <p class="module-desc">{{ module.description }}</p>
+                        </div>
+                      </a>
                     </div>
-                  </a>
+                    <div class="col-sm-1">
+                      <a href="#">
+                        <span class="glyphicon glyphicon-remove delete" id="{{ module.index }}"></span>
+                      </a>
+                    </div>
+                  </div>
 
                   <!-- Insert new module behind this module -->
                   <a href="#">
-                    <div class="addModule" id="{{ module.index|add:1 }}">
+                    <div class="addModule col-sm-11" id="{{ module.index|add:1 }}">
                       <span class="glyphicon glyphicon-plus"></span>Add new module here
                     </div>
                   </a>
@@ -174,6 +183,61 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default btn-refresh" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End modal -->
+
+      <!-- Delete confirm modal dialog -->
+      <div class="modal fade" id="deleteConfirmModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Confirm</h4>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure to delete this module?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default btn-confirm" data-dismiss="modal">Confirm</button>
+              <button type="button" class="btn btn-cancel" data-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End modal -->
+
+      <!-- Delete success modal dialog -->
+      <div class="modal fade" id="deleteSuccessModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close btn-success" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Success</h4>
+            </div>
+            <div class="modal-body">
+              <p>Module deleted successfully.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default btn-success" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End modal -->
+
+      <!-- Delete fail modal dialog -->
+      <div class="modal fade" id="deleteFailModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Error</h4>
+            </div>
+            <div class="modal-body">
+              <p>An error occurred. Deletion failed.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
