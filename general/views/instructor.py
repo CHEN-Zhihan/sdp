@@ -182,7 +182,7 @@ def modulePage(request,instructorID,courseID,moduleIndex):
                     componentIndex=int(request.POST.get("index"))
                     component=module.getComponentByIndex(componentIndex)
                     try:
-                        component.delete()
+                        module.deleteComponent(component)
                     except Exception:
                         result=False
                     else:

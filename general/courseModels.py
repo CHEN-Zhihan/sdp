@@ -95,8 +95,13 @@ class Course(models.Model):
         moduleChanged.save()
 
     def deleteModule(self,module):
+        index=module.index
         for component in module.component_set.all():
             component.delete()
+        for restModule in self.module_set.all():
+            if restModule.index>index:
+                restModule-=1
+                restModule.save()
         module.delete()
 
     def modifyModule(self,module,name,description):
@@ -159,6 +164,14 @@ class Module(models.Model):
         self.component_set.add(c)
         self.save()
         return c
+    
+    def deleteComponent(self,component):
+        index=component.index
+        for restComponent in self.component_set.all():
+            if restComponent.index>index:
+                restComponent.index-=1
+                restComponent.save()
+        component.delete()
 
     def _updateIndex(self,newIndex):
         for component in self.component_set.all():
