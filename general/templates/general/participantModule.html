@@ -45,7 +45,7 @@
                   <span class="glyphicon glyphicon-home"></span>Home
                 </a>
               </li>
-              
+
               <!-- Menu item: Catalog -->
               <li>
                 <a href="#" data-toggle="collapse" data-target="#categories" id="catalog">
@@ -83,15 +83,10 @@
               {% if component.typeName == 'TEXT' %}
               <li>
                 <div class="row">
-                  <div class="col-sm-11">
+                  <div class="col-sm-12">
                     <div class="component jumbotron disabled" id="{{ component.index }}">
                       <p class="content-text">{{ component.text }}</p>
                     </div>
-                  </div>
-                  <div class="col-sm-1">
-                    <a href="#">
-                      <span class="glyphicon glyphicon-remove delete" id="{{ component.index }}"></span>
-                    </a>
                   </div>
                 </div>
               </li>
@@ -103,28 +98,18 @@
                       <img class="content-img" src="{{ component.content.url }}"/>
                     </div>
                   </div>
-                  <div class="col-sm-1">
-                    <a href="#">
-                      <span class="glyphicon glyphicon-remove delete" id="{{ component.index }}"></span>
-                    </a>
-                  </div>
                 </div>
               </li>
               {% else %}
               <li>
                 <div class="row">
-                  <div class="col-sm-11">
+                  <div class="col-sm-12">
                     <div class="component jumbotron disabled" id="{{ component.index }}">
                       <a class="content-file link" href="{{ component.content.url }}" download>
                         <span class="glyphicon glyphicon-save"></span>
                         {{ component.content.name }}
                       </a>
                     </div>
-                  </div>
-                  <div class="col-sm-1">
-                    <a href="#">
-                      <span class="glyphicon glyphicon-remove delete" id="{{ component.index }}"></span>
-                    </a>
                   </div>
                 </div>
               </li>
@@ -135,24 +120,6 @@
           </div>
         </div> <!-- End main content container -->
       </div> <!-- End content row -->
-
-      <!-- Error modal dialog -->
-      <div class="modal fade" id="errorModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Error</h4>
-            </div>
-            <div class="modal-body">
-              <p>An error occurred.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
     </div> <!-- End viewpoint container -->
   </body>
 </html>
