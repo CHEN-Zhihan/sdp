@@ -6,11 +6,14 @@
     <title>SDP</title>
     {% load static %}
     <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}" media="all" type="text/css"/>
+    <link rel="stylesheet" href="{% static "jqueryui/jquery-ui.min.css" %}" media="all" type="text/css"/>
+    <link rel="stylesheet" href="{% static "jqueryui/jquery-ui.structure.min.css" %}" media="all" type="text/css"/>
     <link rel="stylesheet/less" href="{% static "general/general.less" %}" media="all" type="text/css"/>
     <link rel="stylesheet/less" href="{% static "general/instructor.less" %}" media="all" type="text/css"/>
     <script src="{% static "js/jquery-3.1.1.min.js" %}" charset="utf-8"></script>
     <script src="{% static "js/less.min.js" %}" charset="utf-8"></script>
     <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="utf-8"></script>
+    <script src="{% static "jqueryui/jquery-ui.min.js" %}" charset="utf-8"></script>
     <script src="{% static "js/common.js" %}" charset="utf-8"></script>
     <script src="{% static "js/general/developCourse.js" %}" charset="utf-8"></script>
   </head>
@@ -73,29 +76,35 @@
             </div> <!-- End course description row -->
             {% endif %}
 
-            <!-- Insert new module at head -->
-            <a href="#">
-              <div class="addModule" id="0">
-                <span class="glyphicon glyphicon-plus"></span>Add new module here
-              </div>
-            </a>
+            <div class="modules-container">
+              <!-- Insert new module at head -->
+              <a href="#">
+                <div class="addModule" id="0">
+                  <span class="glyphicon glyphicon-plus"></span>Add new module here
+                </div>
+              </a>
+              <ul class="jumbotron-list" id="sortable">
+              {% for module in modules %}
+              <!-- List modules in course -->
+                <li>
+                  <a href="#">
+                    <div class="module jumbotron" id="{{ module.index }}">
+                      <p class="module-name">{{ module.name }}</p>
+                      <p class="module-desc">{{ module.description }}</p>
+                    </div>
+                  </a>
 
-            {% for module in modules %}
-            <!-- List modules in course -->
-            <a href="#">
-              <div class="module jumbotron" id="{{ module.index }}">
-                <p class="module-name">{{ module.name }}</p>
-                <p class="module-desc">{{ module.description }}</p>
-              </div>
-            </a>
-
-            <!-- Insert new module behind this module -->
-            <a href="#">
-              <div class="addModule" id="{{ module.index|add:1 }}">
-                <span class="glyphicon glyphicon-plus"></span>Add new module here
-              </div>
-            </a>
-            {% endfor %}
+                  <!-- Insert new module behind this module -->
+                  <a href="#">
+                    <div class="addModule" id="{{ module.index|add:1 }}">
+                      <span class="glyphicon glyphicon-plus"></span>Add new module here
+                    </div>
+                  </a>
+                </li>
+              {% endfor %}
+              </ul>
+              <div class="scroll-over"></div>
+            </div>
           </div>
         </div> <!-- End main content container -->
       </div> <!-- End content row -->
@@ -192,8 +201,8 @@
         </div>
       </div> <!-- End modal -->
 
-      <!-- Open fail modal dialog -->
-      <div class="modal fade" id="openFailModal" role="dialog">
+      <!-- Delete fail modal dialog -->
+      <div class="modal fade" id="deleteFailModal" role="dialog">
         <div class="modal-dialog modal-sm">
           <div class="modal-content">
             <div class="modal-header">
@@ -201,10 +210,28 @@
               <h4 class="modal-title">Error</h4>
             </div>
             <div class="modal-body">
-              <p>An error occurred. Opening failed.</p>
+              <p>An error occurred. Deletion failed.</p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End modal -->
+
+      <!-- Reorder fail modal dialog -->
+      <div class="modal fade" id="reorderFailModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Error</h4>
+            </div>
+            <div class="modal-body">
+              <p>An error occurred. Reorder failed.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default btn-refresh" data-dismiss="modal">Close</button>
             </div>
           </div>
         </div>

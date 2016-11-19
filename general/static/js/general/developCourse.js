@@ -98,9 +98,48 @@ function registerDeleteListener() {
   });
 }
 
+function registerDragSortHandler() {
+  //
+  $("#sortable").sortable({
+    start   : function (event, ui) {
+      $(".addModule").fadeOut(200);
+    },
+    update  : function (event, ui) {
+      var originIndex = parseInt($("a > .module", ui.item).attr("id"));
+      var newIndex = parseInt($(this).children().index(ui.item));
+      console.log("Change " + originIndex + " to " + newIndex);
+      // Ajax POST
+      $.ajax({
+        url: window.location.pathname + "/changeModuleOrder",
+        type: "POST",
+        data: {"originIndex": originIndex, "newIndex": newIndex},
+        success: function (response) {
+          if (response["result"]) {
+            $(".modules-container").html(response["data"]);
+          } else {
+            $(".btn-refresh").click(function () {
+              window.location.reload();
+            });
+            $("#reorderFailModal").modal();
+          }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+          // On error, log the error info and prompt through error modal
+          console.log(XMLHttpRequest.readyState + XMLHttpRequest.status + XMLHttpRequest.responseText);
+          $("#errorModal").modal();
+        }
+      });
+    },
+    stop    : function (event, ui) {
+      $(".addModule").fadeIn(200);
+    }
+  });
+}
+
 $(document).ready(function () {
   registerAddModuleListener();
   registerEditListener();
   registerOpenListener();
   registerDeleteListener();
+  registerDragSortHandler();
 });

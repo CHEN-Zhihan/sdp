@@ -1,0 +1,27 @@
+<!-- Insert new module at head -->
+<a href="#">
+  <div class="addModule" id="0">
+    <span class="glyphicon glyphicon-plus"></span>Add new module here
+  </div>
+</a>
+<ul class="jumbotron-list" id="sortable">
+{% for module in modules %}
+<!-- List modules in course -->
+  <li>
+    <a href="#">
+      <div class="module jumbotron" id="{{ module.index }}">
+        <p class="module-name">{{ module.name }}</p>
+        <p class="module-desc">{{ module.description }}</p>
+      </div>
+    </a>
+
+    <!-- Insert new module behind this module -->
+    <a href="#">
+      <div class="addModule" id="{{ module.index|add:1 }}">
+        <span class="glyphicon glyphicon-plus"></span>Add new module here
+      </div>
+    </a>
+  </li>
+{% endfor %}
+</ul>
+<div class="scroll-over"></div>
