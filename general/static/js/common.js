@@ -60,7 +60,7 @@ $(document).ready(function () {
   });
 
   // Highlight clicked anchor
-  $("a").click(function (event) {
+  $("a").not(".link").click(function (event) {
     event.preventDefault();
     $("a.active").removeClass("active");
     $(this).addClass("active");
