@@ -1,7 +1,7 @@
 // Respond to click on course
 function registerCourseListener() {
   // If developing course clicked
-  $(".developingCourse").click(function () {
+  $(".course").click(function () {
     // Get course name and ID
     var courseName = $(".course-name", this).text();
     var courseID = parseInt($(this).attr("id"));
