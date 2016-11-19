@@ -87,8 +87,8 @@ def changeModuleOrder(request,instructorID,courseID):
         if instructor.ownCourse(courseID):
             course = instructor.getCourseByID(courseID)
             if request.method=="POST":
-                originIndex = request.POST.get("originIndex")
-                newIndex = request.POST.get("newIndex")
+                originIndex = int(request.POST.get("originIndex"))
+                newIndex = int(request.POST.get("newIndex"))
                 try:
                     course.updateIndex(originIndex,newIndex)
                 except Exception:
