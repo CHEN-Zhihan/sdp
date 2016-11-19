@@ -141,7 +141,7 @@ class Course(models.Model):
     def hasModule(self,index):
         return self.module_set.filter(index=index).exists()
     
-    def getTotalProgress():
+    def getTotalProgress(self):
         return len(self.module_set.all())
 
 class Module(models.Model):

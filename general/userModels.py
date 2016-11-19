@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User,Group
 from django.core.exceptions import ObjectDoesNotExist
 from .exceptions import *
-from .courseModels import Category,Course,CurrentEnrollment
+from .courseModels import Category,Course,CurrentEnrollment,CompletedEnrollment
 
 
 roleList = ["Instructor","Participant","HR","Administrator"]
@@ -123,15 +123,12 @@ class Participant(SDPUser):
         return SDPUser.getFromUser(user,"Participant")
 
     def enroll(self,course):
-        if self.hasEnrolled():
-            raise AlreadyEnrolled()
         self.currentenrollment=CurrentEnrollment()
         self.currentenrollment.course=course
         self.currentenrollment.participant=self
         self.currentenrollment.progress=0
         self.currentenrollment.save()
         self.save()
-        return True
 
     def getProgress(self):
         if self.hasEnrolled():
@@ -147,30 +144,42 @@ class Participant(SDPUser):
             return True
 
     def updateProgress(self):
-        if self.currentenrollment.progress==self.currentenrollment.course.getTotalProgress()-1:
-            self.completeCourse()
+        if self.currentenrollment.progress>=self.currentenrollment.course.getTotalProgress()-1:
+            self.complete()
         else:
             self.currentenrollment.progress+=1
+            self.currentenrollment.save()
             self.save()
+            print("now can visit",self.currentenrollment.progress)
 
-    def dropCourse(self):
-        if not self.hasEnrolled():
-            raise NotEnrolledException()
+    def drop(self):
         CurrentEnrollment.objects.filter(participant=self).delete()
         self.currentenrollment=None
         self.save()
-    
-    def hasCourse(self,courseID):
-        if self.hasEnrolled() and self.currentenrollment.course.id==courseID:
-            return True
-        if len(list(filter((lambda x:x.id==courseID),self.getCompletedCourses())))!=0:
-            return True
-        return False
 
-    def completeCourse(self):
+    def retake(self,course):
+        completedEnrollment = self.completedenrollment_set.get(course=course)
+        completedEnrollment.delete()
+        self.save()
+        self.enroll(course)
+
+    def hasTaken(self,courseID):
+        return len(list(filter((lambda x:x.id==courseID),self.getCompletedCourses())))!=0
+
+    def isTaking(self,courseID):
+        return self.hasEnrolled() and self.currentenrollment.course.id==courseID
+
+    def complete(self):
         self.completedenrollment_set.add(CompletedEnrollment.createFromCurrentEnrollment(self.currentenrollment))
         self.currentenrollment=None
         self.save()
+    
+    def canViewModule(self,courseID,moduleIndex):
+        if self.hasTaken(courseID):
+            return True
+        if self.isTaking(courseID) and self.getProgress()>=moduleIndex:
+            return True
+        return False
 
     def getCompletedCourses(self):
         return set(map((lambda x:x.course),self.completedenrollment_set.all()))
@@ -180,12 +189,14 @@ class Participant(SDPUser):
             return Participant.objects.get(id=ID)
         return None
 
-    def getCourseByID(self,courseID):
-        if self.currentenrollment.course.id==courseID:
-            return self.currentenrollment.course,0
+    def getCompletedCourseByID(self,courseID):
         for completed in self.getCompletedCourses():
             if completed.id==courseID:
-                return completed,1
+                return completed
+    def getCurrentCourse(self):
+        if self.hasEnrolled():
+            return self.currentenrollment.course
+        return None
 
 class HR(SDPUser):
     @staticmethod
