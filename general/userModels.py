@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User,Group
 from django.core.exceptions import ObjectDoesNotExist
 from .exceptions import *
-from .courseModels import Category,Course,CurrentEnrollment
+from .courseModels import Category,Course,CurrentEnrollment,CompletedEnrollment
 
 
 roleList = ["Instructor","Participant","HR","Administrator"]
@@ -144,8 +144,8 @@ class Participant(SDPUser):
             return True
 
     def updateProgress(self):
-        if self.currentenrollment.progress==self.currentenrollment.course.getTotalProgress()-1:
-            self.completeCourse()
+        if self.currentenrollment.progress>=self.currentenrollment.course.getTotalProgress()-1:
+            self.complete()
         else:
             self.currentenrollment.progress+=1
             self.save()

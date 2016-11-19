@@ -102,6 +102,7 @@ def viewModule(request,participantID,courseID,moduleIndex):
             course = participant.getCurrentCourse() if participant.hasEnrolled() else participant.getCompletedCourseByID(courseID)
             module = course.getModuleByIndex(moduleIndex)
             components=module.getSortedComponents()
+            participant.updateProgress()
             return render(request,"general/participantModule.html",{"components":components,"module":module})
         else:
             return HttpResponse(status=404)
