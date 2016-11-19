@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from ..courseModels import Category,Course
 from ..userModels import Instructor
-from ..forms import DocumentForm
+from ..forms import ComponentForm
 from . import authenticate
 from ..exceptions import NameDuplication
 
@@ -236,12 +236,12 @@ def newComponent(request,instructorID,courseID,moduleIndex):
                     typeName = request.POST.get('typeName')
                     index = int(request.POST.get('index'))
                     if typeName=="FILE":
-                        form = DocumentForm(request.POST,request.FILES)
+                        form = ComponentForm(request.POST,request.FILES)
                         if form.is_valid():
                             component = module.createComponent(typeName,index,request.FILES['file'])
                             return JsonResponse({'result':True,'componentID':component.index})
                 else:
-                    form = DocumentForm()
+                    form = ComponentForm()
                     components=module.getSortedComponents()
                     return render(request,"general/newComponent.html",{"components":components,"form":form})
     return HttpResponse(status=404)

@@ -198,8 +198,3 @@ class Component(models.Model):
     def __str__(self):
         string = "{}-th of {}:{}".format(self.index,self.module.course.name,self.module.name)
         return string
-
-    def getURL(self):
-        return self.content.storage.base_url+self.content.name
-    def getText(self):
-        return self.text
