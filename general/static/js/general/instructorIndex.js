@@ -32,7 +32,42 @@ function registerCreateCourseListener() {
   });
 }
 
+// Respond to delete a course
+function registerDeleteListener() {
+  $(".delete").click(function () {
+    console.log("Choose to delete");
+    $(".btn-confirm", "#deleteConfirmModal").click(function () {
+      // Ajax POST
+      $.ajax({
+        url     : window.location.pathname,
+        type    : "POST",
+        data    : {"action": "DELETE", "id": parseInt($(this).attr("id"))},
+        success : function (response) {
+          // Prompt result
+          console.log(response);
+          if (response['result']) {
+            $(".btn-success", "#deleteSuccessModal").click(function () {
+              window.location.reload();
+            });
+            $("#deleteSuccessModal").modal();
+          } else {
+            // On error, prompt enrollment error
+            $("#deleteFailModal").modal();
+          }
+        },
+        error   : function (XMLHttpRequest, textStatus, errorThrown) {
+          // On error, log the error info and prompt through error modal
+          console.log(XMLHttpRequest.readyState + XMLHttpRequest.status + XMLHttpRequest.responseText);
+          $("#errorModal").modal();
+        }
+      });
+    });
+    $("#deleteConfirmModal").modal();
+  });
+}
+
 $(document).ready(function () {
   registerCourseListener();
   registerCreateCourseListener();
+  registerDeleteListener();
 });
