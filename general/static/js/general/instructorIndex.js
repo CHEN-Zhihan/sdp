@@ -28,7 +28,7 @@ function registerDeleteListener() {
           console.log(response);
           if (response['result']) {
             $(".btn-success", "#deleteSuccessModal").click(function () {
-              window.location.reload();
+              window.location.reload(true);
             });
             $("#deleteSuccessModal").modal();
           } else {
