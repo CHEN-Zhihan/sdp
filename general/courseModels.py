@@ -34,8 +34,6 @@ class CurrentEnrollment(Enrollment):
     progress = models.IntegerField()
     participant = models.OneToOneField('Participant')
 
-    def updateProgess(self,newProgress):
-        self.progress=newProgress
 
     def __str__(self):
         return "{} taking {}".format(str(self.participant),str(self.course))
@@ -97,7 +95,7 @@ class Course(models.Model):
     def deleteModule(self,module):
         index=module.index
         for component in module.component_set.all():
-            component.delete()
+            module.deleteComponent(component)
         for restModule in self.module_set.all():
             if restModule.index>index:
                 restModule-=1
@@ -142,6 +140,9 @@ class Course(models.Model):
 
     def hasModule(self,index):
         return self.module_set.filter(index=index).exists()
+    
+    def getTotalProgress():
+        return len(self.module_set.all())
 
 class Module(models.Model):
     name = models.CharField(max_length=200)
@@ -174,6 +175,8 @@ class Module(models.Model):
             if restComponent.index>index:
                 restComponent.index-=1
                 restComponent.save()
+        if component.typeName!="TEXT":
+            component.content.delete()
         component.delete()
 
     def _updateIndex(self,newIndex):

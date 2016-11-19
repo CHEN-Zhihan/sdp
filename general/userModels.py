@@ -128,7 +128,7 @@ class Participant(SDPUser):
         self.currentenrollment=CurrentEnrollment()
         self.currentenrollment.course=course
         self.currentenrollment.participant=self
-        self.currentenrollment.progress=1000
+        self.currentenrollment.progress=0
         self.currentenrollment.save()
         self.save()
         return True
@@ -145,6 +145,13 @@ class Participant(SDPUser):
             return False
         else:
             return True
+
+    def updateProgress(self):
+        if self.currentenrollment.progress==self.currentenrollment.course.getTotalProgress()-1:
+            self.completeCourse()
+        else:
+            self.currentenrollment.progress+=1
+            self.save()
 
     def dropCourse(self):
         if not self.hasEnrolled():

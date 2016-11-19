@@ -19,11 +19,13 @@ def ParticipantIndex(request,participantID):
         currentEnrollment=participant.currentenrollment
     except ObjectDoesNotExist as e:
         currentCourse=None
+        progress=0
     else:
         currentCourse=currentEnrollment.course
+        progress=participant.getProgrss()/currentCourse.getTotalProgress()
     completedCourses = participant.getCompletedCourses()
     return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,
-        'completedCourses':completedCourses})
+        "progress":progress,'completedCourses':completedCourses})
 
 @login_required
 def showCourseList(request,participantID):
@@ -89,5 +91,9 @@ def viewModule(request,participantID,courseID,moduleIndex):
             if course.hasModule(moduleIndex) and participant.getProgress()>=moduleIndex:
                 module = course.getModuleByIndex(moduleIndex)
                 components = module.getSortedComponents()
+                if participant.getProgress()==moduleIndex:
+                    participant.updateProgress()
                 return HttpResponse(request,"general/viewModule.html",{"components":components})
+            else:
+                return HttpResponse(status=404)
     return redirect("myLogout")
