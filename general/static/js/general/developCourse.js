@@ -99,7 +99,6 @@ function registerDeleteListener() {
 }
 
 function registerDragSortHandler() {
-  //
   $("#sortable").sortable({
     start   : function (event, ui) {
       $(".addModule").fadeOut(200);
@@ -110,10 +109,10 @@ function registerDragSortHandler() {
       console.log("Change " + originIndex + " to " + newIndex);
       // Ajax POST
       $.ajax({
-        url: window.location.pathname + "/changeModuleOrder",
-        type: "POST",
-        data: {"originIndex": originIndex, "newIndex": newIndex},
-        success: function (response) {
+        url     : window.location.pathname + "/changeModuleOrder",
+        type    : "POST",
+        data    : {"originIndex": originIndex, "newIndex": newIndex},
+        success : function (response) {
           if (response["result"]) {
             $(".modules-container").html(response["data"]);
           } else {
@@ -123,7 +122,7 @@ function registerDragSortHandler() {
             $("#reorderFailModal").modal();
           }
         },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        error   : function (XMLHttpRequest, textStatus, errorThrown) {
           // On error, log the error info and prompt through error modal
           console.log(XMLHttpRequest.readyState + XMLHttpRequest.status + XMLHttpRequest.responseText);
           $("#errorModal").modal();
