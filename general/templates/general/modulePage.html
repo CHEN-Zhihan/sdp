@@ -69,35 +69,76 @@
               <ul class="jumbotron-list" id="sortable">
               {% for component in components %}
               <!-- List components in module -->
-                <li>
-                  <div class="row">
-                    <div class="col-sm-11">
-                      <a href="#">
-                        <div class="component jumbotron disabled" id="{{ component.index }}">
-                          {% if component.typeName == 'TEXT' %}
-                          <p class="content-text">{{ component.text }}</p>
-                          {% elif component.typeName == 'IMAGE' %}
-                          <img class="content-img" src="{{ component.content.url }}"/>
-                          {% else %}
-                          <a href="{{ component.content.url }}">{{ component.content.name }}</a>
-                          {% endif %}
-                        </div>
-                      </a>
+              {% if component.typeName == 'TEXT' %}
+              <li>
+                <div class="row">
+                  <div class="col-sm-11">
+                    <div class="component jumbotron disabled" id="{{ component.index }}">
+                      <p class="content-text">{{ component.text }}</p>
                     </div>
-                    <div class="col-sm-1">
-                      <a href="#">
-                        <span class="glyphicon glyphicon-remove delete" id="{{ component.index }}"></span>
+                  </div>
+                  <div class="col-sm-1">
+                    <a href="#">
+                      <span class="glyphicon glyphicon-remove delete" id="{{ component.index }}"></span>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Insert new module behind this module -->
+                <a href="#">
+                  <div class="addModule col-sm-11" id="{{ component.index|add:1 }}">
+                    <span class="glyphicon glyphicon-plus"></span>Add new component here
+                  </div>
+                </a>
+              </li>
+              {% elif component.typeName == 'IMAGE' %}
+              <li>
+                <div class="row">
+                  <div class="col-sm-6">
+                    <div class="component jumbotron disabled" id="{{ component.index }}">
+                      <img class="content-img" src="{{ component.content.url }}"/>
+                    </div>
+                  </div>
+                  <div class="col-sm-1">
+                    <a href="#">
+                      <span class="glyphicon glyphicon-remove delete" id="{{ component.index }}"></span>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Insert new module behind this module -->
+                <a href="#">
+                  <div class="addModule col-sm-6" id="{{ component.index|add:1 }}">
+                    <span class="glyphicon glyphicon-plus"></span>Add new component here
+                  </div>
+                </a>
+              </li>
+              {% else %}
+              <li>
+                <div class="row">
+                  <div class="col-sm-11">
+                    <div class="component jumbotron disabled" id="{{ component.index }}">
+                      <a class="content-file link" href="{{ component.content.url }}">
+                        <span class="glyphicon glyphicon-save"></span>
+                        {{ component.content.name }}
                       </a>
                     </div>
                   </div>
+                  <div class="col-sm-1">
+                    <a href="#">
+                      <span class="glyphicon glyphicon-remove delete" id="{{ component.index }}"></span>
+                    </a>
+                  </div>
+                </div>
 
-                  <!-- Insert new module behind this module -->
-                  <a href="#">
-                    <div class="addModule col-sm-11" id="{{ component.index|add:1 }}">
-                      <span class="glyphicon glyphicon-plus"></span>Add new component here
-                    </div>
-                  </a>
-                </li>
+                <!-- Insert new module behind this module -->
+                <a href="#">
+                  <div class="addModule col-sm-11" id="{{ component.index|add:1 }}">
+                    <span class="glyphicon glyphicon-plus"></span>Add new component here
+                  </div>
+                </a>
+              </li>
+              {% endif %}
               {% endfor %}
               </ul>
               <div class="scroll-over"></div>
