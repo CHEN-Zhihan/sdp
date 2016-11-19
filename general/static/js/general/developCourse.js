@@ -64,44 +64,13 @@ function registerOpenListener() {
   });
 }
 
-// Respond to delete a course
-function registerDeleteListener() {
-  $(".btn-delete").click(function () {
-    console.log("Choose to open");
-    $(".btn-confirm", "#deleteConfirmModal").click(function () {
-      // Ajax POST
-      $.ajax({
-        url     : window.location.pathname,
-        type    : "POST",
-        data    : {"action": "DELETE"},
-        success : function (response) {
-          // Prompt result
-          console.log(response);
-          if (response['result']) {
-            $(".btn-success", "#deleteSuccessModal").click(function () {
-              redirectHome();
-            });
-            $("#deleteSuccessModal").modal();
-          } else {
-            // On error, prompt enrollment error
-            $("#deleteFailModal").modal();
-          }
-        },
-        error   : function (XMLHttpRequest, textStatus, errorThrown) {
-          // On error, log the error info and prompt through error modal
-          console.log(XMLHttpRequest.readyState + XMLHttpRequest.status + XMLHttpRequest.responseText);
-          $("#errorModal").modal();
-        }
-      });
-    });
-    $("#deleteConfirmModal").modal();
-  });
-}
-
 function registerDragSortHandler() {
   $("#sortable").sortable({
+    forcePlaceholderSize: true,
+    placeholder: "ui-state-highlight",
     start   : function (event, ui) {
       $(".addModule").fadeOut(200);
+      ui.placeholder.height($("a > .module", ui.item).outerHeight());
     },
     update  : function (event, ui) {
       var originIndex = parseInt($("a > .module", ui.item).attr("id"));
@@ -115,6 +84,7 @@ function registerDragSortHandler() {
         success : function (response) {
           if (response["result"]) {
             $(".modules-container").html(response["data"]);
+            registerAddModuleListener();
             registerDragSortHandler();
           } else {
             $(".btn-refresh").click(function () {
@@ -140,6 +110,5 @@ $(document).ready(function () {
   registerAddModuleListener();
   registerEditListener();
   registerOpenListener();
-  registerDeleteListener();
   registerDragSortHandler();
 });
