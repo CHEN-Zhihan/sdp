@@ -155,15 +155,15 @@ class Module(models.Model):
                 component.save()
 
     def updateIndex(self,originIndex,newIndex):
-        component=self.component_set.get(index=originIndex)        
+        componentChanged=self.component_set.get(index=originIndex)        
         for component in self.component_set.all():
             if component.index>=newIndex and component.index<originIndex:
                 component.index+=1
             elif component.index<=newIndex and component.index>originIndex:
                 component.index-=1
             component.save()
-        component.index=newIndex
-        component.save()
+        componentChanged.index=newIndex
+        componentChanged.save()
 
     def getSortedComponents(self):
         components=list(self.component_set.all())
