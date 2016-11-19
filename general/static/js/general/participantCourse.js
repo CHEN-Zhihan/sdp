@@ -35,4 +35,5 @@ function registerActListener() {
 $(document).ready(function () {
   registerModuleListener();
   registerActListener();
+  registerCategoryListener();
 });
