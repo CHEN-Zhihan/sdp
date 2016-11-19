@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Minimal Django File Upload Example</title>   
+    </head>
+    <body>
+    <!-- List of uploaded components -->
+    {% if components %}
+        <ul>
+        {% for document in components %}
+            <li><a href="{{ document.file.url }}">{{ document.file.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No components.</p>
+    {% endif %}
+
+        <!-- Upload form. Note enctype attribute! -->
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>{{ form.non_field_errors }}</p>
+            <p>{{ form.file.label_tag }} {{ form.file.help_text }}</p>
+            <p>
+                {{ form.file.errors }}
+                {{ form.file }}
+            </p>
+            <p><input type="submit" value="Upload" /></p>
+            <p>index: <input type="text" name="index"></p>
+                usertype: <select name="typeName" >
+                <option value = "text">text</option>
+                <option value = "image">image</option>
+                <option value = "FILE">file</option>
+            </select>
+        </form>
+    </body>
+</html> 

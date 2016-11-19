@@ -4,7 +4,7 @@ from .views import participant,instructor,authenticate,administrator
 participantURL = r'^Participant/(?P<participantID>[0-9]+)'
 instructorURL = r'^Instructor/(?P<instructorID>[0-9]+)'
 courseURL = instructorURL+r'/(?P<courseID>[0-9]+)'
-moduleURL = courseURL + r'/(?P<moduleID>[0-9]+)'
+moduleURL = courseURL + r'/(?P<moduleIndex>[0-9]+)'
 administratorURL=r'^Administrator/(?P<administratorID>[0-9]+)'
 
 urlpatterns = [
@@ -16,9 +16,11 @@ urlpatterns = [
     url(instructorURL+r'$',instructor.InstructorIndex,name="InstructorIndex"),
     url(instructorURL+r'/newCourse$',instructor.newCourse,name="newCourse"),
     url(courseURL+r'$',instructor.coursePage,name="coursePage"),
+    url(courseURL+r'/changeModuleOrder$',instructor.changeModuleOrder,name="changeModuleOrder"),
     url(courseURL+r'/newModule$',instructor.newModule,name="newModule"),
     url(courseURL+r'/editCourse$',instructor.editCourse,name="editCourse"),
     url(moduleURL+r'$',instructor.modulePage,name="modulePage"),
+    url(moduleURL+r'/changeComponentOrder$',instructor.changeComponentOrder,name="changeComponentOrder"),
     url(moduleURL+r'/newComponent$',instructor.newComponent,name="newComponent"),
     url(administratorURL+r'$',administrator.AdministratorIndex,name="AdministratorIndex"),
     url(r'login/$',authenticate.myLogin,name="myLogin"),

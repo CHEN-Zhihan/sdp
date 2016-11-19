@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User,Group
 from django.core.exceptions import ObjectDoesNotExist
 from .exceptions import *
-from .courseModels import Category,Course
+from .courseModels import Category,Course,CurrentEnrollment
 
 
 roleList = ["Instructor","Participant","HR","Administrator"]
@@ -91,7 +91,7 @@ class Instructor(SDPUser):
         course.delete()
 
     def modifyCourse(self,course,name,description,category):
-        if Course.objects.filter(name=name).exists():
+        if Course.objects.filter(name=name).exists() and course.name!=name:
             raise NameDuplication()
         course.name=name
         course.description=description
@@ -131,22 +131,22 @@ class Participant(SDPUser):
         self.currentenrollment.save()
         self.save()
         return True
-    
+
     def getProgress(self):
         if self.hasEnrolled():
             return self.currentenrollment.progress
         return -1
-    
+
     def hasEnrolled(self):
         try:
-            hasEnrolled = participant.currentenrollment
+            _ = self.currentenrollment
         except ObjectDoesNotExist:
             return False
         else:
             return True
 
     def dropCourse(self):
-        if not CurrentEnrollment.objects.filter(participant=self).exists():
+        if not self.hasEnrolled():
             raise NotEnrolledException()
         CurrentEnrollment.objects.filter(participant=self).delete()
         self.currentenrollment=None
@@ -155,7 +155,7 @@ class Participant(SDPUser):
     def hasCourse(self,courseID):
         if self.hasEnrolled() and self.currentenrollment.course.id==courseID:
             return True
-        if len(filter((lambda x:x.id==courseID),self.getCompletedCourses()))!=0:
+        if len(list(filter((lambda x:x.id==courseID),self.getCompletedCourses())))!=0:
             return True
         return False
 
@@ -201,8 +201,8 @@ class Administrator(SDPUser):
         return SDPUser._createFromUser(user,"Administrator")
 
     @staticmethod
-    def designate(user,role):
-        return SDPUser._createFromUser(user,role)
+    def designate(user,newRole):
+        return SDPUser._createFromUser(user,newRole)
 
     @staticmethod
     def getFromUser(user):
@@ -211,7 +211,7 @@ class Administrator(SDPUser):
     @staticmethod
     def getUserGroups(user):
         return list(map((lambda x:x.name),user.groups.all()))
-    
+
     @staticmethod
     def createCategory(name):
         if Category.objects.filter(name=name).exists():

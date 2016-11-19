@@ -182,7 +182,8 @@ class Component(models.Model):
     index = models.IntegerField()
     module = models.ForeignKey(Module,on_delete=models.CASCADE)
     typeName = models.CharField(max_length=200)
-    content = models.FileField()
+    text = models.TextField(null=True)
+    content = models.FileField(null=True)
     def __str__(self):
         string = "{}-th of {}:{}".format(self.index,self.module.course.name,self.module.name)
         return string
