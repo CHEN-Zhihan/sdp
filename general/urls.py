@@ -4,7 +4,7 @@ from .views import participant,instructor,authenticate,administrator
 participantURL = r'^Participant/(?P<participantID>[0-9]+)'
 instructorURL = r'^Instructor/(?P<instructorID>[0-9]+)'
 courseURL = instructorURL+r'/(?P<courseID>[0-9]+)'
-moduleURL = courseURL + r'/(?P<moduleID>[0-9]+)'
+moduleURL = courseURL + r'/(?P<moduleIndex>[0-9]+)'
 administratorURL=r'^Administrator/(?P<administratorID>[0-9]+)'
 
 urlpatterns = [

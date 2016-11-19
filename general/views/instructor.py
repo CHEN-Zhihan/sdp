@@ -1,4 +1,5 @@
-from django.shortcuts import render,redirect,render_to_response,render_to_string
+from django.shortcuts import render,redirect,render_to_response
+from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.template import RequestContext
@@ -181,14 +182,12 @@ def newComponent(request,instructorID,courseID,moduleIndex):
                 module=course.getModuleByIndex(moduleIndex)
                 if request.method =="POST":
                     typeName = request.POST.get('typeName')
-                    index = request.POST.get('index')
+                    index = int(request.POST.get('index'))
                     if typeName=="FILE":
                         form = DocumentForm(request.POST,request.FILES)
                         if form.is_valid():
                             component = module.createComponent(typeName,index,request.FILES['file'])
-                    content = request.POST.get('content')
-                    component = module.createComponent(typeName,index,content)
-                    return JsonResponse({'result':True,'componentID':component.index})
+                            return JsonResponse({'result':True,'componentID':component.index})
                 else:
                     form = DocumentForm()
                     components=module.getSortedComponents()
