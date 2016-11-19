@@ -27,7 +27,8 @@ def showCourseList(request,participantID):
         categoryID = int(request.GET.get("categoryID"))
         category=Category.getByID(categoryID)
         courses = category.getOpenedCourses()
-        return render(request,"general/showCourseList.html",{"courses":courses,"category":category})
+        categoryList=Category.getAllCategories()
+        return render(request,"general/showCourseList.html",{"courses":courses,"categoryList":categoryList})
     return redirect("myLogout")
 
 
