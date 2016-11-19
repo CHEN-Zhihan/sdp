@@ -64,8 +64,8 @@ function registerOpenListener() {
           // Prompt result
           console.log(response);
           if (response['result']) {
-            $(".btn-success", "#openConfirmModal").click(function () {
-              window.location.reload(true);
+            $(".btn-refresh").click(function () {
+              window.location.reload();
             });
             $("#openSuccessModal").modal();
           } else {

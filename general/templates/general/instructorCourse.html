@@ -87,7 +87,7 @@
               <!-- List modules in course -->
                 <li>
                   <div class="row">
-                    <div class="col-sm-11">
+                    <div {% if isOpen %}class="col-sm-12"{% else %}class="col-sm-11"{%endif%}>
                       <a href="#">
                         <div class="module jumbotron" id="{{ module.index }}">
                           <p class="module-name">{{ module.name }}</p>
@@ -95,11 +95,13 @@
                         </div>
                       </a>
                     </div>
+                    {% if not isOpen %}
                     <div class="col-sm-1">
                       <a href="#">
                         <span class="glyphicon glyphicon-remove delete" id="{{ module.index }}"></span>
                       </a>
                     </div>
+                    {% endif %}
                   </div>
 
                   {% if not isOpen %}
@@ -146,14 +148,14 @@
         <div class="modal-dialog modal-sm">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <button type="button" class="close btn-refresh" data-dismiss="modal">&times;</button>
               <h4 class="modal-title">Success</h4>
             </div>
             <div class="modal-body">
               <p>Course<br>{{ course.name }}<br>opened successfully.</p>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-success" data-dismiss="modal">View course</button>
+              <button type="button" class="btn btn-default btn-refresh" data-dismiss="modal">View course</button>
             </div>
           </div>
         </div>
