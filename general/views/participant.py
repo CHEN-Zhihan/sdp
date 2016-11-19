@@ -39,12 +39,10 @@ def viewCourse(request,participantID,courseID):
     if authenticate.roleCheck(request.user,"Participant",participantID):
         participant=Participant.getFromUser(request.user)
         if request.method=="GET":
-            print("get la!")
             if participant.isTaking(courseID):
                 course=participant.getCurrentCourse()
                 status="isTaking"
                 visibility=participant.getProgress()
-                print("is taking this course!")
             elif participant.hasTaken(courseID):
                 course=participant.getCompletedCourseByID(courseID)
                 status="hasTaken"
@@ -102,11 +100,11 @@ def viewModule(request,participantID,courseID,moduleIndex):
             course = participant.getCurrentCourse() if participant.hasEnrolled() else participant.getCompletedCourseByID(courseID)
             module = course.getModuleByIndex(moduleIndex)
             components=module.getSortedComponents()
-            if participant.isTaking(courseID):
+            if participant.isTaking(courseID) and moduleIndex==participant.getProgress():
                 participant.updateProgress()
             categoryList=Category.getAllCategories()
             return render(request,"general/participantModule.html",{"components":components,"module":module,'categoryList':categoryList})
         else:
             return HttpResponse(status=404)
     return redirect("myLogout")
-    
+
