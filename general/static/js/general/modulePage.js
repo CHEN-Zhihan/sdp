@@ -61,6 +61,21 @@ function registerDragSortHandler() {
   });
 }
 
+// Respond to edit module info
+function registerEditListener() {
+  $(".btn-edit").click(function () {
+    var protocol = window.location.protocol;
+    var host = window.location.host;
+    var pathArray = window.location.pathname.split("/");
+    var newPath = pathArray[1] + "/" + pathArray[2]
+                  + "/" + pathArray[3] + "/"
+                  + pathArray[4] + "/editModule";
+
+    // Redirect to new URL
+    window.location.assign(protocol + "//" + host + "/" + newPath);
+  });
+}
+
 // Respond to delete a component
 function registerDeleteListener() {
   $(".delete").click(function () {
@@ -97,6 +112,7 @@ function registerDeleteListener() {
 }
 
 $(document).ready(function () {
+  registerEditListener();
   registerAddComponentListener();
   registerDragSortHandler();
   registerDeleteListener();
