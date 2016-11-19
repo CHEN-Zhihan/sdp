@@ -84,15 +84,15 @@ class Course(models.Model):
                 module.index+=1
                 module.save()
     def updateIndex(self,originIndex,newIndex):
-        module = self.module_set.get(index=originIndex)
+        moduleChanged = self.module_set.get(index=originIndex)
         for module in self.module_set.all():
             if module.index>=newIndex and module.index<originIndex:
                 module.index+=1
             elif module.index<=newIndex and module.index>originIndex:
                 module.index-=1
             module.save()
-        module.index=newIndex
-        module.save()
+        moduleChanged.index=newIndex
+        moduleChanged.save()
 
     def createModule(self,name,description,index):
         if self.module_set.filter(name=name).exists():
