@@ -15,7 +15,7 @@
     <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="utf-8"></script>
     <script src="{% static "jqueryui/jquery-ui.min.js" %}" charset="utf-8"></script>
     <script src="{% static "js/common.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/general/developCourse.js" %}" charset="utf-8"></script>
+    <script src="{% static "js/general/instructorCourse.js" %}" charset="utf-8"></script>
   </head>
   <body>
     <!-- Main viewpoint container -->
@@ -75,12 +75,14 @@
 
             <div class="modules-container">
               <!-- Insert new module at head -->
+              {% if not isOpen %}
               <a href="#">
                 <div class="addModule col-sm-11" id="0">
                   <span class="glyphicon glyphicon-plus"></span>Add new module here
                 </div>
               </a>
-              <ul class="jumbotron-list" id="sortable">
+              {% endif %}
+              <ul class="jumbotron-list" {% if not isOpen %}id="sortable"{% endif %}>
               {% for module in modules %}
               <!-- List modules in course -->
                 <li>
@@ -100,21 +102,26 @@
                     </div>
                   </div>
 
+                  {% if not isOpen %}
                   <!-- Insert new module behind this module -->
                   <a href="#">
                     <div class="addModule col-sm-11" id="{{ module.index|add:1 }}">
                       <span class="glyphicon glyphicon-plus"></span>Add new module here
                     </div>
                   </a>
+                  {% endif %}
                 </li>
               {% endfor %}
               </ul>
+              {% if not isOpen %}
               <div class="scroll-over"></div>
+              {% endif %}
             </div>
           </div>
         </div> <!-- End main content container -->
       </div> <!-- End content row -->
 
+      {% if not isOpen %}
       <!-- Open confirm modal dialog -->
       <div class="modal fade" id="openConfirmModal" role="dialog">
         <div class="modal-dialog modal-sm">
@@ -242,6 +249,7 @@
           </div>
         </div>
       </div> <!-- End modal -->
+      {% endif %}
 
       <!-- Error modal dialog -->
       <div class="modal fade" id="errorModal" role="dialog">
