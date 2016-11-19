@@ -45,7 +45,7 @@
 
               <!-- Menu item: Catalog -->
               <li>
-                <a href="#" data-toggle="collapse" data-target="#categories" id="catalog">
+                <a href="#" class="active" data-toggle="collapse" data-target="#categories" id="catalog">
                   <span class="glyphicon glyphicon-book"></span>Catalog
                 </a>
               </li>
@@ -55,7 +55,7 @@
                 <!-- List all categories -->
                 {% for categoryItr in categoryList %}
                 <li>
-                  <a href="#" class="category {% if category.id == categoryItr.categoryID %}active{% endif %}" id="{{ categoryItr.id }}">{{ categoryItr.name }}</a>
+                  <a href="#" class="category" id="{{ categoryItr.id }}">{{ categoryItr.name }}</a>
                 </li>
                 {% endfor %}
               </div>
@@ -66,8 +66,8 @@
         <!-- Main content container -->
         <div class="col-sm-10 fill-height main-column">
           <div class="container-fluid" id="main-content">
-            <!-- List courses -->
             {% for course in courses %}
+            <!-- List courses -->
             <a href="#">
               <div class="course jumbotron" id="{{ course.id }}">
                 <p class="course-name">{{ course.name }}</p>
@@ -75,6 +75,15 @@
               </div>
             </a>
             {% endfor %}
+            {% if not courses %}
+            <!-- If no courses, display default message -->
+            <div class="container-fluid centered text-center">
+              <h3 class="info-text jumbotron">
+                There is no course under this category yet.<br>
+                Check out other categories!
+              </h3>
+            </div>
+            {% endif %}
           </div>
         </div> <!-- End main content container -->
       </div> <!-- End content row -->
