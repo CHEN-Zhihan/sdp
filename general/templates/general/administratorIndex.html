@@ -66,15 +66,18 @@
               {% for user in users %}
               <a href="#">
                 <tr>
-                  <td><p class="user-name">{{ user }}</p></td>
-                  <!--<td><p class="user-desc"></p></td>-->
+                  <td><p class="user-name">{{ user.name }}</p></td>
+                  <td><p class="user-desc">{{user.username}}</p></td>
+                  {% for group in user.groups%}
+                    {{group}}
+                  {% endfor%}
                   <td><p class="user-designate">
-                    <!--{% if "Instructor" != user.group %}-->
+                    {% if not user.isInstructor %}
                     <form action="action_page.php">
                       <input type="submit" value="Designate">
                       <input type="hidden" value={{ user.name }}>
                     </form>
-                    <!--{% endif %}-->
+                    {% endif %}
                   </p></td>
                 </tr>
               </a>
@@ -99,7 +102,8 @@
               <a href="#">
                 <tr>
                   <td><p class="user-name">{{ course.name }}</p></td>
-                  <td><p class="user-desc">{{ course.instructor.name }}</p></td>
+                  <td><p class="user-desc">{{ course.instructor }}</p></td>
+                  <td><p class="user-desc">{{ course.category }}</p></td>
                 </tr>
               </a>
               {% endfor %}
