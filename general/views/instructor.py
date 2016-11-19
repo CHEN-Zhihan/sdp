@@ -2,7 +2,6 @@ from django.shortcuts import render,redirect,render_to_response
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.http import JsonResponse
-from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from ..courseModels import Category,Course
 from ..userModels import Instructor
