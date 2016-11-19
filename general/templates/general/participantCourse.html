@@ -99,7 +99,7 @@
                       {% if module.index > visibility %}
                       <a href="#">
                       {% endif %}
-                        <div class="module jumbotron" {% if module.index > visibility %}disabled{% endif %} id="{{ module.index }}">
+                        <div class="module jumbotron {% if module.index > visibility %}disabled{% endif %}" id="{{ module.index }}">
                           <p class="module-name">{{ module.name }}</p>
                           <p class="module-desc">{{ module.description }}</p>
                         </div>

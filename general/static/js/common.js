@@ -46,7 +46,7 @@ function validateForm(form) {
 
 // Respond to a course clicked
 function registerCourseListener() {
-  $(".course:not(disabled)").click(function () {
+  $(".course:not(.disabled)").click(function () {
     // Get course name and ID
     var courseName = $(".course-name", this).text();
     var courseID = parseInt($(this).attr("id"));
@@ -65,7 +65,7 @@ function registerCourseListener() {
 // Respond to click on course
 function registerModuleListener() {
   // If developing course clicked
-  $(".module:not(disabled)").click(function () {
+  $(".module:not(.disabled)").click(function () {
     // Get course name and ID
     var moduleName = $(".module-name", this).text();
     var moduleIndex = parseInt($(this).attr("id"));
