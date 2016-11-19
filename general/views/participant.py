@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from . import authenticate
 from ..userModels import Participant
 from ..courseModels import Course,Category
-from ..exceptions import AlreadyEnrolled,NoModuleException
+from ..exceptions import AlreadyEnrolled
 @login_required
 def ParticipantIndex(request,participantID):
     participantID=int(participantID)
@@ -16,7 +16,7 @@ def ParticipantIndex(request,participantID):
     categoryList = Category.getAllCategories()
     participant = Participant.getFromUser(request.user)
     currentCourse=participant.getCurrentCourse()
-    if currentCourse!=None and currentCourse.getTotalProgress()!=0:
+    if currentCourse!=None and  currentCourse.getTotalProgress()!=0:
         progress = -1 if currentCourse==None else int(participant.getProgress()/currentCourse.getTotalProgress()*100)
     else:
         progress=0
@@ -74,13 +74,11 @@ def viewCourse(request,participantID,courseID):
                 course = Course.getByID(courseID)
                 try:
                     result = participant.enroll(course)
-                except NoModuleException:
-                    result=-2
                 except Exception as e:
                     print(e)
-                    result=-1
+                    result=False
                 else:
-                    result=0
+                    result=True
                 return JsonResponse({'result':result})
             elif action=="RETAKE" and not participant.hasEnrolled() and participant.hasTaken(courseID):
                 course = participant.getCompletedCourseByID(courseID)
