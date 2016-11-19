@@ -4,9 +4,9 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from ..courseModels import Category
+from ..courseModels import Category,Course
 from ..userModels import Instructor
-from ..forms import DocumentForm
+from ..forms import ComponentForm
 from . import authenticate
 from ..exceptions import NameDuplication
 
@@ -16,6 +16,15 @@ def InstructorIndex(request,instructorID):
         instructor = Instructor.getFromUser(request.user)
         developingCourses = instructor.getDevelopingCourses()
         openCourses = instructor.getOpenedCourses()
+        if request.method=="POST":
+            courseID=int(request.POST.get("id"))
+            try:
+                instructor.deleteCourse(Course.getByID(courseID))
+            except Exception:
+                result=False
+            else:
+                result=True
+            return JsonResponse({"result":result})
         return render(request,"general/instructorIndex.html",{'developingCourses':developingCourses,'openCourses':openCourses})
     return redirect("myLogout")
 
@@ -53,7 +62,7 @@ def coursePage(request,instructorID,courseID):
         if instructor.ownCourse(courseID):
             course = instructor.getCourseByID(courseID)
             if request.method=="POST":
-                action = request.POST.get("action")
+                action=request.POST.get("action")
                 if action=="OPEN":
                     try:
                         instructor.openCourse(course)
@@ -63,8 +72,10 @@ def coursePage(request,instructorID,courseID):
                         result=True
                     return JsonResponse({"result":result})
                 elif action=="DELETE":
+                    moduleIndex=int(request.POST.get("index"))
+                    module=course.getModuleByIndex(moduleIndex)
                     try:
-                        instructor.deleteCourse(course)
+                        course.deleteModule(module)
                     except Exception:
                         result=False
                     else:
@@ -160,15 +171,56 @@ def newModule(request,instructorID,courseID):
 @login_required
 def modulePage(request,instructorID,courseID,moduleIndex):
     courseID=int(courseID)
+    moduleIndex=int(moduleIndex)
     if authenticate.roleCheck(request.user,"Instructor",instructorID):
         instructor=Instructor.getFromUser(request.user)
         if instructor.ownCourse(courseID):
             course=instructor.getCourseByID(courseID)
-            module = course.getModuleByIndex(moduleIndex)
-            if module!=None:
-                components = module.getSortedComponents()
-                return render(request,"general/modulePage.html",{'course':course,'module':module,'components':components,"isOpen":course.isOpen()})
+            if course.hasModule(moduleIndex):
+                module=course.getModuleByIndex(moduleIndex)                
+                if request.method=="POST":
+                    componentIndex=int(request.POST.get("index"))
+                    component=module.getComponentByIndex(componentIndex)
+                    try:
+                        component.delete()
+                    except Exception:
+                        result=False
+                    else:
+                        result=True
+                    return JsonResponse({"result":result})
+                else:
+                    components = module.getSortedComponents()
+                    return render(request,"general/modulePage.html",{'course':course,'module':module,'components':components,"isOpen":course.isOpen()})
     return redirect("myLogout")
+
+@login_required
+def editModule(request,instructorID,courseID,moduleIndex):
+    courseID=int(courseID)
+    moduleIndex=int(moduleIndex)
+    if authenticate.roleCheck(request.user,"Instructor",instructorID):
+        instructor=Instructor.getFromUser(request.user)
+        if instructor.ownCourse(courseID):
+            course = instructor.getCourseByID(courseID)
+            if course.hasModule(moduleIndex):
+                module=course.getModuleByIndex(moduleIndex)
+                if request.method=="POST":
+                    name=request.POST.get("name")
+                    description = request.POST.get("description")
+                    try:
+                        course.modifyModule(module,name,description)
+                    except NameDuplication:
+                        errno=-2
+                    except Exception as err:
+                        print(err)
+                        errno=-1
+                    else:
+                        errno=0
+                    return JsonResponse({"result":errno})
+                else:
+                    return render(request,"general/editModule.html",{"module":module})
+    return redirect("myLogout")
+
+
 
 @login_required
 def newComponent(request,instructorID,courseID,moduleIndex):
@@ -184,12 +236,12 @@ def newComponent(request,instructorID,courseID,moduleIndex):
                     typeName = request.POST.get('typeName')
                     index = int(request.POST.get('index'))
                     if typeName=="FILE":
-                        form = DocumentForm(request.POST,request.FILES)
+                        form = ComponentForm(request.POST,request.FILES)
                         if form.is_valid():
                             component = module.createComponent(typeName,index,request.FILES['file'])
                             return JsonResponse({'result':True,'componentID':component.index})
                 else:
-                    form = DocumentForm()
+                    form = ComponentForm()
                     components=module.getSortedComponents()
                     return render(request,"general/newComponent.html",{"components":components,"form":form})
     return HttpResponse(status=404)

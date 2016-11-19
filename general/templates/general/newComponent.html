@@ -8,8 +8,8 @@
     <!-- List of uploaded components -->
     {% if components %}
         <ul>
-        {% for document in components %}
-            <li><a href="{{ document.file.url }}">{{ document.file.name }}</a></li>
+        {% for components in components %}
+            <li><a href="{{ components.content.url }}">{{ document.content.name }}</a></li>
         {% endfor %}
         </ul>
     {% else %}

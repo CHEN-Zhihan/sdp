@@ -20,6 +20,7 @@ urlpatterns = [
     url(courseURL+r'/newModule$',instructor.newModule,name="newModule"),
     url(courseURL+r'/editCourse$',instructor.editCourse,name="editCourse"),
     url(moduleURL+r'$',instructor.modulePage,name="modulePage"),
+    url(moduleURL+r'/editModule$',instructor.editModule,name="editModule"),
     url(moduleURL+r'/changeComponentOrder$',instructor.changeComponentOrder,name="changeComponentOrder"),
     url(moduleURL+r'/newComponent$',instructor.newComponent,name="newComponent"),
     url(administratorURL+r'$',administrator.AdministratorIndex,name="AdministratorIndex"),
