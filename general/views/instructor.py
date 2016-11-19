@@ -62,7 +62,7 @@ def coursePage(request,instructorID,courseID):
         if instructor.ownCourse(courseID):
             course = instructor.getCourseByID(courseID)
             if request.method=="POST":
-                action=request.method.get("action")
+                action=request.POST.get("action")
                 if action=="OPEN":
                     try:
                         instructor.openCourse(course)
