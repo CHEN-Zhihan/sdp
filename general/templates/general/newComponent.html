@@ -6,15 +6,6 @@
     </head>
     <body>
     <!-- List of uploaded components -->
-    {% if components %}
-        <ul>
-        {% for components in components %}
-            <li><a href="{{ components.content.url }}">{{ document.content.name }}</a></li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No components.</p>
-    {% endif %}
 
         <!-- Upload form. Note enctype attribute! -->
         <form action="" method="post" enctype="multipart/form-data">
@@ -25,13 +16,14 @@
                 {{ form.file.errors }}
                 {{ form.file }}
             </p>
-            <p><input type="submit" value="Upload" /></p>
             <p>index: <input type="text" name="index"></p>
                 usertype: <select name="typeName" >
-                <option value = "text">text</option>
-                <option value = "image">image</option>
+                <option value = "TEXT">text</option>
+                <option value = "IMAGE">image</option>
                 <option value = "FILE">file</option>
             </select>
+            <p><input type="submit" value="Upload" /></p>
+
         </form>
     </body>
 </html> 

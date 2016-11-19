@@ -159,7 +159,10 @@ class Module(models.Model):
         c.index=index
         self._updateIndex(index)
         c.typeName=typeName
-        c.content=content
+        if typeName!="TEXT":
+            c.content = content
+        else:
+            c.text = content
         c.save()
         self.component_set.add(c)
         self.save()
@@ -189,7 +192,6 @@ class Module(models.Model):
             component.save()
         componentChanged.index=newIndex
         componentChanged.save()
-
     def getSortedComponents(self):
         components=list(self.component_set.all())
         components.sort(key=(lambda x:x.index))
