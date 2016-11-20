@@ -28,5 +28,4 @@ urlpatterns = [
     url(r'login/$',authenticate.myLogin,name="myLogin"),
     url(r'^$',authenticate.myLogin,name="homeLogin"),
     url(r'logout/$',authenticate.myLogout,name="myLogout"),
-    url(r'register/$',authenticate.register,name="register"),
 ]
