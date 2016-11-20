@@ -24,7 +24,8 @@ def AdministratorIndex(request,administratorID):
             result = True
         return JsonResponse({"result":result})
     else:
-        users = set(map(UserAdapter,User.objects.all()))
+        users = list(map(UserAdapter,User.objects.all()))
+        users.sort(key=(lambda x:x.username))
         courses = Course.objects.all()
         return render(request,"general/administratorIndex.html",{"users":users,"courses":courses})
 
