@@ -67,21 +67,19 @@
               <a href="#">
                 <tr>
                   <td><p class="user-name">{{ user.name }}</p></td>
-                  <td><p class="user-desc">{{user.username}}</p></td>
-                  {% for group in user.groups%}
-                    {{group}}
-                  {% endfor%}
+                  <td><p class="user-group">{{user.group}}</p></td>
                   <td><p class="user-designate">
                     {% if not user.isInstructor %}
-                    <form action="action_page.php">
+                    <form method = "POST" action="">{% csrf_token %}
                       <input type="submit" value="Designate">
-                      <input type="hidden" value={{ user.name }}>
+                      <input type="hidden" name = "username" value="{{user.username}}">
                     </form>
                     {% endif %}
                   </p></td>
                 </tr>
               </a>
               {% endfor %}
+            </table>
             {% endif %}
 
 
@@ -107,9 +105,10 @@
                 </tr>
               </a>
               {% endfor %}
+            </table>
             {% endif %}
 
-            {% if not developingCourses and not openCourses %}
+            {% if not users and not courses %}
             <!-- If no courses, display default message -->
             <div class="container-fluid centered text-center">
               <h3 class="info-text jumbotron">
