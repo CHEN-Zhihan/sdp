@@ -1,6 +1,7 @@
 from . import authenticate
 from ..userModels import Participant,Administrator,Instructor,HR,SDPUser
 from ..courseModels import Course
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render,redirect
@@ -12,10 +13,16 @@ def AdministratorIndex(request,administratorID):
         return redirect("myLogout")
     admin=Administrator.getFromUser(request.user)
     if request.method=="POST":
-        username = request.POST.get("username")
-        user=User.objects.get(username=username)
-        newInstructor=Administrator.designate(user,"Instructor")
-        return redirect('AdministratorIndex',administratorID)
+        try:
+            username = request.POST.get("username")
+            user=User.objects.get(username=username)
+            newInstructor=Administrator.designate(user,"Instructor")
+        except Exception as err:
+            result = False
+            print(err)
+        else:
+            result = True
+        return JsonResponse({"result":result})
     else:
         users = list(map(UserAdapter,User.objects.all()))
         users.sort(key=(lambda x:x.username))
