@@ -17,7 +17,7 @@ def AdministratorIndex(request,administratorID):
         newInstructor=Administrator.designate(user,"Instructor")
         return redirect('AdministratorIndex',administratorID)
     else:
-        users = set(map(UserAdapter,User.objects.all()))
+        users = list(map(UserAdapter,User.objects.all()))
         courses = Course.objects.all()
         return render(request,"general/administratorIndex.html",{"users":users,"courses":courses})
 
