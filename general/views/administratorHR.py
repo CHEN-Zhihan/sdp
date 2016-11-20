@@ -29,6 +29,14 @@ def AdministratorIndex(request,administratorID):
         courses = Course.objects.all()
         return render(request,"general/administratorIndex.html",{"users":users,"courses":courses})
 
+@login_required
+def HRIndex(request,HRID):
+    HRID=int(HRID)
+    if not authenticate.roleCheck(request.user,"HR",HRID):
+        return redirect("myLogout")
+    users = list(map(UserAdapter,User.objects.all()))
+    users.sort(key=(lambda x:x.username))
+    return render(request,"general/HRIndex.html",{"users":users})
 
 class UserAdapter():
     def __init__(self,user):
