@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import participant,instructor,authenticate,administrator
+from .views import participant,instructor,authenticate,administratorHR
 
 participantURL = r'^Participant/(?P<participantID>[0-9]+)'
 instructorURL = r'^Instructor/(?P<instructorID>[0-9]+)'
@@ -24,7 +24,8 @@ urlpatterns = [
     url(instructorModuleURL+r'/editModule$',instructor.editModule,name="editModule"),
     url(instructorModuleURL+r'/changeComponentOrder$',instructor.changeComponentOrder,name="changeComponentOrder"),
     url(instructorModuleURL+r'/newComponent$',instructor.newComponent,name="newComponent"),
-    url(administratorURL+r'$',administrator.AdministratorIndex,name="AdministratorIndex"),
+    url(administratorURL+r'$',administratorHR.AdministratorIndex,name="AdministratorIndex"),
+    url(r'^HR/(?P<HRID>[0-9]+)$',administratorHR.HRIndex,name="HRIndex"),
     url(r'login/$',authenticate.myLogin,name="myLogin"),
     url(r'^$',authenticate.myLogin,name="homeLogin"),
     url(r'logout/$',authenticate.myLogout,name="myLogout"),
