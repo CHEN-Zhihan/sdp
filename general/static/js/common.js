@@ -101,6 +101,18 @@ function registerCategoryListener() {
   });
 }
 
+function registerBack2CourseListener() {
+  $("#back").click(function () {
+    var protocol = window.location.protocol;
+    var host = window.location.host;
+    var pathArray = window.location.pathname.split("/");
+    var newPath = pathArray[1] + "/" + pathArray[2] + "/" + pathArray[3];
+
+    // Redirect to new URL
+    window.location.assign(protocol + "//" + host + "/" + newPath);
+  });
+}
+
 $(document).ready(function () {
   // Set up AJAX for Django CSRF token
   $.ajaxSetup({

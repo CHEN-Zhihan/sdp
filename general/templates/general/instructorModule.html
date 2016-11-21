@@ -45,6 +45,14 @@
                   <span class="glyphicon glyphicon-home"></span>Home
                 </a>
               </li>
+              {% if not isOpen %}
+              <!-- Menu item: Back to course -->
+              <li>
+                <a href="#" id="back">
+                  <span class="glyphicon glyphicon-menu-left"></span>Back to Course
+                </a>
+              </li>
+              {% endif %}
 
               <!-- Logout -->
               <div class="menu-bottom">
