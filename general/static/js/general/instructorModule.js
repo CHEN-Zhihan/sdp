@@ -116,4 +116,5 @@ $(document).ready(function () {
   registerAddComponentListener();
   registerDragSortHandler();
   registerDeleteListener();
+  registerBack2CourseListener();
 });

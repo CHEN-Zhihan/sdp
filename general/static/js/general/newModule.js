@@ -67,4 +67,5 @@ function registerModuleSubmitListener(pos) {
 
 $(document).ready(function () {
   registerModuleSubmitListener();
+  registerBack2CourseListener();
 });
