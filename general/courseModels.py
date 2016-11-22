@@ -195,6 +195,7 @@ class Module(models.Model):
             component.save()
         componentChanged.index=newIndex
         componentChanged.save()
+
     def getSortedComponents(self):
         components=list(self.component_set.all())
         components.sort(key=(lambda x:x.index))

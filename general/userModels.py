@@ -152,7 +152,6 @@ class Participant(SDPUser):
             self.currentenrollment.progress+=1
             self.currentenrollment.save()
             self.save()
-            print("now can visit",self.currentenrollment.progress)
 
     def drop(self):
         CurrentEnrollment.objects.filter(participant=self).delete()
