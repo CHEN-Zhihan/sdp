@@ -21,7 +21,8 @@ class Category(models.Model):
 
 for name in categoryList:
     if not Category.objects.filter(name=name).exists():
-        category=Category.create(name)
+        category=Category()
+        category.name=name
         category.save()
 
 class Enrollment(models.Model):
@@ -94,20 +95,12 @@ class Course(models.Model):
 
     def deleteModule(self,module):
         index=module.index
-        for component in module.component_set.all():
-            module.deleteComponent(component)
         for restModule in self.module_set.all():
             if restModule.index>index:
                 restModule-=1
                 restModule.save()
-        module.delete()
+        module.deleteSelf()
 
-    def modifyModule(self,module,name,description):
-        if self.module_set.filter(name=name).exists() and module.name!=name:
-            raise NameDuplication()
-        module.name=name
-        module.description=description
-        module.save()
 
     def createModule(self,name,description,index):
         if self.module_set.filter(name=name).exists():
@@ -122,25 +115,39 @@ class Course(models.Model):
         self.module_set.add(m)
         self.save()
         return m
+
+    def updateInfo(self,name,category,description):
+        if Course.objects.filter(name=name).exists() and course.name!=name:
+            raise NameDuplication()
+        self.name=name
+        self.description=description
+        self.category=category
+        self.save()
+
     def getSortedModules(self):
         temp = list(self.module_set.all())
         temp.sort(key=(lambda x:x.index))
         return temp
 
-    def getInstructor(self):
-        return self.instructor
 
     def openCourse(self):
-        if self._isOpen:
-            raise Exception("Course {} already opened".format(str(self)))
+        if len(self.module_set.all())==0:
+            raise NoModuleException()
         self._isOpen=True
+        self.save()
+
+    def deleteSelf(self):
+        while (len(self.module_set.all())):
+            temp = self.module_set.pop()
+            temp.deleteSelf()
+        self.delete()
 
     def getModuleByIndex(self,index):
         return self.module_set.get(index=index)
 
     def hasModule(self,index):
         return self.module_set.filter(index=index).exists()
-    
+
     def getTotalProgress(self):
         return len(self.module_set.all())
 
@@ -155,39 +162,33 @@ class Module(models.Model):
         return string
 
     def createComponent(self,typeName,index,content):
-        c = Component()
+        c = lookup[typeName]()
+        print(type(c))
         c.module=self
         c.index=index
         self._updateIndex(index)
-        c.typeName=typeName
-        if typeName!="TEXT":
-            c.content = content
-        else:
-            c.text = content
+        c.content=content
         c.save()
-        self.component_set.add(c)
         self.save()
         return c
-    
+
     def deleteComponent(self,component):
         index=component.index
-        for restComponent in self.component_set.all():
+        for restComponent in self._getAllComponents():
             if restComponent.index>index:
                 restComponent.index-=1
                 restComponent.save()
-        if component.typeName!="TEXT":
-            component.content.delete()
-        component.delete()
+        component.deleteSelf()
 
     def _updateIndex(self,newIndex):
-        for component in self.component_set.all():
+        for component in self._getAllComponents():
             if component.index>=newIndex:
                 component.index+=1
                 component.save()
 
     def updateIndex(self,originIndex,newIndex):
-        componentChanged=self.component_set.get(index=originIndex)        
-        for component in self.component_set.all():
+        componentChanged=self.getComponentByIndex(originIndex)        
+        for component in self._getAllComponents():
             if component.index>=newIndex and component.index<originIndex:
                 component.index+=1
             elif component.index<=newIndex and component.index>originIndex:
@@ -197,23 +198,88 @@ class Module(models.Model):
         componentChanged.save()
 
     def getSortedComponents(self):
-        components=list(self.component_set.all())
+        components = self._getAllComponents()
         components.sort(key=(lambda x:x.index))
         return components
 
+    def updateInfo(self,name,description):
+        if self.course.module_set.filter(name=name).exists() and self.name!=name:
+            raise NameDuplication()
+        self.name=name
+        self.description=description
+        self.save()
+
     def hasComponent(self,index):
-        return self.component_set.filter(index=index).exists()
+        return self.filecomponent_set.filter(index=index).exists() or self.textcomponent_set.filter(index=index).exists()\
+            or self.imagecomponent_set.filter(index=index).exists()
 
     def getComponentByIndex(self,index):
-        return self.component_set.get(index=index)
+        if self.filecomponent_set.filter(index=index).exists():
+            return self.filecomponent_set.get(index=index)
+        elif self.textcomponent_set.filter(index=index).exists():
+            return self.textcomponent_set.get(index=index)
+        elif self.imagecomponent_set.filter(index=index).exists():
+            return self.imagecomponent_set.get(index=index)
 
+    def deleteSelf(self):
+        components = self._getAllComponents()
+        while (len(components)!=0):
+            temp = components.pop()
+            temp.deleteSelf()
+        self.delete()
+    
+    def _getAllComponents(self):
+        fileComponents=list(self.filecomponent_set.all())
+        textComponents = list(self.textcomponent_set.all())
+        imageComponents = list(self.imagecomponent_set.all())
+        fileComponents.extend(textComponents) 
+        fileComponents.extend(imageComponents)
+        return fileComponents
 
 class Component(models.Model):
+    class Meta:
+        abstract=True
     index = models.IntegerField()
     module = models.ForeignKey(Module,on_delete=models.CASCADE)
-    typeName = models.CharField(max_length=200)
-    text = models.TextField(null=True)
-    content = models.FileField(null=True)
     def __str__(self):
         string = "{}-th of {}:{}".format(self.index,self.module.course.name,self.module.name)
         return string
+
+
+    def getIndex(self):
+        return self.index
+    
+    def getContent(self):
+        return self.content
+
+class TextComponent(Component):
+    content = models.TextField()
+
+    def deleteSelf(self):
+        self.delete()
+
+    def getType(self):
+        return "TEXT"
+
+
+
+class FileComponent(Component):
+    content = models.FileField()
+    def deleteSelf(self):
+        self.content.delete()
+        self.delete()
+
+    def getType(self):
+        return "FILE"
+    
+class ImageComponent(Component):
+    content = models.ImageField(null=True,blank=True)
+
+    def deleteSelf(self):
+        self.content.delete()
+        self.delete()
+
+    def getType(self):
+        return "IMAGE"
+
+lookup={"IMAGE":ImageComponent,"FILE":FileComponent,"TEXT":TextComponent}

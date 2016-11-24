@@ -4,7 +4,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from .exceptions import *
 from .courseModels import Category,Course,CurrentEnrollment,CompletedEnrollment
 
-
 roleList = ["Instructor","Participant","HR","Administrator"]
 for role in roleList:
     if not Group.objects.filter(name=role).exists():
@@ -15,24 +14,9 @@ class SDPUser(models.Model):
     _user = models.ForeignKey(User,on_delete=models.CASCADE)
     class Meta:
         abstract=True
-    @staticmethod
-    def _createFromUser(user,role):
-        temp=lookup[role]()
-        temp._user=user
-        temp._addToGroup(role)
-        temp.save()
-        return temp
 
-    @staticmethod
-    def _createWithNewUser(username,password,firstName,lastName,role):
-        user=User.objects.create_user(username=username,password=password,first_name=firstName,last_name=lastName)
-        return SDPUser._createFromUser(user,role)
-
-    @staticmethod
-    def getFromUser(user,roleName):
-        role=lookup[roleName]
-        temp = role.objects.get(_user=user)
-        return temp
+    def setUser(self,user):
+        self._user=user
 
     def getUser(self):
         return self._user
@@ -40,34 +24,13 @@ class SDPUser(models.Model):
     def __str__(self):
         return "{} {}".format(self._user.first_name,self._user.last_name)
 
-
-    def _addToGroup(self,name):
-        print(name)
-        group = Group.objects.get(name=name)
-        group.user_set.add(self._user)
-        self._user.groups.add(group)
-        group.save()
-        self._user.save()
-        self.save()
-
 class Instructor(SDPUser):
-    @staticmethod
-    def createWithNewUser(username,password,firstName,lastName):
-        return SDPUser._createWithNewUser(username,password,firstName,lastName,"Instructor")
-
-    @staticmethod
-    def createFromUser(user):
-        return SDPUser._createFromUser(user,"Instructor")
-
-    @staticmethod
-    def getFromUser(user):
-        return SDPUser.getFromUser(user,"Instructor")
 
     def getDevelopingCourses(self):
-        return self.course_set.filter(_isOpen=False)
+        return list(filter((lambda x:not x.isOpen()),self.course_set.all()))
 
     def getOpenedCourses(self):
-        return self.course_set.filter(_isOpen=True)
+        return list(filter((lambda x: x.isOpen()),self.course_set.all()))
 
     def getAllCourses(self):
         return self.course_set.all()
@@ -83,27 +46,6 @@ class Instructor(SDPUser):
         c.category=category
         c.save()
         return c
-    
-    def deleteCourse(self,course):
-        for module in course.getSortedModules():
-            for component in module.getSortedComponents():
-                component.delete()
-            module.delete()
-        course.delete()
-
-    def modifyCourse(self,course,name,description,category):
-        if Course.objects.filter(name=name).exists() and course.name!=name:
-            raise NameDuplication()
-        course.name=name
-        course.description=description
-        course.category=category
-        course.save()
-
-    def openCourse(self,course):
-        if len(course.module_set.all())==0:
-            raise NoModuleException()
-        course._isOpen=True
-        course.save()
 
     def ownCourse(self,courseID):
         return courseID in list(map((lambda x:x.id),self.getAllCourses()))
@@ -112,17 +54,6 @@ class Instructor(SDPUser):
         return self.course_set.get(id=courseID)
 
 class Participant(SDPUser):
-    @staticmethod
-    def createFromUser(user):
-        return SDPUser._createFromUser(user,"Participant")
-
-    @staticmethod
-    def createWithNewUser(username,password,firstName,lastName):
-        return SDPUser._createWithNewUser(username,password,firstName,lastName,"Participant")
-
-    @staticmethod
-    def getFromUser(user):
-        return SDPUser.getFromUser(user,"Participant")
 
     def enroll(self,course):
         self.currentenrollment=CurrentEnrollment()
@@ -174,7 +105,7 @@ class Participant(SDPUser):
         self.completedenrollment_set.add(CompletedEnrollment.createFromCurrentEnrollment(self.currentenrollment))
         self.currentenrollment=None
         self.save()
-    
+
     def canViewModule(self,courseID,moduleIndex):
         if self.hasTaken(courseID):
             return True
@@ -194,46 +125,20 @@ class Participant(SDPUser):
         for completed in self.getCompletedCourses():
             if completed.id==courseID:
                 return completed
+
     def getCurrentCourse(self):
         if self.hasEnrolled():
             return self.currentenrollment.course
         return None
 
 class HR(SDPUser):
-    @staticmethod
-    def createFromUser(user):
-        return SDPUser._createFromUser(user,"HR")
-    @staticmethod
-    def createWithNewUser(username,password,firstName,lastName):
-        return SDPUser._createWithNewUser(username,password,firstName,lastName,"HR")
-    @staticmethod
-    def getFromUser(user):
-        return SDPUser.getFromUser(user,"HR")
-
+    pass
 
 class Administrator(SDPUser):
-    @staticmethod
-    def createWithNewUser(username,password,firstName,lastName):
-        return SDPUser._createWithNewUser(username,password,firstName,lastName,"Administrator")
+    def designate(self,user,newRole):
+        return UserManager.getInstance().createFromUser(user,newRole)
 
-    @staticmethod
-    def createFromUser(user):
-        return SDPUser._createFromUser(user,"Administrator")
-
-    @staticmethod
-    def designate(user,newRole):
-        return SDPUser._createFromUser(user,newRole)
-
-    @staticmethod
-    def getFromUser(user):
-        return SDPUser.getFromUser(user,"Administrator")
-
-    @staticmethod
-    def getUserGroups(user):
-        return list(map((lambda x:x.name),user.groups.all()))
-
-    @staticmethod
-    def createCategory(name):
+    def createCategory(self,name):
         if Category.objects.filter(name=name).exists():
             raise NameDuplication()
         c=Category()
@@ -241,4 +146,36 @@ class Administrator(SDPUser):
         c.save()
         return c
 
-lookup = {"Instructor":Instructor,"Participant":Participant,"HR":HR,"Administrator":Administrator}
+class UserManager():
+    _instance = None
+
+    @staticmethod
+    def getInstance():
+        if UserManager._instance is None:
+            UserManager._instance=UserManager()
+        return UserManager._instance
+
+    def getFromUser(self,user,group,ID):
+        if self.userInGroup(user,group):
+            temp = group.objects.get(id=ID)
+            if temp.getUser().id==user.id:
+                return temp
+        return None
+
+    def userInGroup(self,user,group):
+        return group.__name__ in list(map((lambda x:x.name),user.groups.all()))
+
+    def getUserGroupID(self,user,group):
+        return list(filter((lambda x:x.getUser().id==user.id),group.objects.all()))[0].id
+    
+    def createWithNewUser(self,username,password,firstName,lastName,group):
+        user = User.objects.create_user(username=username,password=password,first_name=firstName,last_name=lastName)
+        user.save()
+        return self.createFromUser(user,group)
+    
+    def createFromUser(self,user,group):
+        temp = group()
+        temp.setUser(user)
+        temp.save()
+        temp.getUser().groups.add(Group.objects.get(name=group.__name__))
+        return temp
