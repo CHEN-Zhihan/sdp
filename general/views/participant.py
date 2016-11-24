@@ -5,28 +5,28 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from . import authenticate
-from ..userModels import Participant
+from ..userModels import Participant,UserManager
 from ..courseModels import Course,Category
 from ..exceptions import AlreadyEnrolled
+
 @login_required
 def ParticipantIndex(request,participantID):
     participantID=int(participantID)
-    if not authenticate.roleCheck(request.user,"Participant",participantID):
-        return redirect("myLogout")
-    categoryList = Category.getAllCategories()
-    participant = Participant.getFromUser(request.user)
-    currentCourse=participant.getCurrentCourse()
-    if currentCourse!=None and  currentCourse.getTotalProgress()!=0:
+    participant = UserManager.getInstance().getFromUser(request.user,Participant,participantID)
+    if participant is not None:
+        categoryList = Category.getAllCategories()
+        currentCourse=participant.getCurrentCourse()
         progress = -1 if currentCourse==None else int(participant.getProgress()/currentCourse.getTotalProgress()*100)
-    else:
-        progress=0
-    completedCourses = participant.getCompletedCourses()
-    return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,
-        "progress":progress,'completedCourses':completedCourses})
+        completedCourses = participant.getCompletedCourses()
+        return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,
+            "progress":progress,'completedCourses':completedCourses})
+    return redirect("myLogout")
 
 @login_required
 def showCourseList(request,participantID):
-    if authenticate.roleCheck(request.user,"Participant",participantID):
+    participantID=int(participantID)
+    participant = UserManager.getInstance().getFromUser(request.user,Participant,participantID)
+    if participant is not None:
         categoryID = int(request.GET.get("categoryID"))
         category=Category.getByID(categoryID)
         courses = category.getOpenedCourses()
@@ -40,8 +40,8 @@ def showCourseList(request,participantID):
 def viewCourse(request,participantID,courseID):
     participantID=int(participantID)
     courseID=int(courseID)
-    if authenticate.roleCheck(request.user,"Participant",participantID):
-        participant=Participant.getFromUser(request.user)
+    participant = UserManager.getInstance().getFromUser(request.user,Participant,participantID)
+    if participant is not None:
         if request.method=="GET":
             if participant.isTaking(courseID):
                 course=participant.getCurrentCourse()
@@ -98,8 +98,8 @@ def viewModule(request,participantID,courseID,moduleIndex):
     participantID=int(participantID)
     courseID=int(courseID)
     moduleIndex=int(moduleIndex)
-    if authenticate.roleCheck(request.user,"Participant",participantID):
-        participant = Participant.getFromUser(request.user)
+    participant = UserManager.getInstance().getFromUser(request.user,Participant,participantID)
+    if participant is not None:
         if participant.canViewModule(courseID,moduleIndex):
             course = participant.getCurrentCourse() if participant.hasEnrolled() else participant.getCompletedCourseByID(courseID)
             module = course.getModuleByIndex(moduleIndex)

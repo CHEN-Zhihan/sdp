@@ -4,21 +4,23 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from ..courseModels import Category,Course
-from ..userModels import Instructor
+from ..userModels import Instructor,UserManager
 from . import authenticate
 from ..exceptions import NameDuplication,NoModuleException
 
 @login_required
 def InstructorIndex(request,instructorID):
-    if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        instructor = Instructor.getFromUser(request.user)
+    instructorID=int(instructorID)
+    instructor = UserManager.getInstance().getFromUser(request.user,Instructor,instructorID)
+    if instructor is not None:
         developingCourses = instructor.getDevelopingCourses()
         openCourses = instructor.getOpenedCourses()
         if request.method=="POST":
             courseID=int(request.POST.get("id"))
             try:
-                instructor.deleteCourse(Course.getByID(courseID))
-            except Exception:
+                Course.getByID(courseID).deleteSelf()
+            except Exception as e:
+                print(e)
                 result=False
             else:
                 result=True
@@ -28,13 +30,14 @@ def InstructorIndex(request,instructorID):
 
 @login_required
 def newCourse(request,instructorID):
-    if authenticate.roleCheck(request.user,"Instructor",instructorID):
+    instructorID=int(instructorID)
+    instructor = UserManager.getInstance().getFromUser(request.user,Instructor,instructorID)
+    if instructor is not None:
         if request.method == "POST":
             name = request.POST.get('name')
             description = request.POST.get("description")
             categoryID = request.POST.get("categoryID")
             category = Category.getByID(categoryID)
-            instructor = Instructor.getFromUser(request.user)
             try:
                 course = instructor.createCourse(name,description,category)
             except NameDuplication:
@@ -55,18 +58,21 @@ def newCourse(request,instructorID):
 @login_required
 def coursePage(request,instructorID,courseID):
     courseID=int(courseID)
-    if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        instructor=Instructor.getFromUser(request.user)
+    instructorID=int(instructorID)
+    instructor = UserManager.getInstance().getFromUser(request.user,Instructor,instructorID)
+    if instructor is not None:
         if instructor.ownCourse(courseID):
             course = instructor.getCourseByID(courseID)
             if request.method=="POST":
                 action=request.POST.get("action")
                 if action=="OPEN":
                     try:
-                        instructor.openCourse(course)
+                        course.openCourse()
                     except NoModuleException:
+                        print("gg")
                         result=-2
-                    except Exception:
+                    except Exception as e:
+                        print(e)
                         result=-1
                     else:
                         result=0
@@ -93,8 +99,8 @@ def coursePage(request,instructorID,courseID):
 def changeModuleOrder(request,instructorID,courseID):
     instructorID=int(instructorID)
     courseID=int(courseID)
-    if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        instructor=Instructor.getFromUser(request.user)
+    instructor = UserManager.getInstance().getFromUser(request.user,Instructor,instructorID)
+    if instructor is not None:
         if instructor.ownCourse(courseID):
             course = instructor.getCourseByID(courseID)
             if request.method=="POST":
@@ -117,8 +123,9 @@ def changeModuleOrder(request,instructorID,courseID):
 @login_required
 def editCourse(request,instructorID,courseID):
     courseID=int(courseID)
-    if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        instructor=Instructor.getFromUser(request.user)
+    instructorID=int(instructorID)
+    instructor = UserManager.getInstance().getFromUser(request.user,Instructor,instructorID)
+    if instructor is not None:
         if instructor.ownCourse(courseID):
             course = instructor.getCourseByID(courseID)
             if request.method=="POST":
@@ -127,7 +134,7 @@ def editCourse(request,instructorID,courseID):
                 categoryID = request.POST.get("categoryID")
                 category = Category.getByID(categoryID)
                 try:
-                    instructor.modifyCourse(course,name,description,category)
+                    course.updateInfo(name,description,category)
                 except NameDuplication:
                     errno=-2
                 except Exception as err:
@@ -144,8 +151,9 @@ def editCourse(request,instructorID,courseID):
 @login_required
 def newModule(request,instructorID,courseID):
     courseID=int(courseID)
-    if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        instructor=Instructor.getFromUser(request.user)
+    instructorID=int(instructorID)
+    instructor = UserManager.getInstance().getFromUser(request.user,Instructor,instructorID)
+    if instructor is not None:
         if instructor.ownCourse(courseID):
             course =instructor.getCourseByID(courseID)
             if request.method == "POST":
@@ -172,8 +180,9 @@ def newModule(request,instructorID,courseID):
 def modulePage(request,instructorID,courseID,moduleIndex):
     courseID=int(courseID)
     moduleIndex=int(moduleIndex)
-    if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        instructor=Instructor.getFromUser(request.user)
+    instructorID=int(instructorID)
+    instructor = UserManager.getInstance().getFromUser(request.user,Instructor,instructorID)
+    if instructor is not None:
         if instructor.ownCourse(courseID):
             course=instructor.getCourseByID(courseID)
             if course.hasModule(moduleIndex):
@@ -189,7 +198,8 @@ def modulePage(request,instructorID,courseID,moduleIndex):
                         result=True
                     return JsonResponse({"result":result})
                 else:
-                    components = module.getSortedComponents()
+                    components =list(map(ComponentAdapter,module.getSortedComponents()))
+                    print(list(map((lambda x:x.typeName),components)))
                     return render(request,"general/instructorModule.html",{'course':course,'module':module,'components':components,"isOpen":course.isOpen()})
     return redirect("myLogout")
 
@@ -197,8 +207,9 @@ def modulePage(request,instructorID,courseID,moduleIndex):
 def editModule(request,instructorID,courseID,moduleIndex):
     courseID=int(courseID)
     moduleIndex=int(moduleIndex)
-    if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        instructor=Instructor.getFromUser(request.user)
+    instructorID=int(instructorID)
+    instructor = UserManager.getInstance().getFromUser(request.user,Instructor,instructorID)
+    if instructor is not None:
         if instructor.ownCourse(courseID):
             course = instructor.getCourseByID(courseID)
             if course.hasModule(moduleIndex):
@@ -207,7 +218,7 @@ def editModule(request,instructorID,courseID,moduleIndex):
                     name=request.POST.get("name")
                     description = request.POST.get("description")
                     try:
-                        course.modifyModule(module,name,description)
+                        module.updateInfo(name,description)
                     except NameDuplication:
                         errno=-2
                     except Exception as err:
@@ -226,8 +237,9 @@ def editModule(request,instructorID,courseID,moduleIndex):
 def newComponent(request,instructorID,courseID,moduleIndex):
     courseID=int(courseID)
     moduleIndex=int(moduleIndex)
-    if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        instructor=Instructor.getFromUser(request.user)
+    instructorID=int(instructorID)
+    instructor = UserManager.getInstance().getFromUser(request.user,Instructor,instructorID)
+    if instructor is not None:
         if instructor.ownCourse(courseID):
             course=instructor.getCourseByID(courseID)
             if course.hasModule(moduleIndex):
@@ -264,8 +276,8 @@ def changeComponentOrder(request,instructorID,courseID,moduleIndex):
     instructorID=int(instructorID)
     courseID=int(courseID)
     moduleIndex=int(moduleIndex)
-    if authenticate.roleCheck(request.user,"Instructor",instructorID):
-        instructor=Instructor.getFromUser(request.user)
+    instructor = UserManager.getInstance().getFromUser(request.user,Instructor,instructorID)
+    if instructor is not None:
         if instructor.ownCourse(courseID):
             course = instructor.getCourseByID(courseID)
             if course.hasModule(moduleIndex):
@@ -279,9 +291,15 @@ def changeComponentOrder(request,instructorID,courseID,moduleIndex):
                         result=False
                     else:
                         result=True
-                    components = module.getSortedComponents()
+                    components =list(map(ComponentAdapter,module.getSortedComponents()))
                     data=render_to_string("general/ajax/components.html",{"components":components})
                     return JsonResponse({"result":result,"data":data})
                 else:
                     return HttpResponse(status=404)
     return redirect("myLogout")
+
+class ComponentAdapter():
+    def __init__(self,component):
+        self.typeName=component.getType()
+        self.index=component.getIndex()
+        self.content=component.getContent()
