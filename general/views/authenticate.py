@@ -26,8 +26,10 @@ def myLogin(request):
         elif request.POST.get('action') == 'REGISTER':
             firstName = request.POST.get('firstName')
             lastName = request.POST.get('lastName')
-            if User.objects.filter(username=username).exists():
-                return JsonResponse({"result": False})
+            if not isValidUsername(username):
+                return JsonResponse({"result":False,"errno":-2})
+            elif User.objects.filter(username=username).exists():
+                return JsonResponse({"result": False,"errno":-1})
             else:
                 newUser = userManager.createWithNewUser(username, password, firstName, lastName,Participant)
                 login(request,newUser.getUser())
@@ -41,3 +43,11 @@ def myLogin(request):
 def myLogout(request):
     logout(request)
     return redirect('myLogin')
+
+def isValidChar(char):
+    return char.isalnum() or char=='-' or char =='_'
+
+def isValidUsername(username):
+    if len(username)==8:
+        return all(map(isValidChar,username))
+    return False
