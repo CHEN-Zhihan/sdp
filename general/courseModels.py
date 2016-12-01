@@ -1,8 +1,7 @@
 from datetime import datetime
 from django.db import models
-from .exceptions import NameDuplication,NoModuleException
-categoryList= ["Mergers and Acquisitions","Markets","Risk Management","Securities",
-"Financial Modelling","Operations","Information Technology"]
+from .exceptions import NameDuplication, NoModuleException
+
 class Category(models.Model):
     name = models.CharField(max_length=200)
     @staticmethod
@@ -20,11 +19,7 @@ class Category(models.Model):
     def getOpenedCourses(self):
         return self.course_set.filter(_isOpen=True)
 
-for name in categoryList:
-    if not Category.objects.filter(name=name).exists():
-        category=Category()
-        category.name=name
-        category.save()
+
 
 class Enrollment(models.Model):
     class Meta:
