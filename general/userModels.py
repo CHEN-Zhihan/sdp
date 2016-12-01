@@ -4,11 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .exceptions import NameDuplication
 from .courseModels import Category,Course,CurrentEnrollment,CompletedEnrollment
 
-roleList = ["Instructor","Participant","HR","Administrator"]
-for role in roleList:
-    if not Group.objects.filter(name=role).exists():
-        group = Group(name=role)
-        group.save()
+
 
 class SDPUser(models.Model):
     _user = models.ForeignKey(User,on_delete=models.CASCADE)
