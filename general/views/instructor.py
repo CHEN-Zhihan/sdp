@@ -69,7 +69,6 @@ def coursePage(request,instructorID,courseID):
                     try:
                         course.openCourse()
                     except NoModuleException:
-                        print("gg")
                         result=-2
                     except Exception as e:
                         print(e)
