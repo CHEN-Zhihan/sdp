@@ -287,4 +287,11 @@ class ImageComponent(Component):
     def getType(self):
         return "IMAGE"
 
-lookup={"IMAGE":ImageComponent,"FILE":FileComponent,"TEXT":TextComponent}
+class VideoComponent(Component):
+    content = models.URLField()
+    def getType(self):
+        return "VIDEO"
+    def deleteSelf(self):
+        self.delete()
+
+lookup={"IMAGE":ImageComponent,"FILE":FileComponent,"TEXT":TextComponent,"VIDEO":VideoComponent}
