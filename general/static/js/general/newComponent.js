@@ -4,6 +4,10 @@ function registerTypeSelectListener() {
       $(".form-content").html(`
         <textarea class="well well-sm well-input fullwidth" placeholder="Add Content" rows=10 id="text" name="text"></textarea>
       `);
+    } else if ($(this).val() == "VIDEO") {
+      $(".form-content").html(`
+        <input class="well well-sm well-input fullwidth" placeholder="Paste video URL here" id="text" name="text"></input>
+      `);
     } else {
       $(".form-content").html(`
         <input type="file" name="file" id="id_file">
@@ -51,7 +55,7 @@ function registerComponentSubmitListener() {
 
     var formData = new FormData($(this)[0]);
 
-    if (type == "TEXT") {
+    if (type == "TEXT" || type == "VIDEO") {
       if (!validateForm(this)) {
         $("#validateFailModal").modal();
         return;
