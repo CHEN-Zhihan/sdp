@@ -4,8 +4,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from .exceptions import NameDuplication
 from .courseModels import Category,Course,CurrentEnrollment,CompletedEnrollment
 
-
-
+'''
+SDPUser is an abstract class used as an interface to the User model
+provided by Django.
+'''
 class SDPUser(models.Model):
     _user = models.ForeignKey(User,on_delete=models.CASCADE)
     class Meta:
@@ -20,6 +22,9 @@ class SDPUser(models.Model):
     def __str__(self):
         return "{} {}".format(self._user.first_name,self._user.last_name)
 
+'''
+An Instructor is an SDPUser who can create courses.
+'''
 class Instructor(SDPUser):
 
     def getDevelopingCourses(self):
@@ -49,8 +54,9 @@ class Instructor(SDPUser):
     def getCourseByID(self,courseID):
         return self.course_set.get(id=courseID)
 
+'''
+'''
 class Participant(SDPUser):
-
 
     def enroll(self,course):
         self.currentenrollment=CurrentEnrollment()
@@ -75,7 +81,7 @@ class Participant(SDPUser):
 
     def updateProgress(self):
         if self.currentenrollment.progress>=self.currentenrollment.course.getTotalProgress()-1:
-            self.complete()
+            self._complete()
         else:
             self.currentenrollment.progress+=1
             self.currentenrollment.save()
@@ -98,7 +104,7 @@ class Participant(SDPUser):
     def isTaking(self,courseID):
         return self.hasEnrolled() and self.currentenrollment.course.id==courseID
 
-    def complete(self):
+    def _complete(self):
         self.completedenrollment_set.add(CompletedEnrollment.createFromCurrentEnrollment(self.currentenrollment))
         self.currentenrollment=None
         self.save()
@@ -128,18 +134,18 @@ class Participant(SDPUser):
 class HR(SDPUser):
     pass
 
+'''
+An Administrator is an SDPUser who can desigate a newRole
+to a exist user.
+'''
 class Administrator(SDPUser):
     def designate(self,user,newRole):
         return UserManager.getInstance().createFromUser(user,newRole)
 
-    def createCategory(self,name):
-        if Category.objects.filter(name=name).exists():
-            raise NameDuplication()
-        c=Category()
-        c.name=name
-        c.save()
-        return c
 
+'''
+A UserManager is a 
+'''
 class UserManager():
     _instance = None
 
