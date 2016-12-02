@@ -2,6 +2,11 @@ from datetime import datetime
 from django.db import models
 from .exceptions import NameDuplication, NoModuleException
 
+
+'''
+Category models the actual category. It has an attribute name and
+a category can get all opened courses under that category.
+'''
 class Category(models.Model):
     name = models.CharField(max_length=200)
     @staticmethod
@@ -14,31 +19,49 @@ class Category(models.Model):
             return Category.objects.get(id=ID)
         return None
 
+    def getOpenedCourses(self):
+        courses = self.course_set.all()
+        courses = list(filter((lambda x: x.isOpen()), courses))
+        courses.sort(key=(lambda x: x.name))
+        return courses
+
     def __str__(self):
         return self.name
-    def getOpenedCourses(self):
-        return self.course_set.filter(_isOpen=True)
 
-
-
+'''
+An Enrollment is a abstract class that associate with a course.
+'''
 class Enrollment(models.Model):
     class Meta:
         abstract=True
     course = models.ForeignKey('Course',on_delete=models.CASCADE)
 
 
+'''
+A CurrentEnrollment is an Enrollment that is currently undergoing.
+It is associated with one participant and it contains a progress w.r.t that
+Enrollment. Each participant can only have at most 1 currentEnrollment.
+'''
 class CurrentEnrollment(Enrollment):
     progress = models.IntegerField()
-    participant = models.OneToOneField('Participant')
-
+    participant = models.OneToOneField('Participant',on_delete=models.CASCADE)
 
     def __str__(self):
         return "{} taking {}".format(str(self.participant),str(self.course))
 
+'''
+A CompletedEnrollment is an Enrollment that is completed. It contains a completion date.
+A completedEnrollment is associated with one participant. While a participant can have many
+completedEnrollment.
+'''
 class CompletedEnrollment(Enrollment):
     completionDate = models.DateField()
     participant = models.ForeignKey('Participant',on_delete=models.CASCADE)
 
+    '''
+    Constructor for CompletedEnrollment. It is created from a currentEnrollment.
+    The completionDate is the date when this constructor is called.
+    '''
     @staticmethod
     def createFromCurrentEnrollment(currentEnrollment):
         temp = CompletedEnrollment()
@@ -54,6 +77,11 @@ class CompletedEnrollment(Enrollment):
     def __str__(self):
         return "{} completed {} on {}".format(str(self.participant),str(self.course),str(self.completionDate))
 
+
+'''
+A Course contains a name, a description, an isOpen status. It is also associated
+with one instructor and one category.
+'''
 class Course(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -66,7 +94,7 @@ class Course(models.Model):
         if Course.objects.filter(id=ID).exists():
             return Course.objects.get(id=ID)
         return None
-    
+
     @staticmethod
     def getAllCourses():
         return Course.objects.all()
@@ -76,12 +104,18 @@ class Course(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+    '''
+    Method for index update when adding a new module.
+    '''
     def _updateIndex(self,newIndex):
         for module in self.module_set.all():
             if module.index>=newIndex:
                 module.index+=1
                 module.save()
+    '''
+    Method for index update when reordering modules.
+    '''
     def updateIndex(self,originIndex,newIndex):
         moduleChanged = self.module_set.get(index=originIndex)
         for module in self.module_set.all():
@@ -97,7 +131,7 @@ class Course(models.Model):
         index=module.index
         for restModule in self.module_set.all():
             if restModule.index>index:
-                restModule-=1
+                restModule.index-=1
                 restModule.save()
         module.deleteSelf()
 
@@ -151,6 +185,11 @@ class Course(models.Model):
     def getTotalProgress(self):
         return len(self.module_set.all())
 
+
+'''
+A Module contains a name, a description and an index with in a course which
+it is associated to.
+'''
 class Module(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -163,7 +202,6 @@ class Module(models.Model):
 
     def createComponent(self,typeName,index,content):
         c = lookup[typeName]()
-        print(type(c))
         c.module=self
         c.index=index
         self._updateIndex(index)
@@ -187,7 +225,7 @@ class Module(models.Model):
                 component.save()
 
     def updateIndex(self,originIndex,newIndex):
-        componentChanged=self.getComponentByIndex(originIndex)        
+        componentChanged=self.getComponentByIndex(originIndex)
         for component in self._getAllComponents():
             if component.index>=newIndex and component.index<originIndex:
                 component.index+=1
@@ -210,16 +248,11 @@ class Module(models.Model):
         self.save()
 
     def hasComponent(self,index):
-        return self.filecomponent_set.filter(index=index).exists() or self.textcomponent_set.filter(index=index).exists()\
-            or self.imagecomponent_set.filter(index=index).exists()
+        return len(list(filter((lambda x: x.index == index),self._getAllComponents())))!=0
 
     def getComponentByIndex(self,index):
-        if self.filecomponent_set.filter(index=index).exists():
-            return self.filecomponent_set.get(index=index)
-        elif self.textcomponent_set.filter(index=index).exists():
-            return self.textcomponent_set.get(index=index)
-        elif self.imagecomponent_set.filter(index=index).exists():
-            return self.imagecomponent_set.get(index=index)
+        return list(filter((lambda x: x.index==index),self._getAllComponents()))[0]
+
 
     def deleteSelf(self):
         components = self._getAllComponents()
@@ -227,15 +260,21 @@ class Module(models.Model):
             temp = components.pop()
             temp.deleteSelf()
         self.delete()
-    
+
     def _getAllComponents(self):
         fileComponents=list(self.filecomponent_set.all())
         textComponents = list(self.textcomponent_set.all())
         imageComponents = list(self.imagecomponent_set.all())
-        fileComponents.extend(textComponents) 
+        videoComponents = list(self.videocomponent_set.all())
+        fileComponents.extend(textComponents)
         fileComponents.extend(imageComponents)
+        fileComponents.extend(videoComponents)
         return fileComponents
 
+'''
+A Component is a abstract class which contains its index within a module
+which it is associated to.
+'''
 class Component(models.Model):
     class Meta:
         abstract=True
@@ -244,7 +283,6 @@ class Component(models.Model):
     def __str__(self):
         string = "{}-th of {}:{}".format(self.index,self.module.course.name,self.module.name)
         return string
-
 
     def getIndex(self):
         return self.index
@@ -261,8 +299,6 @@ class TextComponent(Component):
     def getType(self):
         return "TEXT"
 
-
-
 class FileComponent(Component):
     content = models.FileField()
     def deleteSelf(self):
@@ -273,7 +309,7 @@ class FileComponent(Component):
         return "FILE"
 
 class ImageComponent(Component):
-    content = models.ImageField(null=True,blank=True)
+    content = models.ImageField()
 
     def deleteSelf(self):
         self.content.delete()
@@ -290,3 +326,8 @@ class VideoComponent(Component):
         self.delete()
 
 lookup={"IMAGE":ImageComponent,"FILE":FileComponent,"TEXT":TextComponent,"VIDEO":VideoComponent}
+class ComponentAdapter():
+    def __init__(self,component):
+        self.typeName=component.getType()
+        self.index=component.getIndex()
+        self.content=component.getContent()
