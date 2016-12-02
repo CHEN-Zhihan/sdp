@@ -155,9 +155,9 @@
               {% elif component.typeName == 'VIDEO' %}
               <li>
                 <div class="row">
-                  <div class="col-sm-6">
+                  <div class="col-sm-11">
                     <div class="component jumbotron" id="{{ component.index }}">
-                      <iframe class="content-vdo" src="{{ component.content.url }}">
+                      <iframe class="content-vdo" src="{{ component.content }}" frameborder="0" allowfullscreen>
                       </iframe>
                     </div>
                   </div>
@@ -170,7 +170,7 @@
 
                 <!-- Insert new module behind this module -->
                 <div class="row">
-                  <div class="col-sm-6">
+                  <div class="col-sm-11">
                     <a href="#">
                       <div class="addComponent" id="{{ component.index|add:1 }}">
                         <span class="glyphicon glyphicon-plus"></span>Add new component here
