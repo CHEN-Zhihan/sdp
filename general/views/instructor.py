@@ -3,7 +3,7 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from ..courseModels import Category,Course
+from ..courseModels import Category,Course,ComponentAdapter
 from ..userModels import Instructor,UserManager
 from . import authenticate
 from ..exceptions import NameDuplication,NoModuleException
@@ -296,9 +296,3 @@ def changeComponentOrder(request,instructorID,courseID,moduleIndex):
                 else:
                     return HttpResponse(status=404)
     return redirect("myLogout")
-
-class ComponentAdapter():
-    def __init__(self,component):
-        self.typeName=component.getType()
-        self.index=component.getIndex()
-        self.content=component.getContent()

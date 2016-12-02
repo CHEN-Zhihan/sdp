@@ -4,7 +4,7 @@ from .exceptions import NameDuplication, NoModuleException
 
 
 '''
-Category models the actual category. It has an attribute name and 
+Category models the actual category. It has an attribute name and
 a category can get all opened courses under that category.
 '''
 class Category(models.Model):
@@ -21,7 +21,8 @@ class Category(models.Model):
 
     def getOpenedCourses(self):
         courses = self.course_set.all()
-        courses = list(filter((lambda x: x.isOpen()), courses)).sort(key=(lambda x: x.name))
+        courses = list(filter((lambda x: x.isOpen()), courses))
+        courses.sort(key=(lambda x: x.name))
         return courses
 
     def __str__(self):
@@ -224,7 +225,7 @@ class Module(models.Model):
                 component.save()
 
     def updateIndex(self,originIndex,newIndex):
-        componentChanged=self.getComponentByIndex(originIndex)        
+        componentChanged=self.getComponentByIndex(originIndex)
         for component in self._getAllComponents():
             if component.index>=newIndex and component.index<originIndex:
                 component.index+=1
@@ -259,13 +260,13 @@ class Module(models.Model):
             temp = components.pop()
             temp.deleteSelf()
         self.delete()
-    
+
     def _getAllComponents(self):
         fileComponents=list(self.filecomponent_set.all())
         textComponents = list(self.textcomponent_set.all())
         imageComponents = list(self.imagecomponent_set.all())
         videoComponents = list(self.videocomponent_set.all())
-        fileComponents.extend(textComponents) 
+        fileComponents.extend(textComponents)
         fileComponents.extend(imageComponents)
         fileComponents.extend(videoComponents)
         return fileComponents
@@ -325,3 +326,8 @@ class VideoComponent(Component):
         self.delete()
 
 lookup={"IMAGE":ImageComponent,"FILE":FileComponent,"TEXT":TextComponent,"VIDEO":VideoComponent}
+class ComponentAdapter():
+    def __init__(self,component):
+        self.typeName=component.getType()
+        self.index=component.getIndex()
+        self.content=component.getContent()

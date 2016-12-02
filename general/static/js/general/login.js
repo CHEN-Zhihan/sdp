@@ -131,11 +131,16 @@ function registerRegisterListener() {
             var protocol = window.location.protocol;
             var host = window.location.host;
             window.location.assign(protocol + "//" + host + "/" + response["url"]);
-          } else {
+          } else if (response["errno"] == -1) {
             $("#username").addClass("has-error").focus(function () {
               $(this).removeClass("has-error");
             });
-            $("#registerFailModal").modal();
+            $("#dupErrorModal").modal();
+          } else if (response["errno"] == -2) {
+            $("#username").addClass("has-error").focus(function () {
+              $(this).removeClass("has-error");
+            });
+            $("#invErrorModal").modal();
           }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
