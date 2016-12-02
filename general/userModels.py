@@ -55,6 +55,7 @@ class Instructor(SDPUser):
         return self.course_set.get(id=courseID)
 
 '''
+A Participant is an SDPUser that can enroll, view, drop, retake courses.
 '''
 class Participant(SDPUser):
 
@@ -144,7 +145,10 @@ class Administrator(SDPUser):
 
 
 '''
-A UserManager is a 
+A UserManager is a singleton class that can 
+get an SDPUser from a User in Django, judge whether a user is in a group,
+get an SDPUser id from a User in a Group, create a new user in a group and
+create a new SDPUser from a exist user in a new group.
 '''
 class UserManager():
     _instance = None
