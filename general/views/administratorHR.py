@@ -1,12 +1,10 @@
-from . import authenticate
-from ..userModels import Participant,Administrator,Instructor,HR,SDPUser
-from ..userModels import UserManager
-from ..courseModels import Course
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render,redirect
-
+from ..userModels import Administrator,Instructor,HR
+from ..userModels import UserManager
+from ..courseModels import Course
 
 @login_required
 def AdministratorIndex(request,administratorID):
@@ -17,7 +15,7 @@ def AdministratorIndex(request,administratorID):
             try:
                 username = request.POST.get("username")
                 user=User.objects.get(username=username)
-                newInstructor=admin.designate(user,Instructor)
+                _=admin.designate(user,Instructor)
             except Exception as err:
                 result = False
                 print(err)
@@ -27,7 +25,7 @@ def AdministratorIndex(request,administratorID):
         else:
             users = list(map(UserAdapter,User.objects.all()))
             users.sort(key=(lambda x:x.username))
-            courses = Course.objects.all()
+            courses = Course.getAllCourses()
             return render(request,"general/administratorIndex.html",{"users":users,"courses":courses})
     return redirect("myLogout")
 

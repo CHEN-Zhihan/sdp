@@ -69,7 +69,6 @@ def coursePage(request,instructorID,courseID):
                     try:
                         course.openCourse()
                     except NoModuleException:
-                        print("gg")
                         result=-2
                     except Exception as e:
                         print(e)
@@ -247,7 +246,7 @@ def newComponent(request,instructorID,courseID,moduleIndex):
                 if request.method =="POST":
                     typeName = request.POST.get('typeName')
                     index = int(request.POST.get('index'))
-                    if typeName!="TEXT":
+                    if typeName=="FILE" or typeName=="IMAGE":
                         try:
                             component = module.createComponent(typeName,index,request.FILES['file'])
                         except Exception as e:
@@ -259,7 +258,7 @@ def newComponent(request,instructorID,courseID,moduleIndex):
                     else:
                         text = request.POST.get("text")
                         try:
-                            component = module.createComponent("TEXT",index,text)
+                            component = module.createComponent(typeName,index,text)
                         except Exception as e:
                             print(e)
                             result=False

@@ -1,7 +1,7 @@
-from django.db import models
 from datetime import datetime
-from .exceptions import *
-categoryList= ["Mergers and Acquisitions","Markets","Risk Management","Securities","Financial Modelling","Operations","Information Technology"]
+from django.db import models
+from .exceptions import NameDuplication, NoModuleException
+
 class Category(models.Model):
     name = models.CharField(max_length=200)
     @staticmethod
@@ -19,11 +19,7 @@ class Category(models.Model):
     def getOpenedCourses(self):
         return self.course_set.filter(_isOpen=True)
 
-for name in categoryList:
-    if not Category.objects.filter(name=name).exists():
-        category=Category()
-        category.name=name
-        category.save()
+
 
 class Enrollment(models.Model):
     class Meta:
@@ -70,6 +66,10 @@ class Course(models.Model):
         if Course.objects.filter(id=ID).exists():
             return Course.objects.get(id=ID)
         return None
+    
+    @staticmethod
+    def getAllCourses():
+        return Course.objects.all()
 
     def isOpen(self):
         return self._isOpen
@@ -117,7 +117,7 @@ class Course(models.Model):
         return m
 
     def updateInfo(self,name,category,description):
-        if Course.objects.filter(name=name).exists() and course.name!=name:
+        if Course.objects.filter(name=name).exists() and self.name!=name:
             raise NameDuplication()
         self.name=name
         self.description=description
@@ -248,7 +248,7 @@ class Component(models.Model):
 
     def getIndex(self):
         return self.index
-    
+
     def getContent(self):
         return self.content
 
@@ -271,7 +271,7 @@ class FileComponent(Component):
 
     def getType(self):
         return "FILE"
-    
+
 class ImageComponent(Component):
     content = models.ImageField(null=True,blank=True)
 
@@ -282,4 +282,11 @@ class ImageComponent(Component):
     def getType(self):
         return "IMAGE"
 
-lookup={"IMAGE":ImageComponent,"FILE":FileComponent,"TEXT":TextComponent}
+class VideoComponent(Component):
+    content = models.URLField()
+    def getType(self):
+        return "VIDEO"
+    def deleteSelf(self):
+        self.delete()
+
+lookup={"IMAGE":ImageComponent,"FILE":FileComponent,"TEXT":TextComponent,"VIDEO":VideoComponent}

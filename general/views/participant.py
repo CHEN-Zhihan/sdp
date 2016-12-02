@@ -1,13 +1,9 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.template.loader import render_to_string
 from django.http import JsonResponse
-from django.core.exceptions import ObjectDoesNotExist
-from . import authenticate
 from ..userModels import Participant,UserManager
 from ..courseModels import Course,Category
-from ..exceptions import AlreadyEnrolled
 
 @login_required
 def ParticipantIndex(request,participantID):
@@ -16,9 +12,9 @@ def ParticipantIndex(request,participantID):
     if participant is not None:
         categoryList = Category.getAllCategories()
         currentCourse=participant.getCurrentCourse()
-        progress = -1 if currentCourse==None else int(participant.getProgress()/currentCourse.getTotalProgress()*100)
+        progress = -1 if currentCourse is None else int(participant.getProgress()/currentCourse.getTotalProgress()*100)
         completedCourses = participant.getCompletedCourses()
-        return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,
+        return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,\
             "progress":progress,'completedCourses':completedCourses})
     return redirect("myLogout")
 
@@ -57,8 +53,9 @@ def viewCourse(request,participantID,courseID):
                 visibility=-1
             modules=course.getSortedModules()
             hasEnrolled=participant.hasEnrolled()
-            categoryList=Category.getAllCategories()            
-            return render(request,"general/participantCourse.html",{"course":course,"status":status,"modules":modules,"visibility":visibility,"hasEnrolled":hasEnrolled,'categoryList':categoryList})
+            categoryList=Category.getAllCategories()
+            return render(request,"general/participantCourse.html",{"course":course,"status":status,
+                                                                    "modules":modules,"visibility":visibility,"hasEnrolled":hasEnrolled,'categoryList':categoryList})
         else:
             action = request.POST.get("action")
             if action=="DROP" and participant.isTaking(courseID):
@@ -111,4 +108,3 @@ def viewModule(request,participantID,courseID,moduleIndex):
         else:
             return HttpResponse(status=404)
     return redirect("myLogout")
-

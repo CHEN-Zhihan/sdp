@@ -1,14 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User,Group
 from django.core.exceptions import ObjectDoesNotExist
-from .exceptions import *
+from .exceptions import NameDuplication
 from .courseModels import Category,Course,CurrentEnrollment,CompletedEnrollment
 
-roleList = ["Instructor","Participant","HR","Administrator"]
-for role in roleList:
-    if not Group.objects.filter(name=role).exists():
-        group = Group(name=role)
-        group.save()
+
 
 class SDPUser(models.Model):
     _user = models.ForeignKey(User,on_delete=models.CASCADE)
@@ -37,7 +33,7 @@ class Instructor(SDPUser):
 
     def createCourse(self,name,description,category):
         if Course.objects.filter(name=name).exists():
-            raise NameDuplication()            
+            raise NameDuplication()
         c=Course()
         c.name=name
         c.description=description
@@ -54,6 +50,7 @@ class Instructor(SDPUser):
         return self.course_set.get(id=courseID)
 
 class Participant(SDPUser):
+
 
     def enroll(self,course):
         self.currentenrollment=CurrentEnrollment()
@@ -116,10 +113,7 @@ class Participant(SDPUser):
     def getCompletedCourses(self):
         return set(map((lambda x:x.course),self.completedenrollment_set.all()))
 
-    def getByID(self,ID):
-        if Participant.objects.filter(id=ID).exists():
-            return Participant.objects.get(id=ID)
-        return None
+
 
     def getCompletedCourseByID(self,courseID):
         for completed in self.getCompletedCourses():
@@ -167,12 +161,12 @@ class UserManager():
 
     def getUserGroupID(self,user,group):
         return list(filter((lambda x:x.getUser().id==user.id),group.objects.all()))[0].id
-    
+
     def createWithNewUser(self,username,password,firstName,lastName,group):
         user = User.objects.create_user(username=username,password=password,first_name=firstName,last_name=lastName)
         user.save()
         return self.createFromUser(user,group)
-    
+
     def createFromUser(self,user,group):
         temp = group()
         temp.setUser(user)
