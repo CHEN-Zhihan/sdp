@@ -133,7 +133,7 @@ def editCourse(request,instructorID,courseID):
                 categoryID = request.POST.get("categoryID")
                 category = Category.getByID(categoryID)
                 try:
-                    course.updateInfo(name,description,category)
+                    course.updateInfo(name,category,description)
                 except NameDuplication:
                     errno=-2
                 except Exception as err:
