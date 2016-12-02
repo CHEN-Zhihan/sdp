@@ -73,7 +73,7 @@ def newCourse(request, instructorID):
 @login_required
 def coursePage(request, instructorID, courseID):
     '''
-    coursePage receives instructorID and courseID from URL. 
+    coursePage receives instructorID and courseID from URL.
     If the request method is POST, it tells the action to be taken
     using the action argument. The action might be open course or delete module.
     If the request method is GET, return this course together with its modules.
@@ -165,7 +165,7 @@ def editCourse(request, instructorID, courseID):
                 categoryID = request.POST.get("categoryID")
                 category = Category.getByID(categoryID)
                 try:
-                    course.updateInfo(name, description, category)
+                    course.updateInfo(name, category, description)
                 except NameDuplication:
                     errno = -2
                 except Exception as err:
@@ -332,4 +332,3 @@ def changeComponentOrder(request, instructorID, courseID, moduleIndex):
                 else:
                     return HttpResponse(status=404)
     return redirect("myLogout")
-
