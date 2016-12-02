@@ -6,6 +6,7 @@ from ..userModels import Administrator, Instructor, HR
 from ..userModels import UserManager
 from ..courseModels import Course
 
+
 @login_required
 def AdministratorIndex(request, administratorID):
     administratorID = int(administratorID)
@@ -21,14 +22,15 @@ def AdministratorIndex(request, administratorID):
                 print(err)
             else:
                 result = True
-            return JsonResponse({"result":result})
+            return JsonResponse({"result": result})
         else:
             users = list(map(UserAdapter, User.objects.all()))
             users.sort(key=(lambda x: x.username))
             courses = Course.getAllCourses()
-            return render(request, "general/administratorIndex.html", {"users":users,
-                                                                       "courses":courses})
+            return render(request, "general/administratorIndex.html", {"users": users,
+                                                                       "courses": courses})
     return redirect("myLogout")
+
 
 @login_required
 def HRIndex(request, HRID):
@@ -37,8 +39,9 @@ def HRIndex(request, HRID):
     if hr is not None:
         users = list(map(UserAdapter, User.objects.all()))
         users.sort(key=(lambda x: x.username))
-        return render(request, "general/HRIndex.html", {"users":users})
+        return render(request, "general/HRIndex.html", {"users": users})
     return redirect("myLogout")
+
 
 class UserAdapter():
     def __init__(self, user):

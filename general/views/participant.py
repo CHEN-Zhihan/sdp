@@ -75,7 +75,7 @@ def viewCourse(request, participantID, courseID):
                     result = False
                 else:
                     result = True
-                return JsonResponse({"result":result})
+                return JsonResponse({"result": result})
             elif action == "ENROLL" and not participant.hasEnrolled():
                 course = Course.getByID(courseID)
                 try:
