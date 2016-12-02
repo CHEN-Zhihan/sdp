@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from ..userModels import Participant,UserManager
-from ..courseModels import Course,Category
+from ..courseModels import Course,Category, ComponentAdapter
 
 @login_required
 def ParticipantIndex(request, participantID):
@@ -106,7 +106,7 @@ def viewModule(request, participantID, courseID, moduleIndex):
         if participant.canViewModule(courseID, moduleIndex):
             course = participant.getCurrentCourse() if participant.hasEnrolled() else participant.getCompletedCourseByID(courseID)
             module = course.getModuleByIndex(moduleIndex)
-            components = module.getSortedComponents()
+            components =list(map(ComponentAdapter,module.getSortedComponents()))
             if participant.isTaking(courseID) and moduleIndex == participant.getProgress():
                 participant.updateProgress()
             categoryList = Category.getAllCategories()
