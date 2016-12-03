@@ -1,9 +1,10 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from ..userModels import Participant,UserManager
-from ..courseModels import Course,Category, ComponentAdapter
+from ..userModels import Participant, UserManager
+from ..courseModels import Course, Category, ComponentAdapter
+
 
 @login_required
 def ParticipantIndex(request, participantID):
@@ -14,9 +15,12 @@ def ParticipantIndex(request, participantID):
         currentCourse = participant.getCurrentCourse()
         progress = -1 if currentCourse is None else int(participant.getProgress()/currentCourse.getTotalProgress()*100)
         completedCourses = participant.getCompletedCourses()
-        return render(request,'general/participantIndex.html',{'categoryList':categoryList,'currentCourse':currentCourse,\
-            "progress":progress,'completedCourses':completedCourses})
+        return render(request, 'general/participantIndex.html', {'categoryList': categoryList,
+                                                                 'currentCourse': currentCourse,
+                                                                 "progress": progress,
+                                                                 'completedCourses': completedCourses})
     return redirect("myLogout")
+
 
 @login_required
 def showCourseList(request, participantID):
@@ -27,11 +31,10 @@ def showCourseList(request, participantID):
         category = Category.getByID(categoryID)
         courses = category.getOpenedCourses()
         categoryList = Category.getAllCategories()
-        return render(request, "general/showCourseList.html", {"courses":courses,
-                                                               "categoryList":categoryList,
-                                                               "category":category})
+        return render(request, "general/showCourseList.html", {"courses": courses,
+                                                               "categoryList": categoryList,
+                                                               "category": category})
     return redirect("myLogout")
-
 
 
 @login_required
@@ -56,12 +59,12 @@ def viewCourse(request, participantID, courseID):
             modules = course.getSortedModules()
             hasEnrolled = participant.hasEnrolled()
             categoryList = Category.getAllCategories()
-            return render(request, "general/participantCourse.html", {"course":course,
-                                                                      "status":status,
-                                                                      "modules":modules,
-                                                                      "visibility":visibility,
-                                                                      "hasEnrolled":hasEnrolled,
-                                                                      'categoryList':categoryList})
+            return render(request, "general/participantCourse.html", {"course": course,
+                                                                      "status": status,
+                                                                      "modules": modules,
+                                                                      "visibility": visibility,
+                                                                      "hasEnrolled": hasEnrolled,
+                                                                      'categoryList': categoryList})
         else:
             action = request.POST.get("action")
             if action == "DROP" and participant.isTaking(courseID):
@@ -72,7 +75,7 @@ def viewCourse(request, participantID, courseID):
                     result = False
                 else:
                     result = True
-                return JsonResponse({"result":result})
+                return JsonResponse({"result": result})
             elif action == "ENROLL" and not participant.hasEnrolled():
                 course = Course.getByID(courseID)
                 try:
@@ -82,7 +85,7 @@ def viewCourse(request, participantID, courseID):
                     result = False
                 else:
                     result = True
-                return JsonResponse({'result':result})
+                return JsonResponse({'result': result})
             elif action == "RETAKE" and not participant.hasEnrolled() and participant.hasTaken(courseID):
                 course = participant.getCompletedCourseByID(courseID)
                 try:
@@ -92,9 +95,10 @@ def viewCourse(request, participantID, courseID):
                     result = False
                 else:
                     result = True
-                return JsonResponse({'result':result})
+                return JsonResponse({'result': result})
             return HttpResponse(status=404)
     return redirect("myLogout")
+
 
 @login_required
 def viewModule(request, participantID, courseID, moduleIndex):
@@ -106,13 +110,13 @@ def viewModule(request, participantID, courseID, moduleIndex):
         if participant.canViewModule(courseID, moduleIndex):
             course = participant.getCurrentCourse() if participant.hasEnrolled() else participant.getCompletedCourseByID(courseID)
             module = course.getModuleByIndex(moduleIndex)
-            components =list(map(ComponentAdapter,module.getSortedComponents()))
+            components = list(map(ComponentAdapter, module.getSortedComponents()))
             if participant.isTaking(courseID) and moduleIndex == participant.getProgress():
                 participant.updateProgress()
             categoryList = Category.getAllCategories()
-            return render(request, "general/participantModule.html", {"components":components,
-                                                                      "module":module,
-                                                                      'categoryList':categoryList})
+            return render(request, "general/participantModule.html", {"components": components,
+                                                                      "module": module,
+                                                                      'categoryList': categoryList})
         else:
             return HttpResponse(status=404)
     return redirect("myLogout")
