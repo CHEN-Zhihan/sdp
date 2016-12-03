@@ -1,4 +1,5 @@
 # Staff Development Platform
+GitHub page: [SDP](https://github.com/CHEN-Zhihan/sdp)
 What is it?
 -----------
 The Staff Development Platform (or SDP) serves as an educational plaform for course delivery
