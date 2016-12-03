@@ -175,7 +175,7 @@ class Course(models.Model):
 
     def deleteSelf(self):
         while (len(self.module_set.all())):
-            temp = self.module_set.pop()
+            temp = self.module_set.all().pop()
             temp.deleteSelf()
         self.delete()
 
