@@ -83,6 +83,21 @@ Instructor can reorder modules and components by simply drag-and-drop:
 
 ![instructor reorder component](/doc/screenshots/instructorReorderComponent.png)
 
+
+### Administrator
+All users and courses will be displayed on the home page of administrator. Administrator can designate users as instructors:
+
+![administrator home](/doc/screenshots/administratorHome.png)
+
+
+### HR
+All users will be displayed on the home page of HR:
+
+![HR home](/doc/screenshots/HRHome.png)
+
+Other functionalities of HR are not implemented in this release.
+
+
 Known bugs and limitations
 --------------------------
 All features listed in Elaobration 1, Elaboration 2, and Construction has been implemented,
