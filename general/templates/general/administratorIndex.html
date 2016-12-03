@@ -111,6 +111,13 @@
                   <div class="col-sm-2">
                     <p class="course-category">{{ course.category.name }}</p>
                   </div>
+                  <div class="col-sm-2">
+                    <p class="course-status">
+                      {% if course.isOpen %}Opened
+                      {% else %}Developing
+                      {% endif %}
+                    </p>
+                  </div>
                 </div>
               </li>
               {% endfor %}
