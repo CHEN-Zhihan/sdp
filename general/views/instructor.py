@@ -166,7 +166,10 @@ def newModule(request, instructorID, courseID):
             if request.method == "POST":
                 name = request.POST.get('name')
                 description = request.POST.get('description')
-                index = int(request.POST.get('index'))
+                try:
+                    index = int(request.POST.get('index'))
+                except ValueError:
+                    return JsonResponse({'result': -1, "newModuleIndex": -1})
                 try:
                     module = course.createModule(name, description, index)
                 except NameDuplication:
@@ -261,7 +264,10 @@ def newComponent(request, instructorID, courseID, moduleIndex):
                 module = course.getModuleByIndex(moduleIndex)
                 if request.method == "POST":
                     typeName = request.POST.get('typeName')
-                    index = int(request.POST.get('index'))
+                    try:
+                        index = int(request.POST.get('index'))
+                    except ValueError:
+                        return JsonResponse({"result": False})
                     if typeName == "FILE" or typeName == "IMAGE":
                         try:
                             component = module.createComponent(typeName, index, request.FILES['file'])

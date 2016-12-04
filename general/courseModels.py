@@ -147,6 +147,10 @@ class Course(models.Model):
         m.name = name
         m.description = description
         m.course = self
+        if index < 0:
+            index = 0
+        elif index > len(self.module_set.all()):
+            index = len(self.module_set.all())
         self._updateIndex(index)
         m.index = index
         m.save()
@@ -208,6 +212,10 @@ class Module(models.Model):
     def createComponent(self, typeName, index, content):
         c = lookup[typeName]()
         c.module = self
+        if index < 0:
+            index = 0
+        elif index > len(self._getAllComponents()):
+            index = len(self._getAllComponents())
         c.index = index
         self._updateIndex(index)
         c.content = content
