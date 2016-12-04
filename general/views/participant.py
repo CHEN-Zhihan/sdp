@@ -108,7 +108,7 @@ def viewModule(request, participantID, courseID, moduleIndex):
     participant = UserManager.getInstance().getFromUser(request.user, Participant, participantID)
     if participant is not None:
         if participant.canViewModule(courseID, moduleIndex):
-            course = participant.getCurrentCourse() if participant.hasEnrolled() else participant.getCompletedCourseByID(courseID)
+            course = participant.getCurrentCourse() if participant.isTaking(courseID) else participant.getCompletedCourseByID(courseID)
             module = course.getModuleByIndex(moduleIndex)
             components = list(map(ComponentAdapter, module.getSortedComponents()))
             if participant.isTaking(courseID) and moduleIndex == participant.getProgress():
