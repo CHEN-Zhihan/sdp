@@ -24,10 +24,11 @@ def InstructorIndex(request, instructorID):
             else:
                 result = True
             return JsonResponse({"result": result})
-        developingCourses = instructor.getDevelopingCourses()
-        openCourses = instructor.getOpenedCourses()
-        return render(request, "general/instructorIndex.html", {'developingCourses': developingCourses,
-                                                                'openCourses': openCourses})
+        else:
+            developingCourses = instructor.getDevelopingCourses()
+            openCourses = instructor.getOpenedCourses()
+            return render(request, "general/instructorIndex.html", {'developingCourses': developingCourses,
+                                                                    'openCourses': openCourses})
     return redirect("myLogout")
 
 
@@ -95,8 +96,7 @@ def coursePage(request, instructorID, courseID):
                 return render(request, "general/instructorCourse.html", {'course': course,
                                                                          'modules': modules,
                                                                          "isOpen": course.isOpen()})
-        else:
-            print(courseID, "not in ", list(map((lambda x: x.id), instructor.getAllCourses())))
+        return HttpResponse(status=404)
     return redirect("myLogout")
 
 
@@ -120,8 +120,7 @@ def changeModuleOrder(request, instructorID, courseID):
                 modules = course.getSortedModules()
                 data = render_to_string("general/ajax/modules.html", {"modules": modules})
                 return JsonResponse({"result": result, "data": data})
-            else:
-                return HttpResponse(status=404)
+        return HttpResponse(status=404)
     return redirect("myLogout")
 
 
@@ -133,24 +132,26 @@ def editCourse(request, instructorID, courseID):
     if instructor is not None:
         if instructor.ownCourse(courseID):
             course = instructor.getCourseByID(courseID)
-            if request.method == "POST":
-                name = request.POST.get("name")
-                description = request.POST.get("description")
-                categoryID = request.POST.get("categoryID")
-                category = Category.getByID(categoryID)
-                try:
-                    course.updateInfo(name, category, description)
-                except NameDuplication:
-                    errno = -2
-                except Exception as err:
-                    print(err)
-                    errno = -1
+            if not course.isOpen():
+                if request.method == "POST":
+                    name = request.POST.get("name")
+                    description = request.POST.get("description")
+                    categoryID = request.POST.get("categoryID")
+                    category = Category.getByID(categoryID)
+                    try:
+                        course.updateInfo(name, category, description)
+                    except NameDuplication:
+                        errno = -2
+                    except Exception as err:
+                        print(err)
+                        errno = -1
+                    else:
+                        errno = 0
+                    return JsonResponse({"result": errno})
                 else:
-                    errno = 0
-                return JsonResponse({"result": errno})
-            else:
-                categories = Category.getAllCategories()
-                return render(request, "general/editCourse.html", {"course": course, "categories": categories})
+                    categories = Category.getAllCategories()
+                    return render(request, "general/editCourse.html", {"course": course, "categories": categories})
+        return HttpResponse(status=404)
     return redirect("myLogout")
 
 
@@ -178,8 +179,9 @@ def newModule(request, instructorID, courseID):
                     newIndex = module.index
                     result = True
                 return JsonResponse({'result': result, "newModuleIndex": newIndex})
-            elif request.method == "GET":
+            else:
                 return render(request, "general/newModule.html")
+        return HttpResponse(status=404)
     return redirect("myLogout")
 
 
@@ -212,6 +214,7 @@ def modulePage(request, instructorID, courseID, moduleIndex):
                                                                              'module': module,
                                                                              'components': components,
                                                                              "isOpen": course.isOpen()})
+        return HttpResponse(status=404)
     return redirect("myLogout")
 
 
@@ -224,7 +227,7 @@ def editModule(request, instructorID, courseID, moduleIndex):
     if instructor is not None:
         if instructor.ownCourse(courseID):
             course = instructor.getCourseByID(courseID)
-            if course.hasModule(moduleIndex):
+            if course.hasModule(moduleIndex) and not course.isOpen():
                 module = course.getModuleByIndex(moduleIndex)
                 if request.method == "POST":
                     name = request.POST.get("name")
@@ -241,6 +244,7 @@ def editModule(request, instructorID, courseID, moduleIndex):
                     return JsonResponse({"result": errno})
                 else:
                     return render(request, "general/editModule.html", {"module": module})
+        return HttpResponse(status=404)
     return redirect("myLogout")
 
 
@@ -279,7 +283,8 @@ def newComponent(request, instructorID, courseID, moduleIndex):
                         return JsonResponse({"result": result})
                 else:
                     return render(request, "general/newComponent.html")
-    return HttpResponse(status=404)
+        return HttpResponse(status=404)
+    return redirect("myLogout")
 
 
 @login_required
@@ -305,6 +310,5 @@ def changeComponentOrder(request, instructorID, courseID, moduleIndex):
                     components = list(map(ComponentAdapter, module.getSortedComponents()))
                     data = render_to_string("general/ajax/components.html", {"components": components})
                     return JsonResponse({"result": result, "data": data})
-                else:
-                    return HttpResponse(status=404)
+        return HttpResponse(status=404)
     return redirect("myLogout")
