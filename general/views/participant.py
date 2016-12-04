@@ -57,7 +57,7 @@ def viewCourse(request, participantID, courseID):
                 visibility = course.getTotalProgress()
             else:
                 course = Course.getByID(courseID)
-                if course is None:
+                if course is None or not course.isOpen():
                     return HttpResponse(status=404)
                 status = "notTaken"
                 visibility = -1
