@@ -27,13 +27,16 @@ def showCourseList(request, participantID):
     participantID = int(participantID)
     participant = UserManager.getInstance().getFromUser(request.user, Participant, participantID)
     if participant is not None:
-        categoryID = int(request.GET.get("categoryID"))
-        category = Category.getByID(categoryID)
-        courses = category.getOpenedCourses()
-        categoryList = Category.getAllCategories()
-        return render(request, "general/showCourseList.html", {"courses": courses,
-                                                               "categoryList": categoryList,
-                                                               "category": category})
+        if request.GET.get("categoryID") is not None:
+            categoryID = int(request.GET.get("categoryID"))
+            category = Category.getByID(categoryID)
+            if category is not None:
+                courses = category.getOpenedCourses()
+                categoryList = Category.getAllCategories()
+                return render(request, "general/showCourseList.html", {"courses": courses,
+                                                                    "categoryList": categoryList,
+                                                                    "category": category})
+        return HttpResponse(status=404)
     return redirect("myLogout")
 
 
@@ -54,6 +57,8 @@ def viewCourse(request, participantID, courseID):
                 visibility = course.getTotalProgress()
             else:
                 course = Course.getByID(courseID)
+                if course is None:
+                    return HttpResponse(status=404)
                 status = "notTaken"
                 visibility = -1
             modules = course.getSortedModules()
@@ -110,6 +115,8 @@ def viewModule(request, participantID, courseID, moduleIndex):
         if participant.canViewModule(courseID, moduleIndex):
             course = participant.getCurrentCourse() if participant.isTaking(courseID) else participant.getCompletedCourseByID(courseID)
             module = course.getModuleByIndex(moduleIndex)
+            if module is None:
+                return HttpResponse(status=404)
             components = list(map(ComponentAdapter, module.getSortedComponents()))
             if participant.isTaking(courseID) and moduleIndex == participant.getProgress():
                 participant.updateProgress()

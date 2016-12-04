@@ -164,9 +164,10 @@ class UserManager():
 
     def getFromUser(self, user, group, ID):
         if self.userInGroup(user, group):
-            temp = group.objects.get(id=ID)
-            if temp.getUser().id == user.id:
-                return temp
+            if group.objects.filter(id=ID).exists():
+                temp = group.objects.get(id=ID)
+                if temp.getUser().id == user.id:
+                    return temp
         return None
 
     def userInGroup(self, user, group):

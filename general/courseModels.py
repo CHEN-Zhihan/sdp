@@ -180,7 +180,9 @@ class Course(models.Model):
         self.delete()
 
     def getModuleByIndex(self, index):
-        return self.module_set.get(index=index)
+        if self.module_set.filter(index=index).exists():
+            return self.module_set.get(index=index)
+        return None
 
     def hasModule(self, index):
         return self.module_set.filter(index=index).exists()
