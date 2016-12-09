@@ -41,6 +41,14 @@ function validateForm(form) {
       validate = false;
     }
   });
+  $(".form-container", form).children().not(".submit").each(function () {
+    if ($(this).children().val() === "" || $(this).children().val() === "placeholder") {
+      $(this).children().addClass("has-error").focus(function () {
+        $(this).removeClass("has-error");
+      });
+      validate = false;
+    }
+  });
   return validate;
 }
 
