@@ -1,152 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SDP</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}" media="all" type="text/css"/>
-    <link rel="stylesheet" href="{% static "jqueryui/jquery-ui.min.css" %}" media="all" type="text/css"/>
-    <link rel="stylesheet" href="{% static "jqueryui/jquery-ui.structure.min.css" %}" media="all" type="text/css"/>
-    <link rel="stylesheet/less" href="{% static "general/general.less" %}" media="all" type="text/css"/>
-    <link rel="stylesheet/less" href="{% static "general/participant.less" %}" media="all" type="text/css"/>
-    <script src="{% static "js/jquery-3.1.1.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/less.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "jqueryui/jquery-ui.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/common.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/general/participantModule.js" %}" charset="utf-8"></script>
-  </head>
-  <body>
-    <!-- Main viewpoint container -->
-    <div class="container-fluid viewpoint-container">
-      <!-- Header row -->
-      <div class="row header-row">
-        <!-- Brand -->
-        <div class="col-sm-2 cbg-darken">
-          <h3>SDP</h3>
+{% extends 'general/base.html' %}
+
+{% load static %}
+
+{% block self-style %}
+<link rel="stylesheet/less" href="{% static "general/participant.less" %}" media="all" type="text/css"/>
+{% endblock %}
+
+{% block self-script %}
+<script src="{% static "js/general/participantModule.js" %}" charset="utf-8"></script>
+{% endblock %}
+
+{% block header %}{{ module.name }}{% endblock %}
+
+{% block nav %}
+<!-- Menu item: Home -->
+<li>
+  <a href="#" id="home">
+    <span class="glyphicon glyphicon-home"></span>Home
+  </a>
+</li>
+
+<!-- Menu item: Catalog -->
+<li>
+  <a href="#" data-toggle="collapse" data-target="#categories" id="catalog">
+    <span class="glyphicon glyphicon-book"></span>Catalog
+  </a>
+</li>
+
+<!-- Collapse sub-menu: categories -->
+<div class="collapse" id="categories">
+  <!-- List all categories -->
+  {% for category in categoryList %}
+  <li>
+    <a href="#" class="category" id="{{ category.id }}">{{ category.name }}</a>
+  </li>
+  {% endfor %}
+</div>
+
+<!-- Menu item: Back to course -->
+<li>
+  <a href="#" id="back">
+    <span class="glyphicon glyphicon-menu-left"></span>Back to Course
+  </a>
+</li>
+
+<!-- Logout -->
+<div class="menu-bottom">
+  <li>
+    <a href="/logout/" class="link" id="logout">
+      <span class="glyphicon glyphicon-log-out"></span>Logout
+    </a>
+  </li>
+</div>
+{% endblock %}
+
+{% block main-content %}
+<!-- Module description row -->
+<div class="row page-header">
+  <div class="col-sm-12">
+    <h4 class="module-desc">{{ module.description }}</h4>
+  </div>
+</div> <!-- End module description row -->
+
+<div class="components-container">
+  <ul class="jumbotron-list">
+  {% for component in components %}
+  <!-- List components in module -->
+  {% if component.typeName == 'TEXT' %}
+  <li>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="component jumbotron" id="{{ component.index }}">
+          <p class="content-text">{{ component.content }}</p>
         </div>
-        <!-- Header text -->
-        <div class="col-sm-10">
-          <h3 id="header-text">{{ module.name }}</h3>
+      </div>
+    </div>
+  </li>
+  {% elif component.typeName == 'IMAGE' %}
+  <li>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="component jumbotron" id="{{ component.index }}">
+          <img class="content-img" src="{{ component.content.url }}"/>
         </div>
-      </div> <!-- End header row -->
-
-      <!-- Content row -->
-      <div class="row content-row">
-        <!-- Navigation column -->
-        <div class="col-sm-2 cbg-primary fill-height">
-          <!-- Sidebar menu -->
-          <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-              <!-- Menu item: Home -->
-              <li>
-                <a href="#" id="home">
-                  <span class="glyphicon glyphicon-home"></span>Home
-                </a>
-              </li>
-
-              <!-- Menu item: Catalog -->
-              <li>
-                <a href="#" data-toggle="collapse" data-target="#categories" id="catalog">
-                  <span class="glyphicon glyphicon-book"></span>Catalog
-                </a>
-              </li>
-
-              <!-- Collapse sub-menu: categories -->
-              <div class="collapse" id="categories">
-                <!-- List all categories -->
-                {% for category in categoryList %}
-                <li>
-                  <a href="#" class="category" id="{{ category.id }}">{{ category.name }}</a>
-                </li>
-                {% endfor %}
-              </div>
-
-              <!-- Menu item: Back to course -->
-              <li>
-                <a href="#" id="back">
-                  <span class="glyphicon glyphicon-menu-left"></span>Back to Course
-                </a>
-              </li>
-
-              <!-- Logout -->
-              <div class="menu-bottom">
-                <li>
-                  <a href="/logout/" class="link" id="logout">
-                    <span class="glyphicon glyphicon-log-out"></span>Logout
-                  </a>
-                </li>
-              </div>
-            </ul>
-          </div>
-        </div> <!-- End navigation -->
-
-        <!-- Main content container -->
-        <div class="col-sm-10 fill-height main-column">
-          <div class="container-fluid" id="main-content">
-            <!-- Module description row -->
-            <div class="row page-header">
-              <div class="col-sm-12">
-                <h4 class="module-desc">{{ module.description }}</h4>
-              </div>
-            </div> <!-- End module description row -->
-
-            <div class="components-container">
-              <ul class="jumbotron-list">
-              {% for component in components %}
-              <!-- List components in module -->
-              {% if component.typeName == 'TEXT' %}
-              <li>
-                <div class="row">
-                  <div class="col-sm-12">
-                    <div class="component jumbotron" id="{{ component.index }}">
-                      <p class="content-text">{{ component.content }}</p>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              {% elif component.typeName == 'IMAGE' %}
-              <li>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <div class="component jumbotron" id="{{ component.index }}">
-                      <img class="content-img" src="{{ component.content.url }}"/>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              {% elif component.typeName == 'VIDEO' %}
-              <li>
-                <div class="row">
-                  <div class="col-sm-12">
-                    <div class="component jumbotron" id="{{ component.index }}">
-                      <iframe class="content-vdo" src="{{ component.content }}" frameborder="0" allowfullscreen>
-                      </iframe>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              {% else %}
-              <li>
-                <div class="row">
-                  <div class="col-sm-12">
-                    <div class="component jumbotron" id="{{ component.index }}">
-                      <a class="content-file link" href="{{ component.content.url }}" download>
-                        <span class="glyphicon glyphicon-save"></span>
-                        {{ component.content.name }}
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              {% endif %}
-              {% endfor %}
-              </ul>
-            </div>
-          </div>
-        </div> <!-- End main content container -->
-      </div> <!-- End content row -->
-    </div> <!-- End viewpoint container -->
-  </body>
-</html>
+      </div>
+    </div>
+  </li>
+  {% elif component.typeName == 'VIDEO' %}
+  <li>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="component jumbotron" id="{{ component.index }}">
+          <iframe class="content-vdo" src="{{ component.content }}" frameborder="0" allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </li>
+  {% else %}
+  <li>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="component jumbotron" id="{{ component.index }}">
+          <a class="content-file link" href="{{ component.content.url }}" download>
+            <span class="glyphicon glyphicon-save"></span>
+            {{ component.content.name }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </li>
+  {% endif %}
+  {% endfor %}
+  </ul>
+</div>
+{% endblock %}
