@@ -1,284 +1,233 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SDP</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}" media="all" type="text/css"/>
-    <link rel="stylesheet" href="{% static "jqueryui/jquery-ui.min.css" %}" media="all" type="text/css"/>
-    <link rel="stylesheet" href="{% static "jqueryui/jquery-ui.structure.min.css" %}" media="all" type="text/css"/>
-    <link rel="stylesheet/less" href="{% static "general/general.less" %}" media="all" type="text/css"/>
-    <link rel="stylesheet/less" href="{% static "general/instructor.less" %}" media="all" type="text/css"/>
-    <script src="{% static "js/jquery-3.1.1.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/less.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "jqueryui/jquery-ui.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/common.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/general/instructorCourse.js" %}" charset="utf-8"></script>
-  </head>
-  <body>
-    <!-- Main viewpoint container -->
-    <div class="container-fluid viewpoint-container">
-      <!-- Header row -->
-      <div class="row header-row">
-        <!-- Brand -->
-        <div class="col-sm-2 cbg-darken">
-          <h3>SDP</h3>
-        </div>
-        <!-- Header text -->
-        <div class="col-sm-10">
-          <h3 id="header-text">{{ course.name }}</h3>
-        </div>
-      </div> <!-- End header row -->
+{% extends 'general/base.html' %}
 
-      <!-- Content row -->
-      <div class="row content-row">
-        <!-- Navigation column -->
-        <div class="col-sm-2 cbg-primary fill-height">
-          <!-- Sidebar menu -->
-          <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-              <!-- Menu item: Home -->
-              <li>
-                <a href="#" id="home">
-                  <span class="glyphicon glyphicon-home"></span>Home
-                </a>
-              </li>
+{% load static %}
 
-              <!-- Logout -->
-              <div class="menu-bottom">
-                <li>
-                  <a href="/logout/" class="link" id="logout">
-                    <span class="glyphicon glyphicon-log-out"></span>Logout
-                  </a>
-                </li>
-              </div>
-            </ul>
-          </div>
-        </div> <!-- End navigation -->
+{% block self-style %}
+<link rel="stylesheet/less" href="{% static "general/instructor.less" %}" media="all" type="text/css"/>
+{% endblock %}
 
-        <!-- Main content container -->
-        <div class="col-sm-10 fill-height main-column">
-          <div class="container-fluid" id="main-content">
-            <!-- Course description row -->
-            {% if not isOpen %}
-            <div class="row page-header">
-              <div class="col-sm-10">
-                <h4 class="course-desc">{{ course.description }}</h4>
-              </div>
-              <div class="col-sm-1">
-                <button type="button" class="btn btn-default btn-lg btn-edit" id="{{ course.id }}">Edit</button>
-              </div>
-              <div class="col-sm-1">
-                <button type="button" class="btn btn-default btn-lg btn-open" id="{{ course.id }}">Open</button>
-              </div>
-            </div> <!-- End course description row -->
-            {% else %}
-            <div class="row page-header">
-              <div class="col-sm-12">
-                <h4 class="course-desc">{{ course.description }}</h4>
-              </div>
-            </div> <!-- End course description row -->
-            {% endif %}
+{% block self-script %}
+<script src="{% static "js/general/instructorCourse.js" %}" charset="utf-8"></script>
+{% endblock %}
 
-            <div class="modules-container">
-              <!-- Insert new module at head -->
-              {% if not isOpen %}
-              <a href="#">
-                <div class="addModule col-sm-11" id="0">
-                  <span class="glyphicon glyphicon-plus"></span>Add new module here
-                </div>
-              </a>
-              {% endif %}
-              <ul class="jumbotron-list" {% if not isOpen %}id="sortable"{% endif %}>
-              {% for module in modules %}
-              <!-- List modules in course -->
-                <li>
-                  <div class="row">
-                    <div {% if isOpen %}class="col-sm-12"{% else %}class="col-sm-11"{%endif%}>
-                      <a href="#">
-                        <div class="module jumbotron" id="{{ module.index }}">
-                          <p class="module-name">{{ module.name }}</p>
-                          <p class="module-desc">{{ module.description }}</p>
-                        </div>
-                      </a>
-                    </div>
-                    {% if not isOpen %}
-                    <div class="col-sm-1">
-                      <a href="#">
-                        <span class="glyphicon glyphicon-remove delete" id="{{ module.index }}"></span>
-                      </a>
-                    </div>
-                    {% endif %}
-                  </div>
+{% block header %}{{ course.name }}{% endblock %}
 
-                  {% if not isOpen %}
-                  <!-- Insert new module behind this module -->
-                  <a href="#">
-                    <div class="addModule col-sm-11" id="{{ module.index|add:1 }}">
-                      <span class="glyphicon glyphicon-plus"></span>Add new module here
-                    </div>
-                  </a>
-                  {% endif %}
-                </li>
-              {% endfor %}
-              </ul>
-              {% if not isOpen %}
-              <div class="scroll-over"></div>
-              {% endif %}
+{% block nav %}
+<!-- Menu item: Home -->
+<li>
+  <a href="#" id="home">
+    <span class="glyphicon glyphicon-home"></span>Home
+  </a>
+</li>
+
+<!-- Logout -->
+<div class="menu-bottom">
+  <li>
+    <a href="/logout/" class="link" id="logout">
+      <span class="glyphicon glyphicon-log-out"></span>Logout
+    </a>
+  </li>
+</div>
+{% endblock %}
+
+{% block main-content %}
+<!-- Course description row -->
+{% if not isOpen %}
+<div class="row page-header">
+  <div class="col-sm-10">
+    <h4 class="course-desc">{{ course.description }}</h4>
+  </div>
+  <div class="col-sm-1">
+    <button type="button" class="btn btn-default btn-lg btn-edit" id="{{ course.id }}">Edit</button>
+  </div>
+  <div class="col-sm-1">
+    <button type="button" class="btn btn-default btn-lg btn-open" id="{{ course.id }}">Open</button>
+  </div>
+</div> <!-- End course description row -->
+{% else %}
+<div class="row page-header">
+  <div class="col-sm-12">
+    <h4 class="course-desc">{{ course.description }}</h4>
+  </div>
+</div> <!-- End course description row -->
+{% endif %}
+
+<div class="modules-container">
+  <!-- Insert new module at head -->
+  {% if not isOpen %}
+  <a href="#">
+    <div class="addModule col-sm-11" id="0">
+      <span class="glyphicon glyphicon-plus"></span>Add new module here
+    </div>
+  </a>
+  {% endif %}
+  <ul class="jumbotron-list" {% if not isOpen %}id="sortable"{% endif %}>
+  {% for module in modules %}
+  <!-- List modules in course -->
+    <li>
+      <div class="row">
+        <div {% if isOpen %}class="col-sm-12"{% else %}class="col-sm-11"{%endif%}>
+          <a href="#">
+            <div class="module jumbotron" id="{{ module.index }}">
+              <p class="module-name">{{ module.name }}</p>
+              <p class="module-desc">{{ module.description }}</p>
             </div>
-          </div>
-        </div> <!-- End main content container -->
-      </div> <!-- End content row -->
+          </a>
+        </div>
+        {% if not isOpen %}
+        <div class="col-sm-1">
+          <a href="#">
+            <span class="glyphicon glyphicon-remove delete" id="{{ module.index }}"></span>
+          </a>
+        </div>
+        {% endif %}
+      </div>
 
       {% if not isOpen %}
-      <!-- Open confirm modal dialog -->
-      <div class="modal fade" id="openConfirmModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Confirm</h4>
-            </div>
-            <div class="modal-body">
-              <p>Are you sure to open course<br>{{ course.name }}?</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-confirm" data-dismiss="modal">Confirm</button>
-              <button type="button" class="btn btn-cancel" data-dismiss="modal">Cancel</button>
-            </div>
-          </div>
+      <!-- Insert new module behind this module -->
+      <a href="#">
+        <div class="addModule col-sm-11" id="{{ module.index|add:1 }}">
+          <span class="glyphicon glyphicon-plus"></span>Add new module here
         </div>
-      </div> <!-- End modal -->
-
-      <!-- Open success modal dialog -->
-      <div class="modal fade" id="openSuccessModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close btn-refresh" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Success</h4>
-            </div>
-            <div class="modal-body">
-              <p>Course<br>{{ course.name }}<br>opened successfully.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-refresh" data-dismiss="modal">View course</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
-
-      <!-- Open fail modal dialog -->
-      <div class="modal fade" id="openFailModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close btn-fail" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Error</h4>
-            </div>
-            <div class="modal-body">
-              <p>An error occurred. Opening failed.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-fail" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
-
-      <!-- Reorder fail modal dialog -->
-      <div class="modal fade" id="reorderFailModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close btn-refresh" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Error</h4>
-            </div>
-            <div class="modal-body">
-              <p>An error occurred. Reorder failed.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-refresh" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
-
-      <!-- Delete confirm modal dialog -->
-      <div class="modal fade" id="deleteConfirmModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Confirm</h4>
-            </div>
-            <div class="modal-body">
-              <p>Are you sure to delete this module?</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-confirm" data-dismiss="modal">Confirm</button>
-              <button type="button" class="btn btn-cancel" data-dismiss="modal">Cancel</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
-
-      <!-- Delete success modal dialog -->
-      <div class="modal fade" id="deleteSuccessModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close btn-success" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Success</h4>
-            </div>
-            <div class="modal-body">
-              <p>Module deleted successfully.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-success" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
-
-      <!-- Delete fail modal dialog -->
-      <div class="modal fade" id="deleteFailModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Error</h4>
-            </div>
-            <div class="modal-body">
-              <p>An error occurred. Deletion failed.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
+      </a>
       {% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+  {% if not isOpen %}
+  <div class="scroll-over"></div>
+  {% endif %}
+</div>
+{% endblock %}
 
-      <!-- Error modal dialog -->
-      <div class="modal fade" id="errorModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Error</h4>
-            </div>
-            <div class="modal-body">
-              <p>An error occurred.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
-    </div> <!-- End viewpoint container -->
-  </body>
-</html>
+{% block extra-modal %}
+{% if not isOpen %}
+<!-- Open confirm modal dialog -->
+<div class="modal fade" id="openConfirmModal" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Confirm</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure to open course<br>{{ course.name }}?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-confirm" data-dismiss="modal">Confirm</button>
+        <button type="button" class="btn btn-cancel" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- End modal -->
+
+<!-- Open success modal dialog -->
+<div class="modal fade" id="openSuccessModal" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-refresh" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Success</h4>
+      </div>
+      <div class="modal-body">
+        <p>Course<br>{{ course.name }}<br>opened successfully.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-refresh" data-dismiss="modal">View course</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- End modal -->
+
+<!-- Open fail modal dialog -->
+<div class="modal fade" id="openFailModal" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-fail" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Error</h4>
+      </div>
+      <div class="modal-body">
+        <p>An error occurred. Opening failed.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-fail" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- End modal -->
+
+<!-- Reorder fail modal dialog -->
+<div class="modal fade" id="reorderFailModal" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-refresh" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Error</h4>
+      </div>
+      <div class="modal-body">
+        <p>An error occurred. Reorder failed.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-refresh" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- End modal -->
+
+<!-- Delete confirm modal dialog -->
+<div class="modal fade" id="deleteConfirmModal" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Confirm</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure to delete this module?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-confirm" data-dismiss="modal">Confirm</button>
+        <button type="button" class="btn btn-cancel" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- End modal -->
+
+<!-- Delete success modal dialog -->
+<div class="modal fade" id="deleteSuccessModal" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-success" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Success</h4>
+      </div>
+      <div class="modal-body">
+        <p>Module deleted successfully.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-success" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- End modal -->
+
+<!-- Delete fail modal dialog -->
+<div class="modal fade" id="deleteFailModal" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Error</h4>
+      </div>
+      <div class="modal-body">
+        <p>An error occurred. Deletion failed.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- End modal -->
+{% endif %}
+{% endblock %}

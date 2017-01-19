@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SDP</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}" media="all" type="text/css"/>
+    <link rel="stylesheet/less" href="{% static "general/general.less" %}" media="all" type="text/css"/>
+    {% block self-style %}{% endblock %}
+    <script src="{% static "js/jquery-3.1.1.min.js" %}" charset="utf-8"></script>
+    <script src="{% static "js/less.min.js" %}" charset="utf-8"></script>
+    <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="utf-8"></script>
+    <script src="{% static "js/common.js" %}" charset="utf-8"></script>
+    {% block self-script %}{% endblock %}
+  </head>
+  <body>
+    <!-- Main viewpoint container -->
+    <div class="container-fluid viewpoint-container">
+      <!-- Header row -->
+      <div class="row header-row">
+        <!-- Brand -->
+        <div class="col-sm-2 cbg-darken">
+          <h3>SDP</h3>
+        </div>
+        <!-- Header text -->
+        <div class="col-sm-10">
+          <h3 id="header-text">{% block header %}Home{% endblock %}</h3>
+        </div>
+      </div> <!-- End header row -->
+
+      <!-- Content row -->
+      <div class="row content-row">
+        <!-- Navigation column -->
+        <div class="col-sm-2 cbg-primary fill-height">
+          <!-- Sidebar menu -->
+          <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              {% block nav %}
+              {% endblock %}
+            </ul>
+          </div>
+        </div> <!-- End navigation -->
+
+        <!-- Main content container -->
+        <div class="col-sm-10 fill-height main-column">
+          <div class="container-fluid" id="main-content">
+            {% block main-content %}{% endblock %}
+          </div>
+        </div> <!-- End main content container -->
+      </div> <!-- End content row -->
+      {% block extra-modal %}{% endblock %}
+
+      <!-- Error modal dialog -->
+      <div class="modal fade" id="errorModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Error</h4>
+            </div>
+            <div class="modal-body">
+              <p>An error occurred.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End modal -->
+    </div> <!-- End viewpoint container -->
+  </body>
+</html>

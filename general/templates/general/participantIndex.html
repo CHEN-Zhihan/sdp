@@ -1,144 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SDP</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}" media="all" type="text/css"/>
-    <link rel="stylesheet/less" href="{% static "general/general.less" %}" media="all" type="text/css"/>
-    <link rel="stylesheet/less" href="{% static "general/participant.less" %}" media="all" type="text/css"/>
-    <script src="{% static "js/jquery-3.1.1.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/less.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/common.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/general/participantIndex.js" %}" charset="utf-8"></script>
-  </head>
-  <body>
-    <!-- Main viewpoint container -->
-    <div class="container-fluid viewpoint-container">
-      <!-- Header row -->
-      <div class="row header-row">
-        <!-- Brand -->
-        <div class="col-sm-2 cbg-darken">
-          <h3>SDP</h3>
-        </div>
-        <!-- Header text -->
-        <div class="col-sm-10">
-          <h3 id="header-text">Home</h3>
-        </div>
-      </div> <!-- End header row -->
+{% extends 'general/base.html' %}
 
-      <!-- Content row -->
-      <div class="row content-row">
-        <!-- Navigation column -->
-        <div class="col-sm-2 cbg-primary fill-height">
-          <!-- Sidebar menu -->
-          <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-              <!-- Menu item: Home -->
-              <li>
-                <a class="active" href="#" id="home">
-                  <span class="glyphicon glyphicon-home"></span>Home
-                </a>
-              </li>
+{% load static %}
 
-              <!-- Menu item: Catalog -->
-              <li>
-                <a href="#" data-toggle="collapse" data-target="#categories" id="catalog">
-                  <span class="glyphicon glyphicon-book"></span>Catalog
-                </a>
-              </li>
+{% block self-style %}
+<link rel="stylesheet/less" href="{% static "general/participant.less" %}" media="all" type="text/css"/>
+{% endblock %}
 
-              <!-- Collapse sub-menu: categories -->
-              <div class="collapse" id="categories">
-                <!-- List all categories -->
-                {% for category in categoryList %}
-                <li>
-                  <a href="#" class="category" id="{{ category.id }}">{{ category.name }}</a>
-                </li>
-                {% endfor %}
-              </div>
+{% block self-script %}
+<script src="{% static "js/general/participantIndex.js" %}" charset="utf-8"></script>
+{% endblock %}
 
-              <!-- Logout -->
-              <div class="menu-bottom">
-                <li>
-                  <a href="/logout/" class="link" id="logout">
-                    <span class="glyphicon glyphicon-log-out"></span>Logout
-                  </a>
-                </li>
-              </div>
-            </ul>
-          </div>
-        </div> <!-- End navigation -->
+{% block nav %}
+<!-- Menu item: Home -->
+<li>
+  <a class="active" href="#" id="home">
+    <span class="glyphicon glyphicon-home"></span>Home
+  </a>
+</li>
 
-        <!-- Main content container -->
-        <div class="col-sm-10 fill-height main-column">
-          <div class="container-fluid" id="main-content">
-            {% if currentCourse %}
-            <!-- Show current course -->
-            <div>
-              <h4 class="info-text page-header">In Progress</h4>
-            </div>
-            <a href="#">
-              <div class="course currentCourse jumbotron" id="{{ currentCourse.id }}">
-                <p class="course-name">{{ currentCourse.name }}</p>
-                <p class="course-desc">{{ currentCourse.description }}</p>
-                <div class="progress">
-                  <div class="progress-bar" role="progressbar" aria-valuenow="{{ progress }}"
-                  aria-valuemin="0" aria-valuemax="100" style="width:{{progress}}%">
-                    <span>{{ progress }}% Complete</span>
-                  </div>
-                </div>
-              </div>
-            </a>
-            {% endif %}
+<!-- Menu item: Catalog -->
+<li>
+  <a href="#" data-toggle="collapse" data-target="#categories" id="catalog">
+    <span class="glyphicon glyphicon-book"></span>Catalog
+  </a>
+</li>
 
-            {% if completedCourses %}
-            <!-- List taken courses -->
-            <div>
-              <h4 class="info-text page-header">Completed</h4>
-            </div>
-            {% for course in completedCourses %}
-            <a href="#">
-              <div class="course currentCourse jumbotron" id="{{ course.id }}">
-                <p class="course-name">{{ course.name }}</p>
-                <p class="course-desc">{{ course.description }}</p>
-              </div>
-            </a>
-            {% endfor %}
-            {% endif %}
+<!-- Collapse sub-menu: categories -->
+<div class="collapse" id="categories">
+  <!-- List all categories -->
+  {% for category in categoryList %}
+  <li>
+    <a href="#" class="category" id="{{ category.id }}">{{ category.name }}</a>
+  </li>
+  {% endfor %}
+</div>
 
-            {% if not currentCourse and not completedCourses %}
-            <!-- If no courses, display default message -->
-            <div class="container-fluid centered text-center">
-              <h3 class="info-text jumbotron">
-                You haven't taken any course yet.<br>
-                Choose a category to explore!
-              </h3>
-            </div>
-            {% endif %}
-          </div>
-        </div> <!-- End main content container -->
-      </div> <!-- End content row -->
+<!-- Logout -->
+<div class="menu-bottom">
+  <li>
+    <a href="/logout/" class="link" id="logout">
+      <span class="glyphicon glyphicon-log-out"></span>Logout
+    </a>
+  </li>
+</div>
+{% endblock %}
 
-      <!-- Error modal dialog -->
-      <div class="modal fade" id="errorModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Error</h4>
-            </div>
-            <div class="modal-body">
-              <p>An error occurred.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
-    </div> <!-- End viewpoint container -->
-  </body>
-</html>
+{% block main-content %}
+{% if currentCourse %}
+<!-- Show current course -->
+<div>
+  <h4 class="info-text page-header">In Progress</h4>
+</div>
+<a href="#">
+  <div class="course currentCourse jumbotron" id="{{ currentCourse.id }}">
+    <p class="course-name">{{ currentCourse.name }}</p>
+    <p class="course-desc">{{ currentCourse.description }}</p>
+    <div class="progress">
+      <div class="progress-bar" role="progressbar" aria-valuenow="{{ progress }}"
+      aria-valuemin="0" aria-valuemax="100" style="width:{{progress}}%">
+        <span>{{ progress }}% Complete</span>
+      </div>
+    </div>
+  </div>
+</a>
+{% endif %}
+
+{% if completedCourses %}
+<!-- List taken courses -->
+<div>
+  <h4 class="info-text page-header">Completed</h4>
+</div>
+{% for course in completedCourses %}
+<a href="#">
+  <div class="course currentCourse jumbotron" id="{{ course.id }}">
+    <p class="course-name">{{ course.name }}</p>
+    <p class="course-desc">{{ course.description }}</p>
+  </div>
+</a>
+{% endfor %}
+{% endif %}
+
+{% if not currentCourse and not completedCourses %}
+<!-- If no courses, display default message -->
+<div class="container-fluid centered text-center">
+  <h3 class="info-text jumbotron">
+    You haven't taken any course yet.<br>
+    Choose a category to explore!
+  </h3>
+</div>
+{% endif %}
+{% endblock %}

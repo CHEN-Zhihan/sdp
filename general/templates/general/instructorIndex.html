@@ -1,202 +1,152 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SDP</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}" media="all" type="text/css"/>
-    <link rel="stylesheet/less" href="{% static "general/general.less" %}" media="all" type="text/css"/>
-    <link rel="stylesheet/less" href="{% static "general/instructor.less" %}" media="all" type="text/css"/>
-    <script src="{% static "js/jquery-3.1.1.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/less.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "bootstrap/js/bootstrap.min.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/common.js" %}" charset="utf-8"></script>
-    <script src="{% static "js/general/instructorIndex.js" %}" charset="utf-8"></script>
-  </head>
-  <body>
-    <!-- Main viewpoint container -->
-    <div class="container-fluid viewpoint-container">
-      <!-- Header row -->
-      <div class="row header-row">
-        <!-- Brand -->
-        <div class="col-sm-2 cbg-darken">
-          <h3>SDP</h3>
-        </div>
-        <!-- Header text -->
-        <div class="col-sm-10">
-          <h3 id="header-text">Home</h3>
-        </div>
-      </div> <!-- End header row -->
+{% extends 'general/base.html' %}
 
-      <!-- Content row -->
-      <div class="row content-row">
-        <!-- Navigation column -->
-        <div class="col-sm-2 cbg-primary fill-height">
-          <!-- Sidebar menu -->
-          <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-              <!-- Menu item: Home -->
-              <li>
-                <a class="active" href="#" id="home">
-                  <span class="glyphicon glyphicon-home"></span>Home
-                </a>
-              </li>
+{% load static %}
 
-              <!-- Menu item: Create Course -->
-              <li>
-                <a href="#" id="createCourse">
-                  <span class="glyphicon glyphicon-plus"></span>Create Course
-                </a>
-              </li>
+{% block self-style %}
+<link rel="stylesheet/less" href="{% static "general/instructor.less" %}" media="all" type="text/css"/>
+{% endblock %}
 
-              <!-- Logout -->
-              <div class="menu-bottom">
-                <li>
-                  <a href="/logout/" class="link" id="logout">
-                    <span class="glyphicon glyphicon-log-out"></span>Logout
-                  </a>
-                </li>
-              </div>
-            </ul>
-          </div>
-        </div> <!-- End navigation -->
+{% block self-script %}
+<script src="{% static "js/general/instructorIndex.js" %}" charset="utf-8"></script>
+{% endblock %}
 
-        <!-- Main content container -->
-        <div class="col-sm-10 fill-height main-column">
-          <div class="container-fluid" id="main-content">
-            {% if developingCourses %}
-            <!-- Show developing courses -->
-            <div class="row">
-              <div class="col-sm-11">
-                <h4 class="info-text page-header">Developing</h4>
-              </div>
-            </div>
-            {% for course in developingCourses %}
-            <div class="row">
-              <div class="col-sm-11">
-                <a href="#">
-                  <div class="course developingCourse jumbotron" id="{{ course.id }}">
-                    <p class="course-name">{{ course.name }}</p>
-                    <p class="course-desc">{{ course.description }}</p>
-                  </div>
-                </a>
-              </div>
-              <div class="col-sm-1">
-                <a href="#">
-                  <span class="glyphicon glyphicon-remove delete" id="{{ course.id }}"></span>
-                </a>
-              </div>
-            </div>
-            {% endfor %}
-            {% endif %}
+{% block nav %}
+<!-- Menu item: Home -->
+<li>
+  <a class="active" href="#" id="home">
+    <span class="glyphicon glyphicon-home"></span>Home
+  </a>
+</li>
 
-            {% if openCourses %}
-            <!-- List open courses -->
-            <div class="row">
-              <div class="col-sm-11">
-                <h4 class="info-text page-header">Opened</h4>
-              </div>
-            </div>
-            {% for course in openCourses %}
-            <div class="row">
-              <div class="col-sm-11">
-                <a href="#">
-                  <div class="course openCourse jumbotron" id="{{ course.id }}">
-                    <p class="course-name">{{ course.name }}</p>
-                    <p class="course-desc">{{ course.description }}</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-            {% endfor %}
-            {% endif %}
+<!-- Menu item: Create Course -->
+<li>
+  <a href="#" id="createCourse">
+    <span class="glyphicon glyphicon-plus"></span>Create Course
+  </a>
+</li>
 
-            {% if not developingCourses and not openCourses %}
-            <!-- If no courses, display default message -->
-            <div class="container-fluid centered text-center">
-              <h3 class="info-text jumbotron">
-                You haven't developed any course yet.<br>
-                Create a course to start!
-              </h3>
-            </div>
-            {% endif %}
-          </div>
-        </div> <!-- End main content container -->
-      </div> <!-- End content row -->
+<!-- Logout -->
+<div class="menu-bottom">
+  <li>
+    <a href="/logout/" class="link" id="logout">
+      <span class="glyphicon glyphicon-log-out"></span>Logout
+    </a>
+  </li>
+</div>
+{% endblock %}
 
-      <!-- Delete confirm modal dialog -->
-      <div class="modal fade" id="deleteConfirmModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Confirm</h4>
-            </div>
-            <div class="modal-body">
-              <p>Are you sure to delete this course?</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-confirm" data-dismiss="modal">Confirm</button>
-              <button type="button" class="btn btn-cancel" data-dismiss="modal">Cancel</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
+{% block main-content %}
+{% if developingCourses %}
+<!-- Show developing courses -->
+<div class="row">
+  <div class="col-sm-11">
+    <h4 class="info-text page-header">Developing</h4>
+  </div>
+</div>
+{% for course in developingCourses %}
+<div class="row">
+  <div class="col-sm-11">
+    <a href="#">
+      <div class="course developingCourse jumbotron" id="{{ course.id }}">
+        <p class="course-name">{{ course.name }}</p>
+        <p class="course-desc">{{ course.description }}</p>
+      </div>
+    </a>
+  </div>
+  <div class="col-sm-1">
+    <a href="#">
+      <span class="glyphicon glyphicon-remove delete" id="{{ course.id }}"></span>
+    </a>
+  </div>
+</div>
+{% endfor %}
+{% endif %}
 
-      <!-- Delete success modal dialog -->
-      <div class="modal fade" id="deleteSuccessModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close btn-success" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Success</h4>
-            </div>
-            <div class="modal-body">
-              <p>Course deleted successfully.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-success" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
+{% if openCourses %}
+<!-- List open courses -->
+<div class="row">
+  <div class="col-sm-11">
+    <h4 class="info-text page-header">Opened</h4>
+  </div>
+</div>
+{% for course in openCourses %}
+<div class="row">
+  <div class="col-sm-11">
+    <a href="#">
+      <div class="course openCourse jumbotron" id="{{ course.id }}">
+        <p class="course-name">{{ course.name }}</p>
+        <p class="course-desc">{{ course.description }}</p>
+      </div>
+    </a>
+  </div>
+</div>
+{% endfor %}
+{% endif %}
 
-      <!-- Delete fail modal dialog -->
-      <div class="modal fade" id="deleteFailModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Error</h4>
-            </div>
-            <div class="modal-body">
-              <p>An error occurred. Deletion failed.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
+{% if not developingCourses and not openCourses %}
+<!-- If no courses, display default message -->
+<div class="container-fluid centered text-center">
+  <h3 class="info-text jumbotron">
+    You haven't developed any course yet.<br>
+    Create a course to start!
+  </h3>
+</div>
+{% endif %}
+{% endblock %}
 
-      <!-- Error modal dialog -->
-      <div class="modal fade" id="errorModal" role="dialog">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Error</h4>
-            </div>
-            <div class="modal-body">
-              <p>An error occurred.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End modal -->
-    </div> <!-- End viewpoint container -->
-  </body>
-</html>
+{% block extra-modal %}
+<!-- Delete confirm modal dialog -->
+<div class="modal fade" id="deleteConfirmModal" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Confirm</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure to delete this course?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-confirm" data-dismiss="modal">Confirm</button>
+        <button type="button" class="btn btn-cancel" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- End modal -->
+
+<!-- Delete success modal dialog -->
+<div class="modal fade" id="deleteSuccessModal" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-success" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Success</h4>
+      </div>
+      <div class="modal-body">
+        <p>Course deleted successfully.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-success" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- End modal -->
+
+<!-- Delete fail modal dialog -->
+<div class="modal fade" id="deleteFailModal" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Error</h4>
+      </div>
+      <div class="modal-body">
+        <p>An error occurred. Deletion failed.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- End modal -->
+{% endblock %}
